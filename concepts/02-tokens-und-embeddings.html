@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>02 · Tokens &amp; Embeddings — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 02 · Stufe 3–4</p>
+    <h1>02 · Tokens &amp; Embeddings</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Computer können keine Wörter lesen, nur Zahlen. Also zerlegen wir den Text in
+      kleine Stücke („Tokens“) und geben jedem Stück eine Adresse in einem riesigen
+      Raum. Wörter mit ähnlicher Bedeutung wohnen in der Nähe — wie Punkte auf einer
+      Landkarte der Sprache.
+    </div>
+
+    <h2>Token = das „Wort“, das das Modell wirklich sieht</h2>
+    <p>Was in Konzept 01 „Wort“ hieß, heißt technisch <strong>Token</strong>. Ein
+       Token ist nicht zwingend ein ganzes Wort — oft ein Stück davon. Englisch wird
+       typischerweise ~4 Zeichen pro Token „wert“ sein. Deshalb kosten deutsche
+       Umlaute/Wörter mehr Tokens (und damit mehr Geld/Latenz) als Englisch.</p>
+    <p>Beim API-Aufruf zahlst du pro Token, nicht pro Zeichen. <code>max_tokens</code>
+       begrenzt die Antwort, aber die <em>Eingabe</em> wird still mitgezählt.</p>
+    <p>Probier es selbst: <a href="../playground/tokenizer-demo.html">Playground · Tokenizer</a>.</p>
+
+    <h2>Embedding = Bedeutung als Koordinate</h2>
+    <p>Nach der Zerlegung wird jedes Token in einen Vektor (eine Liste von z.B.
+       768–4096 Zahlen) übersetzt — das <strong>Embedding</strong>. Diese Zahlen sind
+       keine willkürlichen IDs, sondern <em>Positionen</em> in einem hochdimensionalen
+       Raum:</p>
+    <ul>
+      <li>„Hund“ und „Katze“ liegen nah beieinander.</li>
+      <li>„Hund“ und „Buch“ liegen weit auseinander.</li>
+      <li>„Bank“ (Sitzmöbel) vs. „Bank“ (Geldinstitut) — der Kontext verschiebt die Position.</li>
+    </ul>
+    <p>Das ist der Kern, warum Modelle „Bedeutung“ überhaupt fassen können: Ähnlichkeit
+       von Wörtern wird zu Abstand von Punkten. Cosine-Similarity zwischen zwei
+       Embeddings ≈ semantische Nähe.</p>
+
+    <h2>Warum das für dich als Code-Nutzer relevant ist</h2>
+    <ul>
+      <li><strong>RAG &amp; Vektordatenbanken:</strong> Du speicherst Embeddings, nicht Text. Suche = „finde Punkte in der Nähe“.</li>
+      <li><strong>Kosten/Latenz:</strong> weniger Tokens = billiger/schneller. Deutsche Prompts optimieren lohnt.</li>
+      <li><strong>Similarity-Checks:</strong> Duplikat- oder Klassifikationslogik oft als Embedding-Distanz statt Regex.</li>
+      <li><strong>Modellgrenzen:</strong> „context window“ ist in Tokens gemessen, nicht Zeichen.</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="01-sprachmodell-als-funktion.html">01 · Sprachmodell als Funktion</a> — wofür das Token die Eingabe ist.</li>
+      <li><a href="03-attention-ueberblick.html">03 · Attention</a> — wie Tokens ihre Embeddings untereinander abgleichen.</li>
+      <li><a href="../playground/tokenizer-demo.html">Playground · Tokenizer</a></li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Wie werden Embeddings <em>gelernt</em> (Training mit Kontext)?
+      Vergleich: Wort2Vec / GPT-Embeddings.<br/>
+      • Was ist der Unterschied zwischen Token-Embedding und Positions-Embedding?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

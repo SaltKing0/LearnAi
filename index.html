@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI-Lernkurs · Hub</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <h1>AI-Lernkurs</h1>
+    <p class="meta">Ein wachsendes, interaktives Wiki — gebaut, um KI wirklich zu <em>verstehen</em>,
+       nicht nur zu benutzen. Jedes Konzept = eine Seite + eine interaktive Demo.</p>
+
+    <div class="callout kid">
+      <span class="label">Die eine Regel</span>
+      Zu jedem Konzept gibt es einen Satz <strong>„Erklär es einem 12-Jährigen“</strong>.
+      Wenn du den nicht schreiben kannst, hast du es noch nicht verstanden.
+    </div>
+
+    <h2>Konzepte (Lernpfad)</h2>
+    <div class="cards">
+      <a class="card" href="concepts/01-sprachmodell-als-funktion.html">
+        <span class="num">01</span>
+        <h3>Sprachmodell als Funktion</h3>
+        <p>Die eine Gleichung, die alles erklärt: P(nächstes Wort | bisheriger Text).</p>
+      </a>
+      <a class="card" href="concepts/02-tokens-und-embeddings.html">
+        <span class="num">02</span>
+        <h3>Tokens &amp; Embeddings</h3>
+        <p>Wie Text in Zahlen wird — und warum „Bedeutung“ = Position im Raum ist.</p>
+      </a>
+      <a class="card" href="concepts/03-attention-ueberblick.html">
+        <span class="num">03</span>
+        <h3>Attention</h3>
+        <p>Der Mechanismus, der LLMs ausmacht: wie ein Wort „hinblickt“.</p>
+      </a>
+    </div>
+
+    <h2>Playground (interaktiv)</h2>
+    <div class="cards">
+      <a class="card" href="playground/tokenizer-demo.html">
+        <span class="num">→</span>
+        <h3>Tokenizer-Demo</h3>
+        <p>Tippe Text und sieh, wie er in Tokens zerlegt wird.</p>
+      </a>
+      <a class="card" href="playground/attention-demo.html">
+        <span class="num">→</span>
+        <h3>Attention-Demo</h3>
+        <p>Self-Attention als Heatmap — und wie „Temperatur“ den Fokus schärft.</p>
+      </a>
+    </div>
+
+    <h2>Wie dieses Repo wächst</h2>
+    <p>Jede neue Sache, die du lernst, wird zu <strong>einer</strong> Konzept-Seite
+       (Kopie von <code>concepts/_template.html</code>) + einem Eintrag in
+       <code>assets/nav.js</code>. Fertig. Kein Framework, kein Build-Step —
+       es läuft direkt auf <a href="https://pages.github.com/">GitHub Pages</a>.</p>
+    <p>Details &amp; Roadmap: <code>README.md</code> und <code>ROADMAP.md</code> im Repo-Root.</p>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="assets/nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Playground · Tokenizer — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Playground</p>
+    <h1>Tokenizer-Demo (vereinfacht)</h1>
+
+    <div class="callout warn">
+      <span class="label">Wichtig</span>
+      Das ist eine <strong>vereinfachte Illustration</strong>, kein echter BPE/WordPiece-
+      Tokenizer (wie GPT-2/4). Echte Tokenizer zerlegen anders und zählen anders.
+      Ziel hier: das <em>Prinzip</em> „Text → Stücke → IDs“ greifbar zu machen.
+    </div>
+
+    <div class="demo-box">
+      <textarea id="inp" rows="4">Der kleine Hund läuft schnell durch den Wald.</textarea>
+      <div class="controls">
+        <button id="run" style="background:#58a6ff;color:#0e1116;border:none;border-radius:8px;padding:8px 16px;font-family:monospace;cursor:pointer;">Zerlegen →</button>
+        <span id="count" style="margin-left:14px;"></span>
+      </div>
+      <div id="tokens" class="tokens"></div>
+    </div>
+
+    <p class="meta">Beobachte: Lange Wörter werden in mehrere Stücke gespalten (wie echte
+       Subword-Tokenizer). Leerzeichen und Sonderzeichen werden oft eigene Tokens.</p>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="../concepts/02-tokens-und-embeddings.html">02 · Tokens &amp; Embeddings</a></li>
+    </ul>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+  <script>
+    // Sehr simple Heuristik: Wörter, dann lange Wörter in ~4er-Chunks (Subword-Illusion).
+    function tokenize(text) {
+      const out = [];
+      // erst an Leerzeichen/punct zerlegen, Satzzeichen als eigene Tokens
+      const raw = text.split(/(\s+|[.,!?;:"'()\[\]{}])/).filter((s) => s.length > 0);
+      for (const piece of raw) {
+        if (/^\s+$/.test(piece)) { out.push("␣"); continue; }
+        if (/^[.,!?;:"'()\[\]{}]/.test(piece)) { out.push(piece); continue; }
+        // Wort: in Chunks von max 4 Zeichen spalten (mimik Subword)
+        let w = piece;
+        while (w.length > 4) { out.push(w.slice(0, 4)); w = w.slice(4); }
+        out.push(w);
+      }
+      return out;
+    }
+
+    function render() {
+      const text = document.getElementById("inp").value;
+      const toks = tokenize(text);
+      const box = document.getElementById("tokens");
+      box.innerHTML = "";
+      toks.forEach((t, i) => {
+        const el = document.createElement("div");
+        el.className = "tok";
+        el.innerHTML = `${escapeHtml(t)}<span class="idx">${i}</span>`;
+        box.appendChild(el);
+      });
+      document.getElementById("count").textContent = `→ ${toks.length} Tokens`;
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+    }
+
+    document.getElementById("run").addEventListener("click", render);
+    document.getElementById("inp").addEventListener("input", render);
+    render();
+  </script>
+</body>
+</html>

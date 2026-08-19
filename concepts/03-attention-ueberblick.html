@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>03 · Attention — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 03 · Stufe 3–4</p>
+    <h1>03 · Attention (Selbst-Aufmerksamkeit)</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Wenn du den Satz liest „Der Hund beißt den Mann, weil <em>er</em> hungrig ist“,
+      musst du wissen: Wer ist „er“? Der Hund oder der Mann? Attention ist das, was
+      dem Modell erlaubt, bei jedem Wort hinzuschauen, welche anderen Wörter gerade
+      wichtig sind — um „er“ dem „Hund“ zuzuordnen.
+    </div>
+
+    <h2>Die Idee in einem Satz</h2>
+    <p>Jedes Token berechnet für jedes andere Token eine <strong>Gewichtung</strong>:
+       „wie viel Aufmerksamkeit schenke ich dir?“ Diese Gewichte bestimmen, welche
+       Informationen in die Bedeutung des aktuellen Tokens einfließen.</p>
+
+    <h2>Wie die Gewichte entstehen (vereinfacht)</h2>
+    <p>Für jedes Token gibt es drei Vektoren, die das Modell gelernt hat:</p>
+    <ul>
+      <li><strong>Query (Q)</strong> — „wonach suche ich?“</li>
+      <li><strong>Key (K)</strong> — „worauf ich passe“</li>
+      <li><strong>Value (V)</strong> — „was ich beitrage“</li>
+    </ul>
+    <p>Score zwischen Token i und j = Ähnlichkeit von Q<sub>i</sub> mit K<sub>j</sub>.
+       Diese Scores werden über alle j mit <strong>Softmax</strong> zu Gewichten
+       normalisiert (Summer = 1). Dann ist der neue Vektor von Token i = gewichtete
+       Summe aller V<sub>j</sub>. Das ist Attention.</p>
+
+    <h2>Temperatur = Schärfe des Blickfelds</h2>
+    <p>Softmax hat eine implizite „Temperatur“: Teilt man die Scores vor dem Softmax
+       durch eine kleine Zahl (tiefe Temperatur), werden die Gewichte scharf/peakig —
+       das Modell fixiert sich auf wenige Wörter. Bei hoher Temperatur werden sie
+       weich/uniform — es schaut überall gleich viel hin. Genau dieselbe
+       Temperatur-Logik steckt hinter dem <code>temperature</code>-Parameter beim
+       Generieren (Konzept 01).</p>
+
+    <p>Probier es in der Demo: <a href="../playground/attention-demo.html">Playground · Attention</a></p>
+
+    <h2>Warum das die „magische“ Komponente ist</h2>
+    <p>Transformer = gestapelte Attention-Lagen. Mehrere „Köpfe“ (Multi-Head) schauen
+       gleichzeitig auf unterschiedliche Beziehungen (Grammatik, Kern-Akteur,
+       Zeit). Daraus entsteht das, was sich wie „Verständnis“ anfühlt — ist aber
+       nur gewichtete Informationsmischung. Kein Wunder, dass Halluzinationen
+       entstehen, wenn die Gewichte das falsche Wort fokussieren.</p>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="02-tokens-und-embeddings.html">02 · Tokens &amp; Embeddings</a> — die Vektoren, auf denen Attention operiert.</li>
+      <li><a href="01-sprachmodell-als-funktion.html">01 · Sprachmodell als Funktion</a> — Attention ist der Baustein im Inneren.</li>
+      <li><a href="../playground/attention-demo.html">Playground · Attention</a></li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Was genau ist „Multi-Head Attention“ und wozu mehrere Köpfe?<br/>
+      • Self-Attention vs. Cross-Attention (letzteres bei Bild→Text etc.).<br/>
+      • Warum skaliert man Q·K durch √d (Vermeidung von vanishing gradients)?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

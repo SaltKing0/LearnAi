@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>01 · Sprachmodell als Funktion — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 01 · Stufe 3–4</p>
+    <h1>01 · Sprachmodell als Funktion</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Ein Sprachmodell ist wie jemand, der einen Satz halb vorgelesen bekommt und
+      immer nur <em>das nächste Wort</em> rät — aber sehr, sehr gut. Es macht das
+      Wort für Wort, bis der Satz fertig ist. Mehr ist es nicht. Alles andere ist
+      Technik, um diese eine Vorhersage gut hinzubekommen.
+    </div>
+
+    <h2>Die eine Gleichung</h2>
+    <p>Alles, was ein LLM tut, ist diese Vorhersage, immer wieder:</p>
+    <pre><code>P( nächstes_token | alle_bisherigen_tokens )</code></pre>
+    <p>Das Modell gibt für jedes mögliche nächste Wort eine Wahrscheinlichkeit aus.
+       Wir picken eins (das wahrscheinlichste, oder zufällig nach Temperatur) und
+       hängen es an. Dann wieder von vorn. <strong>Das ist der ganze „Generierungs-Loop“.</strong></p>
+
+    <h2>Der Loop, visualisiert</h2>
+    <div class="demo-box">
+      <div id="loopSketch"></div>
+      <p class="meta">Animation: das Modell schreibt Wort für Wort. Jeder Schritt füttert
+        das bisher Geschriebene zurück hinein.</p>
+    </div>
+
+    <h2>Was du als API-Nutzer eigentlich aufrufst</h2>
+    <p>Wenn du <code>openai.chat.completions.create(...)</code> oder das Äquivalent
+       bei einem anderen Anbieter aufrufst, passiert intern genau dieser Loop — nur
+       dass der Anbieter ihn für dich serverseitig ausführt und dir das fertige
+       Ergebnis (oder Token-Stream) zurückgibt. Parameter, die du kennst:</p>
+    <ul>
+      <li><code>temperature</code> → wie „zufällig“ das nächste Wort gewählt wird (siehe Attention-Demo für das Prinzip).</li>
+      <li><code>max_tokens</code> → wann der Loop stoppt.</li>
+      <li><code>top_p</code> / <code>top_k</code> → schränkt die Kandidaten-Menge vor der Wahl ein.</li>
+      <li><code>stop</code> → explizites Stopp-Wort für den Loop.</li>
+    </ul>
+
+    <h2>Warum das wichtig ist</h2>
+    <p>Weil das Modell <strong>nichts „weiß“ und nichts „plant“</strong> — es rät nur
+       das nächste Wort. Halluzinationen, Wiederholungsschleifen, „es denkt nach“
+       (eigentlich: mehr Loop-Durchläufe) — alles folgt aus diesem einen Mechanismus.
+       Sobald du das verinnerlicht hast, erklärt sich das Verhalten von LLMs von selbst.</p>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="02-tokens-und-embeddings.html">02 · Tokens &amp; Embeddings</a> — was genau ein „Token“ ist, das das Modell vorhersagt.</li>
+      <li><a href="03-attention-ueberblick.html">03 · Attention</a> — wie das Modell „sieht“, welche bisherigen Wörter relevant sind.</li>
+      <li><a href="../playground/tokenizer-demo.html">Playground · Tokenizer</a></li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Wie genau wird aus der Wahrscheinlichkeitsverteilung das eine gewählte Wort
+      (sampling vs. greedy)? <br/>
+      • Was ist „Logit“ und wie hängt es mit der Wahrscheinlichkeit zusammen?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="../assets/nav.js"></script>
+  <script>
+    // Kleine Animation des Generierungs-Loops (Autoregressiv).
+    const SENTENCE = ["Der", "Hund", "beißt", "den", "Mann", "."];
+    let step = 0;
+    const sketch = (p) => {
+      p.setup = () => {
+        const c = p.createCanvas(640, 140);
+        c.parent("loopSketch");
+        p.frameRate(2); // langsam, damit man denkt
+        p.textAlign(p.CENTER, p.CENTER);
+        p.textSize(20);
+      };
+      p.draw = () => {
+        p.background(22, 27, 34);
+        const y = 70;
+        const w = 640 / (SENTENCE.length + 1);
+        for (let i = 0; i < SENTENCE.length; i++) {
+          const x = w * (i + 0.5);
+          const done = i < step;
+          const isNext = i === step;
+          p.fill(done ? 88 : 28, done ? 166 : 35, done ? 255 : 48);
+          if (isNext) { p.stroke(126, 231, 135); p.strokeWeight(2); }
+          else { p.noStroke(); }
+          p.rectMode(p.CENTER);
+          p.rect(x, y, w - 8, 44, 8);
+          p.noStroke();
+          p.fill(done ? 14 : 230);
+          p.text(SENTENCE[i], x, y);
+        }
+        // "Modell rät →" Pfeil
+        if (step < SENTENCE.length) {
+          p.fill(255, 166, 87);
+          p.textAlign(p.LEFT, p.CENTER);
+          p.textSize(14);
+          p.text("Modell rät das nächste Wort →", 12, 20);
+        }
+        step = (step + 1) % (SENTENCE.length + 1);
+      };
+    };
+    new p5(sketch);
+  </script>
+</body>
+</html>

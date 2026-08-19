@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Playground · Attention — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Playground</p>
+    <h1>Attention-Demo (Self-Attention Heatmap)</h1>
+
+    <div class="callout">
+      <span class="label">Was du siehst</span>
+      Ein 5×5-Raster: Zeile = „blickendes“ Token, Spalte = „angeschautes“ Token.
+      Heller = mehr Aufmerksamkeit. Die Gewichte entstehen per Softmax über
+      Ähnlichkeits-Scores. Mit dem Regler änderst du die <strong>Temperatur</strong>
+      vor dem Softmax — und siehst, wie der „Blick“ scharf (lokal) oder weich (überall)
+      wird.
+    </div>
+
+    <div class="demo-box">
+      <div id="attSketch"></div>
+      <div class="controls">
+        Temperatur:
+        <input id="temp" type="range" min="0.3" max="3" step="0.1" value="1" />
+        <span id="tempVal">1.0</span>
+        &nbsp;·&nbsp; Zeile zum Hervorheben: <span id="hoverInfo">—</span>
+      </div>
+    </div>
+
+    <p class="meta">Hinweis: Die Roh-Scores sind hier bewusst so gewählt, dass lokale
+       Nähe bevorzugt wird (wie „echte“ Attention oft lernt). In einem echten Modell
+       kommen sie aus gelernten Query/Key-Vektoren — siehe Konzept 03.</p>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="../concepts/03-attention-ueberblick.html">03 · Attention</a></li>
+    </ul>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="../assets/nav.js"></script>
+  <script>
+    const TOKENS = ["Der", "Hund", "beißt", "den", "Mann"];
+    const N = TOKENS.length;
+    // Roh-Scores: lokale Nähe bevorzugt (|i-j| klein => hoch).
+    const raw = [];
+    for (let i = 0; i < N; i++) {
+      raw[i] = [];
+      for (let j = 0; j < N; j++) {
+        const dist = Math.abs(i - j);
+        raw[i][j] = 2.5 - dist * 0.9 + (i === j ? 0.6 : 0) + 0.25 * Math.sin(i * 3 + j);
+      }
+    }
+
+    let temp = 1.0;
+    let hoverRow = -1;
+
+    function softmaxRow(i, T) {
+      const scores = raw[i].map((s) => s / T);
+      const max = Math.max(...scores);
+      const exps = scores.map((s) => Math.exp(s - max));
+      const sum = exps.reduce((a, b) => a + b, 0);
+      return exps.map((e) => e / sum);
+    }
+
+    const sketch = (p) => {
+      const SIZE = 560;
+      const pad = 60;
+      const cell = (SIZE - pad * 2) / N;
+
+      p.setup = () => {
+        const c = p.createCanvas(SIZE, SIZE + 30);
+        c.parent("attSketch");
+        p.textAlign(p.CENTER, p.CENTER);
+      };
+      p.draw = () => {
+        p.background(22, 27, 34);
+        // Spalten-Labels (oben)
+        p.fill(154, 167, 180);
+        p.textSize(15);
+        for (let j = 0; j < N; j++) {
+          p.text(TOKENS[j], pad + cell * (j + 0.5), pad / 2);
+        }
+        // Zeilen-Labels (links)
+        for (let i = 0; i < N; i++) {
+          p.text(TOKENS[i], pad / 2, pad + cell * (i + 0.5));
+        }
+        // Heatmap
+        for (let i = 0; i < N; i++) {
+          const w = softmaxRow(i, temp);
+          for (let j = 0; j < N; j++) {
+            const x = pad + cell * j;
+            const y = pad + cell * i;
+            const intensity = w[j];
+            // Blau-Skala
+            p.fill(30, 60 + 160 * intensity, 100 + 120 * intensity);
+            p.noStroke();
+            p.rect(x + 2, y + 2, cell - 4, cell - 4, 6);
+            // Zahl
+            p.fill(intensity > 0.5 ? 14 : 230);
+            p.textSize(13);
+            p.text(intensity.toFixed(2), x + cell / 2, y + cell / 2);
+          }
+        }
+        // Hover-Hervorhebung der Zeile
+        if (hoverRow >= 0) {
+          p.noFill();
+          p.stroke(126, 231, 135);
+          p.strokeWeight(2);
+          p.rect(pad, pad + cell * hoverRow, cell * N, cell);
+          p.noStroke();
+        }
+      };
+      p.mouseMoved = () => {
+        const mx = p.mouseX, my = p.mouseY;
+        if (mx >= pad && mx <= SIZE - pad && my >= pad && my <= SIZE - pad) {
+          hoverRow = Math.floor((my - pad) / cell);
+          const w = softmaxRow(hoverRow, temp);
+          document.getElementById("hoverInfo").textContent =
+            `"${TOKENS[hoverRow]}" schaut am stärksten auf: ${TOKENS[w.indexOf(Math.max(...w))]}`;
+        } else {
+          hoverRow = -1;
+          document.getElementById("hoverInfo").textContent = "—";
+        }
+      };
+    };
+    new p5(sketch);
+
+    document.getElementById("temp").addEventListener("input", (e) => {
+      temp = parseFloat(e.target.value);
+      document.getElementById("tempVal").textContent = temp.toFixed(1);
+    });
+  </script>
+</body>
+</html>
