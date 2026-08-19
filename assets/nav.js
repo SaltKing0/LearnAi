@@ -2,6 +2,11 @@
    nav.js – baut die Top-Navigation + Prev/Next-Fußzeile.
    Zentral gepflegt: neue Konzept-Seiten hier eintragen,
    dann erscheinen sie überall automatisch.
+
+   WICHTIG: Alle Seiten außer index.html liegen eine Ebene
+   tiefer (concepts/ bzw. playground/). Deshalb müssen Links
+   auf Unterseiten mit "../" beginnen, sonst -> 404.
+   basePrefix() regelt das automatisch.
    ============================================================ */
 
 const SITE = {
@@ -25,15 +30,25 @@ function currentPage() {
   return all.find((x) => x.file.endsWith(p)) || null;
 }
 
+// Leitet Links je nach Tiefe der aktuellen Seite:
+//   index.html (Root)     -> ""
+//   concepts/xx.html      -> "../"
+//   playground/xx.html    -> "../"
+function basePrefix() {
+  const here = location.pathname.split("/").pop();
+  return here === "index.html" || location.pathname.endsWith("/") ? "" : "../";
+}
+
 function buildTopNav() {
   const host = document.getElementById("topnav");
   if (!host) return;
+  const bp = basePrefix();
   const brand = `<span class="brand">▸ ${SITE.title}</span>`;
-  const home = `<a href="index.html">Hub</a>`;
+  const home = `<a href="${bp}index.html">Hub</a>`;
   const links = [...SITE.concepts, ...SITE.playground]
     .map((x) => {
       const active = currentPage() && currentPage().file === x.file ? " active" : "";
-      return `<a class="${active}" href="${x.file}">${x.title}</a>`;
+      return `<a class="${active}" href="${bp}${x.file}">${x.title}</a>`;
     })
     .join("");
   host.innerHTML = brand + home + links;
@@ -45,9 +60,10 @@ function buildBottomNav() {
   const all = [...SITE.concepts, ...SITE.playground];
   const cur = currentPage();
   if (!cur) { host.innerHTML = ""; return; }
+  const bp = basePrefix();
   const i = all.findIndex((x) => x.file === cur.file);
-  const prev = i > 0 ? `<a href="${all[i - 1].file}">← ${all[i - 1].title}</a>` : `<span></span>`;
-  const next = i < all.length - 1 ? `<a href="${all[i + 1].file}">${all[i + 1].title} →</a>` : `<span></span>`;
+  const prev = i > 0 ? `<a href="${bp}${all[i - 1].file}">← ${all[i - 1].title}</a>` : `<span></span>`;
+  const next = i < all.length - 1 ? `<a href="${bp}${all[i + 1].file}">${all[i + 1].title} →</a>` : `<span></span>`;
   host.innerHTML = `${prev}<span class="spacer"></span>${next}`;
 }
 
