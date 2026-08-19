@@ -31,6 +31,14 @@ const SITE = {
     //   label: "Stufe B · Ökosystem & Werkzeuge",
     //   items: [ { file: "concepts/04-...html", title: "04 · …", desc: "…" } ],
     // },
+    {
+      id: "B",
+      label: "Stufe B · Architektur & Training",
+      items: [
+        { file: "concepts/04-transformer-ueberblick.html", title: "04 · Transformer-Überblick", desc: "Wie Attention + FFN zu Dutzenden Schichten gestapelt werden — die Fabrik hinter GPT/LLaMA." },
+        // weitere Stufe-B-Seiten hier einfügen
+      ],
+    },
   ],
   playground: [
     { file: "playground/tokenizer-demo.html", title: "Tokenizer",  desc: "Tippe Text und sieh, wie er in Tokens zerlegt wird." },

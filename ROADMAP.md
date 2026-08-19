@@ -7,7 +7,7 @@ Niveau-Ziel: Stufe 3–4 (API-erfahren, Mechanik will verstanden werden).
 - [x] 01 · Sprachmodell als Funktion (P(next|context), autoregressiver Loop)
 - [x] 02 · Tokens & Embeddings (Text→Zahlen, Bedeutung=Position)
 - [x] 03 · Attention (Self-Attention, Q/K/V, Temperatur)
-- [ ] 04 · Transformer-Überblick (Stack aus Attention + FFN, Encoder/Decoder)
+- [x] 04 · Transformer-Überblick (Stack aus Attention + FFN, Encoder/Decoder)
 - [ ] 05 · Training intuitiv (Loss, Backprop nur als Idee, Epochen)
 - [ ] 06 · Inference vs. Training (was läuft wo, warum teuer)
 

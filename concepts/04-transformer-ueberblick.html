@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>04 · Transformer-Überblick — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 04 · Stufe A/B</p>
+    <h1>04 · Transformer-Überblick</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Stell dir eine Fabrik vor: Jedes Wort geht als Paket rein, wird erst
+      „angesehen“ (Attention) und dann noch mal von einer Rechen-Station
+      verarbeitet (Feed-Forward). Das Ganze passiert nicht einmal, sondern in
+      vielen Stockwerken übereinander. Was oben rauskommt, „versteht“ den Satz.
+      Genau diese Fabrik nennt man Transformer — sie steckt in jedem modernen
+      Sprachmodell.
+    </div>
+
+    <h2>Warum das wichtig ist</h2>
+    <p>„Transformer“ ist der Architektur-Name hinter GPT, LLaMA, Claude, Gemini
+       usw. (GPT = <em>Generative Pre-trained Transformer</em>). Wenn du verstehst,
+       wie die Bausteine gestapelt sind, verstehst du, <em>warum</em> Modelle so
+       ticken — und wo ihre Grenzen liegen. Konzept 03 (Attention) war der Kern-
+       baustein; hier siehst du, wie er eingebettet wird.</p>
+
+    <h2>Die Bausteine einer Transformer-Schicht</h2>
+    <p>Jede Schicht („Layer“) macht zwei Dinge nacheinander mit jedem Token:</p>
+    <ol>
+      <li><strong>Multi-Head Self-Attention</strong> — jedes Wort schaut auf die
+        anderen (Konzept 03). „Multi-Head“ = mehrere parallel geschaltete
+        Attention-Varianten, die jeweils andere Beziehungen lernen (Grammatik,
+        Kern-Akteur, Zeit, …).</li>
+      <li><strong>Feed-Forward Network (FFN)</strong> — eine kleine, feste
+        Berechnung <em>pro Token</em> (ohne Blick auf andere Wörter). Verarbeitet
+        das, was Attention „gesehen“ hat.</li>
+    </ol>
+    <p>Dazwischen: <strong>Residual-Verbindungen</strong> (die Eingabe wird zum
+       Ergebnis addiert, damit nichts „verloren“ geht) + <strong>LayerNorm</strong>
+       (stabilisiert die Zahlen). Genau das ist der Loop, der viele Male gestapelt
+       wird — ein modernes LLM hat Dutzende bis hunderte solcher Schichten.</p>
+
+    <h2>Encoder / Decoder</h2>
+    <ul>
+      <li><strong>Decoder-only</strong> (GPT, LLaMA): nur Decoder-Schichten →
+        ideal zum Generieren (unser autoregressiver Loop aus Konzept 01).</li>
+      <li><strong>Encoder-only</strong> (BERT): nur Encoder → ideal zum
+        Einbetten/Verstehen (Klassifikation, Suche).</li>
+      <li><strong>Encoder-Decoder</strong> (T5, klassischer Transformer):
+        eine Seite liest den Input, die andere erzeugt den Output (Übersetzung).</li>
+    </ul>
+
+    <h2>Visualisierung: ein Token wandert durch die Schichten</h2>
+    <div class="demo-box">
+      <div id="tfSketch"></div>
+      <p class="meta">Animation: Das Wort „Hund“ wandert von unten nach oben durch
+        die Schichten. In jeder wird es erst „angesehen“ (Attention), dann
+        verrechnet (FFN).</p>
+    </div>
+
+    <h2>Warum das für dich als Code-Nutzer relevant ist</h2>
+    <ul>
+      <li><strong>„Parameter“</strong> verteilen sich auf diese Schichten — mehr
+        Schichten/„Köpfe“ = größeres Modell = mehr Kapazität, aber auch mehr
+        Kosten/Latenz.</li>
+      <li><strong>Kontext-Länge</strong> ist durch Attention (quadratisch in der
+        Länge) begrenzt — deshalb gibt es ein „context window“.</li>
+      <li><strong>Quantisierung</strong> (INT8/4-bit) verkleinert genau diese
+        Gewichte, damit Modelle auf schwächerer Hardware laufen (Stufe E).</li>
+      <li><strong>Architektur-Wahl</strong>: Encoder-only für Embeddings/Suche,
+        Decoder-only für Chat/Generierung.</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="03-attention-ueberblick.html">03 · Attention</a> — der Kernbaustein, hier eingebettet.</li>
+      <li><a href="01-sprachmodell-als-funktion.html">01 · Sprachmodell als Funktion</a> — der autoregressive Loop nutzt einen Decoder.</li>
+      <li><a href="02-tokens-und-embeddings.html">02 · Tokens &amp; Embeddings</a> — die Vektoren, mit denen die Schichten rechnen.</li>
+      <li><a href="../playground/attention-demo.html">Playground · Attention</a></li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Was genau macht LayerNorm vs. BatchNorm?<br/>
+      • Warum <em>Multi</em>-Head und nicht einfach eine große Attention?<br/>
+      • Woher kommen die Positionsinformationen (Positional Encoding)?<br/>
+      • Wie hängen „7B Parameter“ mit diesen Schichten zusammen?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="../assets/nav.js"></script>
+  <script>
+    // Visualisierung: ein Token wandert durch N Schichten (Attention + FFN).
+    const LAYERS = 6;
+    const TOKEN = "Hund";
+    let step = 0;
+    const sketch = (p) => {
+      p.setup = () => {
+        const c = p.createCanvas(420, 60 + LAYERS * 70);
+        c.parent("tfSketch");
+        p.frameRate(1.5);
+        p.textAlign(p.CENTER, p.CENTER);
+        p.textSize(14);
+      };
+      p.draw = () => {
+        p.background(22, 27, 34);
+        const layerH = 70;
+        for (let i = 0; i < LAYERS; i++) {
+          const y = 50 + i * layerH;
+          const reached = step >= i;
+          const active = step === i;
+          // Attention-Kasten
+          p.noStroke();
+          p.fill(reached ? 40 : 26, reached ? 70 : 35, reached ? 110 : 48);
+          if (active) { p.stroke(126, 231, 135); p.strokeWeight(2); }
+          p.rect(40, y, 150, 40, 8);
+          p.noStroke();
+          p.fill(reached ? 230 : 120);
+          p.text("Attention", 115, y + 20);
+          // FFN-Kasten
+          p.fill(reached ? 45 : 26, reached ? 80 : 35, reached ? 90 : 48);
+          if (active) { p.stroke(255, 166, 87); p.strokeWeight(2); }
+          p.rect(230, y, 150, 40, 8);
+          p.noStroke();
+          p.fill(reached ? 230 : 120);
+          p.text("Feed-Forward", 305, y + 20);
+          // Verbinder
+          p.stroke(60, 70, 85);
+          p.line(190, y + 20, 230, y + 20);
+          p.line(115, y, 115, y - 14);
+          p.noStroke();
+        }
+        // Token zeigen
+        const curY = 30 + Math.min(step, LAYERS - 1) * layerH + 20;
+        p.fill(88, 166, 255);
+        p.textSize(16);
+        p.text("▸ " + TOKEN, 305, curY);
+        p.textSize(14);
+        step = (step + 1) % (LAYERS + 1);
+      };
+    };
+    new p5(sketch);
+  </script>
+</body>
+</html>
