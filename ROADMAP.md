@@ -28,9 +28,9 @@ Struktur = gespiegelt in `assets/nav.js` (dort Stufen als `stages`). Immer synch
 - [x] 14 · Open-Source vs. Closed Models (Llama, Mistral, GPT…)
 
 ## Stufe E — Bewerten & Grenzen
-- [ ] Evaluierung & Metriken (intuitiv: Accuracy, Perplexity)
-- [ ] Halluzinationen, Bias, Limits
-- [ ] Kosten & Latenz (Tokens, Modellgröße)
+- [x] 15 · Evaluierung & Metriken (intuitiv: Accuracy, Perplexity)
+- [x] 16 · Halluzinationen, Bias, Limits
+- [x] 17 · Kosten & Latenz (Tokens, Modellgröße)
 
 ## Stufe F — Realität / MLOps
 - [ ] Deployment (API, Edge, Quantisierung)

@@ -63,6 +63,16 @@ const SITE = {
         // weitere Stufe-D-Seiten hier einfügen
       ],
     },
+    {
+      id: "E",
+      label: "Stufe E · Bewerten & Grenzen",
+      items: [
+        { file: "concepts/15-evaluierung-metriken.html",     title: "15 · Evaluierung & Metriken", desc: "Accuracy, Perplexity intuitiv — warum du Modelle/Prompts messbar vergleichen willst." },
+        { file: "concepts/16-halluzinationen-bias-limits.html", title: "16 · Halluzinationen, Bias, Limits", desc: "Warum Modelle erfinden, spiegeln und harte Grenzen haben (und Gegenmittel)." },
+        { file: "concepts/17-kosten-latenz.html",            title: "17 · Kosten & Latenz",         desc: "Pro Token bezahlt, quadratische Attention — wo Geld und Zeit bleiben." },
+        // weitere Stufe-E-Seiten hier einfügen
+      ],
+    },
   ],
   playground: [
     { file: "playground/tokenizer-demo.html", title: "Tokenizer",  desc: "Tippe Text und sieh, wie er in Tokens zerlegt wird." },
