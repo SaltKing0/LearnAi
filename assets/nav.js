@@ -36,6 +36,8 @@ const SITE = {
       label: "Stufe B · Architektur & Training",
       items: [
         { file: "concepts/04-transformer-ueberblick.html", title: "04 · Transformer-Überblick", desc: "Wie Attention + FFN zu Dutzenden Schichten gestapelt werden — die Fabrik hinter GPT/LLaMA." },
+        { file: "concepts/05-training-intuitiv.html",      title: "05 · Training intuitiv",        desc: "Loss, Backprop als Idee, Lernrate, Epochen — wie das Modell „lernt“." },
+        { file: "concepts/06-inference-vs-training.html",  title: "06 · Inference vs. Training",   desc: "Schule vs. Einsatz: wo läuft was, und warum ist Training so viel teurer." },
         // weitere Stufe-B-Seiten hier einfügen
       ],
     },

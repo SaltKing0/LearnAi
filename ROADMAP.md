@@ -8,8 +8,8 @@ Niveau-Ziel: Stufe 3–4 (API-erfahren, Mechanik will verstanden werden).
 - [x] 02 · Tokens & Embeddings (Text→Zahlen, Bedeutung=Position)
 - [x] 03 · Attention (Self-Attention, Q/K/V, Temperatur)
 - [x] 04 · Transformer-Überblick (Stack aus Attention + FFN, Encoder/Decoder)
-- [ ] 05 · Training intuitiv (Loss, Backprop nur als Idee, Epochen)
-- [ ] 06 · Inference vs. Training (was läuft wo, warum teuer)
+- [x] 05 · Training intuitiv (Loss, Backprop nur als Idee, Epochen)
+- [x] 06 · Inference vs. Training (was läuft wo, warum teuer)
 
 ## Stufe B — Ökosystem & Werkzeuge
 - [ ] Hugging Face: ein Modell laden/ nutzen (pip transformers)

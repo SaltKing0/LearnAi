@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>05 · Training intuitiv — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 05 · Stufe B</p>
+    <h1>05 · Training intuitiv</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Stell dir vor, du wirfst einen Ball und willst treffen. Nach jedem Wurf
+      sagt dir jemand: „zu hoch“, „zu kurz“. Du änderst deinen Wurf ein kleines
+      bisschen in die richtige Richtung. Nach tausend Würfen triffst du fast immer.
+      Genau so lernt ein Modell: es rät, kriegt eine „Fehlernote“ (Loss), und
+      dreht an seinen Zahlen ein Stückchen in die bessere Richtung.
+    </div>
+
+    <h2>Die drei Wörter, die alles erklären</h2>
+    <ul>
+      <li><strong>Loss (Verlust)</strong> — wie falsch die Vorhersage war. Hoch =
+        schlecht, tief = gut. Beim Sprachmodell: „wie überrascht war das Modell vom
+        echten nächsten Wort?“ (technisch: Cross-Entropy über die Wahrscheinlichkeiten
+        aus Konzept 01).</li>
+      <li><strong>Backpropagation</strong> — das Verfahren, das ausrechnet, <em>in
+        welche Richtung</em> jede der Millionen Zahlen (Gewichte) gedreht werden
+        muss, damit der Loss sinkt. Du musst die Mathe nicht können — nur: es ist
+        die „Fehlernote rückwärts durchs Netz“.</li>
+      <li><strong>Epoche / Step</strong> — ein Durchlauf über einen Batches an
+        Daten. Das Ganze wiederholt sich tausende Male („Training“).</li>
+    </ul>
+
+    <h2>Der Trainings-Loop (vereinfacht)</h2>
+    <pre><code>für jede Epoche:
+    batch = nimm einen Happen Trainingsdaten
+    vorhersage = modell(batch)
+    loss       = fehlernote(vorhersage, echte_antwort)
+    gradienten = backprop(loss)        # wo drehen?
+    gewichte  -= lernrate * gradienten  # ein Stückchen besser</code></pre>
+    <p>Das ist alles. <strong>Lernrate</strong> = wie groß der „Schritt“ pro
+       Korrektur ist. Zu groß = überschießt, zu klein = braucht ewig.</p>
+
+    <h2>Visualisierung: Loss sinkt über die Schritte</h2>
+    <div class="demo-box">
+      <div id="lossSketch"></div>
+      <div class="controls">
+        Lernrate:
+        <input id="lr" type="range" min="0.01" max="0.6" step="0.01" value="0.12" />
+        <span id="lrVal">0.12</span>
+      </div>
+      <p class="meta">Animation: Das Modell macht Schritte den Berg hinunter. Die
+        Kurve zeigt den Loss. Zu hohe Lernrate (ganz rechts) lässt ihn hüpfen/divergieren.</p>
+    </div>
+
+    <h2>Was du als Code-Nutzer wirklich wissen musst</h2>
+    <ul>
+      <li><strong>Du trainierst meist NICHT selbst</strong> — du nutzt vortrainierte
+        Modelle. Aber zu verstehen, <em>was</em> passiert, hilft bei Fine-Tuning
+        (Stufe C) und beim Lesen von Logs („loss: 2.1 → 0.8“ = es lernt).</li>
+      <li><strong>Overfitting</strong>: Modell lernt die Trainingsbeispiele auswendig
+        statt der Regel → bei neuen Daten schlecht. Deshalb Validierungsset.</li>
+      <li><strong>Epochen ≠ besser</strong>: zu viele = Overfitting. Der „Sweet Spot“
+        wird aus dem Validierungs-Loss abgelesen.</li>
+      <li><strong>Fine-Tuning</strong> (später) = derselbe Loop, aber nur auf einem
+        kleinen, spezifischen Datensatz und meist mit kleiner Lernrate.</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="01-sprachmodell-als-funktion.html">01 · Sprachmodell als Funktion</a> — wovon das Modell beim Raten ausgeht.</li>
+      <li><a href="04-transformer-ueberblick.html">04 · Transformer-Überblick</a> — die „Zahlen“, die beim Training gedreht werden, sitzen in diesen Schichten.</li>
+      <li><a href="06-inference-vs-training.html">06 · Inference vs. Training</a> — wann diese Schleife läuft und wann nicht.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Was genau ist der Gradient (mathematisch)?<br/>
+      • Warum funktioniert Backprop überhaupt bei so vielen Schichten (Vanishing Gradient)?<br/>
+      • Unterschied SGD / Adam als Optimizer?<br/>
+      • Was ist „Pre-Training“ vs. „Supervised Fine-Tuning“ (SFT)?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="../assets/nav.js"></script>
+  <script>
+    // Loss-Landschaft: ein Ball rollt den Berg runter.
+    let lr = 0.12;
+    let pos = -2.2;      // x-Position des Balls
+    let steps = 0;
+    const history = [];  // gesammelter loss
+    function lossAt(x) { return 0.4 * (x * x); }  // Parabel: Minimum bei x=0
+
+    const sketch = (p) => {
+      p.setup = () => {
+        const c = p.createCanvas(420, 240);
+        c.parent("lossSketch");
+        p.frameRate(20);
+        p.textAlign(p.LEFT, p.CENTER);
+      };
+      p.draw = () => {
+        p.background(22, 27, 34);
+        const W = 420, H = 240, midY = 200, scaleY = 160, scaleX = 70;
+        // Landschaft zeichnen
+        p.noFill();
+        p.stroke(60, 70, 85);
+        p.beginShape();
+        for (let px = 0; px <= W; px++) {
+          const x = (px - W / 2) / scaleX;
+          const y = midY - lossAt(x) * scaleY;
+          p.vertex(px, y);
+        }
+        p.endShape();
+        // Ball
+        const bx = W / 2 + pos * scaleX;
+        const by = midY - lossAt(pos) * scaleY;
+        p.noStroke();
+        p.fill(88, 166, 255);
+        p.ellipse(bx, by, 16, 16);
+        // Schritt: gradient = ableitung = 0.8*x ; ziehe in umgekehrte Richtung
+        const grad = 0.8 * pos;
+        pos = pos - lr * grad;
+        if (pos > 3) pos = 3; if (pos < -3) pos = -3;
+        // Loss-Kurve unten rechts
+        history.push(lossAt(pos));
+        if (history.length > 200) history.shift();
+        p.fill(154, 167, 180);
+        p.textSize(13);
+        p.text("Loss: " + lossAt(pos).toFixed(3), 12, 16);
+        // mini-loss-kurve
+        p.stroke(126, 231, 135); p.noFill();
+        p.beginShape();
+        history.forEach((v, i) => {
+          const x = W - 200 + i;
+          const y = 50 + (v / 4) * 40;
+          p.vertex(x, y);
+        });
+        p.endShape();
+        steps++;
+        if (steps % 400 === 0) { pos = -2.2; } // reset für Loop
+      };
+    };
+    new p5(sketch);
+    document.getElementById("lr").addEventListener("input", (e) => {
+      lr = parseFloat(e.target.value);
+      document.getElementById("lrVal").textContent = lr.toFixed(2);
+    });
+  </script>
+</body>
+</html>
