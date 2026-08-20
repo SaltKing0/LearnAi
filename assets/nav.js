@@ -41,6 +41,17 @@ const SITE = {
         // weitere Stufe-B-Seiten hier einfügen
       ],
     },
+    {
+      id: "C",
+      label: "Stufe C · Mit LLMs arbeiten",
+      items: [
+        { file: "concepts/07-prompting-patterns.html", title: "07 · Prompting-Patterns", desc: "Few-shot, Chain-of-Thought, System-Prompt, Structured Output — die billigste Hebelwirkung." },
+        { file: "concepts/08-rag.html",                 title: "08 · RAG",                  desc: "Retrieval Augmented Generation + Vektordatenbanken: eigene Daten ohne Training." },
+        { file: "concepts/09-agents-tool-use.html",     title: "09 · Agents / Tool-Use",    desc: "Der Loop: Modell ruft Werkzeuge auf und denkt weiter — Code/API/Suche einbinden." },
+        { file: "concepts/10-fine-tuning.html",         title: "10 · Fine-Tuning",          desc: "LoRA/PEFT: das Modell auf Spezialthemen „üben“, ohne das Basis-Modell umzubauen." },
+        // weitere Stufe-C-Seiten hier einfügen
+      ],
+    },
   ],
   playground: [
     { file: "playground/tokenizer-demo.html", title: "Tokenizer",  desc: "Tippe Text und sieh, wie er in Tokens zerlegt wird." },

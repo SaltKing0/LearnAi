@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>08 · RAG — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 08 · Stufe C</p>
+    <h1>08 · RAG (Retrieval Augmented Generation)</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Das Modell kann nicht alles wissen und vergisst schnell Details. Also sagst du
+      ihm vor der Frage: „Hier, lies erst mal diese passenden Buchseiten“ und dann
+      erst: „Beantworte die Frage damit“. So antwortet es mit frischen, echten
+      Infos statt zu raten.
+    </div>
+
+    <h2>Die drei Buchstaben</h2>
+    <ul>
+      <li><strong>Retrieval</strong> — suche die passenden Textstellen zu einer Frage.</li>
+      <li><strong>Augmented</strong> — hänge diese Stellen dem Prompt an (Konzept 07).</li>
+      <li><strong>Generation</strong> — das Modell beantwortet auf Basis davon.</li>
+    </ul>
+
+    <h2>Wie die Suche funktioniert (Verbindung zu Konzept 02)</h2>
+    <p>Die Dokumente werden in Stücke (Chunks) zerlegt und each in ein
+       <strong>Embedding</strong> (Vektor) gewandelt — genau wie Tokens in Konzept 02.
+       Die Frage wird ebenfalls eingebettet. <strong>Cosine-Similarity</strong> zwischen
+       Frage-Vektor und Dokument-Vektoren findet die Naheliegendsten. Das ist die
+       ganze „Suche“ — Abstand im Raum statt Stichwort-Match.</p>
+    <p>Diese Embeddings + Suche lebt in einer <strong>Vektordatenbank</strong>
+       (Chroma, pgvector, Pinecone, Qdrant). Offline: Index aufbauen. Zur Laufzeit:
+       nur die Top-k Chunks retrieven und anhängen.</p>
+
+    <h2>Demo: vereinfachte Retrieval (Toy, keyword-basiert)</h2>
+    <div class="demo-box">
+      <input id="q" type="text" placeholder="Frage z.B. 'Wie lernt das Modell?'" style="width:100%;background:#0e1116;color:#e6edf3;border:1px solid #2a3340;border-radius:8px;padding:10px;font-family:monospace;" />
+      <div class="controls"><button id="go" style="background:#58a6ff;color:#0e1116;border:none;border-radius:8px;padding:8px 16px;font-family:monospace;cursor:pointer;">Suchen →</button></div>
+      <div id="res" style="margin-top:14px;"></div>
+      <p class="meta">Hinweis: Dies ist ein <strong>Toy</strong> (Wort-Überlappung), kein echtes
+        Embedding. Es zeigt nur das Prinzip: Frage → Ähnlichkeits-Ranking → Top-Treffer.</p>
+    </div>
+
+    <h2>Warum das für dich als Code-Nutzer zentral ist</h2>
+    <ul>
+      <li><strong>Eigene Daten</strong> ohne das Modell neu zu trainieren (10).</li>
+      <li><strong>Aktualität</strong>: Dokumente ändern sich, Modell bleibt gleich.</li>
+      <li><strong>Weniger Halluzinationen</strong>: Antwort ist an Quelle gebunden (mit Zitat).</li>
+      <li><strong>Standard-Baustein</strong>: die meisten „KI-Chatbots über eigene Daten“ sind RAG.</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="02-tokens-und-embeddings.html">02 · Tokens &amp; Embeddings</a> — die Vektoren, auf denen RAG-Suche basiert.</li>
+      <li><a href="07-prompting-patterns.html">07 · Prompting-Patterns</a> — Retrieval = „besserer Prompt durch Kontext“.</li>
+      <li><a href="09-agents-tool-use.html">09 · Agents / Tool-Use</a> — Retrieval ist ein mögliches Werkzeug.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Chunking-Strategie (Größe, Überlappung) — warum entscheidend?<br/>
+      • Re-Ranking: warum Similarity-Top-k oft nochmal sortieren?<br/>
+      • Hybrid Search (Keyword + Vektor) — wann besser?<br/>
+      • Was ist „Context Poisoning“ bei RAG?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+  <script>
+    const DOCS = [
+      { id: 1, text: "Training: das Modell lernt durch Backpropagation, indem es seine Gewichte minimal anpasst, um den Fehler (Loss) zu senken." },
+      { id: 2, text: "Attention ist ein Mechanismus, bei dem jedes Wort auf andere Wörter achtet, um Zusammenhänge wie Pronomina aufzulösen." },
+      { id: 3, text: "RAG kombiniert Suche mit Generierung: relevante Dokumente werden retrievalt und dem Prompt angehängt." },
+      { id: 4, text: "Ein Token ist das kleinste Stück Text, mit dem das Modell rechnet; Embeddings machen daraus einen Vektor im Bedeutungsraum." },
+      { id: 5, text: "Fine-Tuning übt ein vortrainiertes Modell auf einem kleinen, spezifischen Datensatz nach — oft via LoRA als kleine Adapter." },
+    ];
+    function overlap(q, doc) {
+      const qw = q.toLowerCase().match(/[a-zäöüß]+/g) || [];
+      const dw = doc.toLowerCase().match(/[a-zäöüß]+/g) || [];
+      const set = new Set(dw);
+      let hit = 0;
+      qw.forEach((w) => { if (set.has(w)) hit++; });
+      return qw.length ? hit / qw.length : 0;
+    }
+    document.getElementById("go").addEventListener("click", () => {
+      const q = document.getElementById("q").value.trim();
+      if (!q) return;
+      const ranked = DOCS.map((d) => ({ d, s: overlap(q, d.text) }))
+        .sort((a, b) => b.s - a.s).slice(0, 3);
+      const box = document.getElementById("res");
+      box.innerHTML = ranked.map((r) =>
+        `<div class="callout" style="margin:10px 0;"><span class="label">Treffer #${r.d.id} · Score ${r.s.toFixed(2)}</span>${r.d.text}</div>`
+      ).join("");
+    });
+    document.getElementById("q").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") document.getElementById("go").click();
+    });
+  </script>
+</body>
+</html>
