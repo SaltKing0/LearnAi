@@ -22,10 +22,10 @@ Struktur = gespiegelt in `assets/nav.js` (dort Stufen als `stages`). Immer synch
 - [x] 10 · Fine-Tuning (Konzept: wann lohnt es, LoRA/PEFT)
 
 ## Stufe D — Ökosystem & Werkzeuge
-- [ ] Hugging Face: ein Modell laden/ nutzen (pip transformers)
-- [ ] LLM-APIs praktisch (System-Prompt, Streaming, Tool-Calls)
-- [ ] Notebook-Workflow (Colab/Jupyter als Spielwiese)
-- [ ] Open-Source vs. Closed Models (Llama, Mistral, GPT…)
+- [x] 11 · Hugging Face (Modell laden/ nutzen, transformers pipeline)
+- [x] 12 · LLM-APIs praktisch (System-Prompt, Streaming, Tool-Calls)
+- [x] 13 · Notebook-Workflow (Colab/Jupyter als Spielwiese)
+- [x] 14 · Open-Source vs. Closed Models (Llama, Mistral, GPT…)
 
 ## Stufe E — Bewerten & Grenzen
 - [ ] Evaluierung & Metriken (intuitiv: Accuracy, Perplexity)

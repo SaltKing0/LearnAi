@@ -52,6 +52,17 @@ const SITE = {
         // weitere Stufe-C-Seiten hier einfügen
       ],
     },
+    {
+      id: "D",
+      label: "Stufe D · Ökosystem & Werkzeuge",
+      items: [
+        { file: "concepts/11-hugging-face.html", title: "11 · Hugging Face",        desc: "Hub + transformers-Bibliothek: vortrainierte Modelle laden und Inference machen." },
+        { file: "concepts/12-llm-apis-praktisch.html", title: "12 · LLM-APIs praktisch", desc: "System-Prompt, Streaming, Tool-Calls über die API — Inference ohne GPU." },
+        { file: "concepts/13-notebook-workflow.html", title: "13 · Notebook-Workflow", desc: "Colab/Jupyter: experimenteller KI-Arbeitsplatz mit Cloud-GPU." },
+        { file: "concepts/14-open-vs-closed.html", title: "14 · Open vs. Closed",    desc: "Open-Source-Modelle vs. proprietäre APIs — Kosten, Kontrolle, Privatsphäre." },
+        // weitere Stufe-D-Seiten hier einfügen
+      ],
+    },
   ],
   playground: [
     { file: "playground/tokenizer-demo.html", title: "Tokenizer",  desc: "Tippe Text und sieh, wie er in Tokens zerlegt wird." },

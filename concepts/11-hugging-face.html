@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>11 · Hugging Face — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 11 · Stufe D</p>
+    <h1>11 · Hugging Face</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Hugging Face ist wie ein riesiger App-Store für KI-Modelle. Statt jedes Modell
+      selbst zu basteln, lädst du eins herunter, das jemand anders gebaut hat, und
+      benutzt es. „transformers“ ist die Werkzeugkiste, mit der du es zum Laufen
+      bringst.
+    </div>
+
+    <h2>Was Hugging Face ist (drei Dinge)</h2>
+    <ul>
+      <li><strong>Hub</strong> — eine Plattform mit hunderttausenden vortrainierten
+        Modellen (gpt2, Llama, Mistral, Bert, …). Jedes Modell = eine „Model Card“
+        mit Beschreibung, Lizenz, Demo.</li>
+      <li><strong>Bibliothek <code>transformers</code></strong> — Python-API, um Modelle
+        zu laden und Inference zu machen, egal welche Architektur (verbindet zu 04).</li>
+      <li><strong>Datasets / Spaces</strong> — freie Datensätze und gehostete Demos.</li>
+    </ul>
+
+    <h2>Das Minimal-Beispiel (Inference, kein Training)</h2>
+    <pre><code>from transformers import pipeline
+
+# lädt automatisch Modell + Tokenizer vom Hub
+generator = pipeline("text-generation", model="gpt2")
+print(generator("Die KI lernt, indem sie", max_new_tokens=20))</code></pre>
+    <p>Das ist exakt der autoregressive Loop aus Konzept 01, nur als fertige
+       Funktion. <code>pipeline</code> kümmert sich um Tokenizer laden (02), Modell
+       laden (04) und das wiederholte Generieren.</p>
+
+    <h2>Demo: „Model Card“ durchschalten</h2>
+    <div class="demo-box">
+      <div class="controls">
+        Modell:
+        <button class="hf" data-m="gpt2">GPT-2</button>
+        <button class="hf" data-m="llama">Llama-3</button>
+        <button class="hf" data-m="bert">BERT</button>
+        <button class="hf" data-m="mistral">Mistral</button>
+      </div>
+      <table style="margin-top:14px;width:100%;border-collapse:collapse;font-family:var(--mono);font-size:14px;">
+        <tr><td style="padding:6px;color:var(--fg-dim)">Architektur</td><td id="hfArch" style="padding:6px;"></td></tr>
+        <tr><td style="padding:6px;color:var(--fg-dim)">Use-Case</td><td id="hfUse" style="padding:6px;"></td></tr>
+        <tr><td style="padding:6px;color:var(--fg-dim)">Lizenz</td><td id="hfLic" style="padding:6px;"></td></tr>
+        <tr><td style="padding:6px;color:var(--fg-dim)">Typ</td><td id="hfType" style="padding:6px;"></td></tr>
+      </table>
+      <p class="meta">Vereinfacht — dient nur als Intuition, welche Modelle es gibt und wofür.</p>
+    </div>
+
+    <h2>Warum das für dich als Code-Nutzer zentral ist</h2>
+    <ul>
+      <li><strong>Kein Frontiermodell nötig</strong>: für Prototypen reicht oft ein
+        offenes 7B-Modell lokal.</li>
+      <li><strong>Interoperabilität</strong>: derselbe Code lädt GPT-2 wie Llama —
+        nur der Modellname ändert sich.</li>
+      <li><strong>Feinjustierung</strong> (Konzept 10) läuft ebenfalls über diese
+        Bibliothek (PEFT-Integration).</li>
+      <li><strong>Self-Hosting</strong>: Grundlage, um Models lokal/auf eigenem Server
+        zu betreiben (Stufe F).</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="04-transformer-ueberblick.html">04 · Transformer-Überblick</a> — was die Bibliothek unter der Haube lädt.</li>
+      <li><a href="10-fine-tuning.html">10 · Fine-Tuning</a> — Hugging Face ist die Trainings-Schmiede.</li>
+      <li><a href="14-open-vs-closed.html">14 · Open-Source vs. Closed</a> — warum diese Modelle frei verfügbar sind.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Was ist ein „Tokenizer“ im transformers-Kontext genau (AutoTokenizer)?<br/>
+      • Unterschied <code>model.generate()</code> vs. <code>pipeline()</code>?<br/>
+      • Wie groß sind Modelle in GB und passt das auf meine GPU/RAM?<br/>
+      • Was sind „Spaces“ und wann nutzt man sie?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+  <script>
+    const HF = {
+      gpt2:    { arch: "Decoder-only (GPT)", use: "Generieren / Chat", lic: "MIT (frei)",            type: "Open" },
+      llama:   { arch: "Decoder-only (LLaMA)", use: "Generieren / Chat (stark)", lic: "Meta Llama 3 Community", type: "Open (Community)" },
+      bert:    { arch: "Encoder-only (BERT)", use: "Klassifikation / Embeddings", lic: "Apache-2.0 (frei)", type: "Open" },
+      mistral: { arch: "Decoder-only (Mistral)", use: "Generieren / Chat (effizient)", lic: "Apache-2.0 (frei)", type: "Open" },
+    };
+    function show(m) {
+      const d = HF[m];
+      document.getElementById("hfArch").textContent = d.arch;
+      document.getElementById("hfUse").textContent = d.use;
+      document.getElementById("hfLic").textContent = d.lic;
+      document.getElementById("hfType").textContent = d.type;
+    }
+    document.querySelectorAll(".hf").forEach((b) => {
+      b.addEventListener("click", () => show(b.dataset.m));
+    });
+    show("gpt2");
+  </script>
+</body>
+</html>
