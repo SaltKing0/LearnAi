@@ -19,7 +19,7 @@ Struktur = gespiegelt in `assets/nav.js` (dort Stufen als `stages`). Immer synch
 - [x] 07 · Prompting-Patterns (few-shot, chain-of-thought, structured output)
 - [x] 08 · RAG (Retrieval Augmented Generation) + Vektordatenbanken
 - [x] 09 · Agents / Tool-Use (Schleife: Modell→Werkzeug→Modell)
-- [x] 10 · Fine-Tuning (Konzept: wann lohnt es, LoRA/PEFT)
+- [x] 10 · Fine-Tuning (Konzept: wann lohnt es, LoRA/FR)
 
 ## Stufe D — Ökosystem & Werkzeuge
 - [x] 11 · Hugging Face (Modell laden/ nutzen, transformers pipeline)
@@ -33,15 +33,15 @@ Struktur = gespiegelt in `assets/nav.js` (dort Stufen als `stages`). Immer synch
 - [x] 17 · Kosten & Latenz (Tokens, Modellgröße)
 
 ## Stufe F — Realität / MLOps
-- [ ] Deployment (API, Edge, Quantisierung)
-- [ ] Wie man Papers & News liest, am Ball bleibt
+- [x] 18 · Deployment (API, Edge, Quantisierung)
+- [x] 19 · Papers & News lesen
 
 ## Querdenken
-- [ ] Was kann AI nicht? Ethik & Risiken
-- [ ] Unterschied zu echtem Verstehen
+- [x] 20 · Was kann AI nicht? (Ethik & Risiken)
+- [x] 21 · Unterschied zu echtem Verstehen
 
-## Mini-Projekte (jeder Block = eins)
-- [ ] Kleiner CLI-Chatbot über eine API
-- [ ] Mini-RAG über eigene Textdateien
-- [ ] Eigene Attention-Visualisierung erweitern
-- [ ] LoRA-Adapter auf einem kleinen Datensatz trainieren
+## Stufe G — Mini-Projekte (Praxis)
+- [x] 22 · CLI-Chatbot über eine API
+- [x] 23 · Mini-RAG über eigene Textdateien
+- [x] 24 · Eigene Attention-Visualisierung
+- [x] 25 · LoRA-Adapter auf einem kleinen Datensatz trainieren

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>24 · Mini-Projekt: Attention-Visualisierung — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Projekt 24 · Stufe G (Praxis)</p>
+    <h1>24 · Mini-Projekt: Attention-Visualisierung</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Du baust genau das Bild, das du in Konzept 03 gesehen hast — aber selbst. Ein
+      Raster, das zeigt: welches Wort schaut wie stark auf welches andere. So wird
+      aus „gelesen“ → „selbst gemacht“.
+    </div>
+
+    <h2>Was du brauchst</h2>
+    <ul>
+      <li><strong>Attention-Theorie</strong> (03) — Q/K/V, Softmax, Temperatur.</li>
+      <li><strong>Die Demo</strong> (playground/attention-demo.html) als Vorlage.</li>
+      <li><strong>p5.js / Canvas</strong> — Heatmap zeichnen.</li>
+    </ul>
+
+    <h2>Erweiterungsideen</h2>
+    <ul>
+      <li>Echte Scores aus einem kleinen Modell (11) statt der simulierten (03).</li>
+      <li>Mehrere Heads nebeneinander zeigen (Multi-Head, 03/04).</li>
+      <li>Wort-Eingabe: welches Pronomen schaut auf welches Nomen (Kern-Beispiel 03)?</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="03-attention-ueberblick.html">03 · Attention</a> · <a href="playground/attention-demo.html">Playground · Attention</a> · <a href="04-transformer-ueberblick.html">04 · Transformer</a></li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen</span>
+      • Wie extrahiert man Attention-Gewichte aus transformers (11)?<br/>
+      • Was bedeutet ein „Head“ tatsächlich (03)?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

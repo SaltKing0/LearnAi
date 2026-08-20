@@ -73,6 +73,35 @@ const SITE = {
         // weitere Stufe-E-Seiten hier einfügen
       ],
     },
+    {
+      id: "F",
+      label: "Stufe F · Realität / MLOps",
+      items: [
+        { file: "concepts/18-deployment.html", title: "18 · Deployment",          desc: "API/Edge/On-Prem hosting + Quantisierung (Modell schrumpfen für schwächere Hardware)." },
+        { file: "concepts/19-papers-news.html", title: "19 · Papers & News",       desc: "arXiv, Blogs, wie man Papers effizient liest, ohne die Mathe zu können." },
+        // weitere Stufe-F-Seiten hier einfügen
+      ],
+    },
+    {
+      id: "X",
+      label: "Querdenken",
+      items: [
+        { file: "concepts/20-was-kann-ai-nicht.html",       title: "20 · Was kann AI nicht?",        desc: "Strukturelle Grenzen: kein Bewusstsein, keine Erfahrung, keine echte Logik." },
+        { file: "concepts/21-unterschied-verstehen.html",   title: "21 · Unterschied zu Verstehen",  desc: "Wort-Netz vs. Erlebnis-Netz — warum ‚raten‘ kein ‚begreifen‘ ist." },
+        // weitere Querdenken-Seiten hier einfügen
+      ],
+    },
+    {
+      id: "G",
+      label: "Stufe G · Mini-Projekte (Praxis)",
+      items: [
+        { file: "concepts/22-projekt-cli-chatbot.html",  title: "22 · CLI-Chatbot",      desc: "Erster benutzbarer Bot: API + System-Prompt + Streaming + Verlauf." },
+        { file: "concepts/23-projekt-mini-rag.html",     title: "23 · Mini-RAG",         desc: "Eigene Daten beantworten: Embeddings + Vektorsuche + augmentierter Prompt." },
+        { file: "concepts/24-projekt-attention-vis.html", title: "24 · Attention-Vis",    desc: "Die Heatmap aus Konzept 03 selbst bauen (p5.js) — gelesen wird zu gemacht." },
+        { file: "concepts/25-projekt-lora-trainieren.html", title: "25 · LoRA trainieren", desc: "Einen kleinen Adapter auf einem eigenen Datensatz trainieren (PEFT)." },
+        // weitere Projekte hier einfügen
+      ],
+    },
   ],
   playground: [
     { file: "playground/tokenizer-demo.html", title: "Tokenizer",  desc: "Tippe Text und sieh, wie er in Tokens zerlegt wird." },

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>25 · Mini-Projekt: LoRA trainieren — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Projekt 25 · Stufe G (Praxis)</p>
+    <h1>25 · Mini-Projekt: LoRA trainieren</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Statt das ganze große Modell umzubauen, nähst du ihm einen kleinen Zusatz-Anhänger
+      an, der genau dein Thema lernt. Hinterher hast du eine kleine Datei, die du
+      jederzeit an- und abschalten kannst (Konzept 10).
+    </div>
+
+    <h2>Bausteine</h2>
+    <ul>
+      <li><strong>Fine-Tuning/PEFT</strong> (10) — LoRA-Adapter trainieren.</li>
+      <li><strong>Hugging Face</strong> (11) — Bibliothek + Modell laden.</li>
+      <li><strong>Training-Intuition</strong> (05) — Loss, Epochen, Lernrate.</li>
+      <li><strong>Notebook</strong> (13) — bequemer Startpunkt.</li>
+    </ul>
+
+    <h2>Skelett (PEFT)</h2>
+    <pre><code>from peft import LoraConfig, get_peft_model
+from transformers import AutoModelForCausalLM, Trainer
+
+base = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B")
+cfg  = LoraConfig(r=8, lora_alpha=16, target_modules=["q_proj","v_proj"])
+model = get_peft_model(base, cfg)   # nur Adapter trainierbar (10)
+
+trainer = Trainer(model=model, train_dataset=data, args=training_args)
+trainer.train()                      # derselbe Loop wie 05
+model.save_pretrained("mein-adapter")  # klein (MB)</code></pre>
+
+    <h2>Aufgaben</h2>
+    <ul>
+      <li>Datensatz: 50–200 Beispiele in deinem Zielton/Format.</li>
+      <li>Lade den Adapter und vergleiche mit/ohne (10-Demo-Gedanke).</li>
+      <li>Evaluiere mit (15), ob es wirklich besser wurde.</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="10-fine-tuning.html">10 · Fine-Tuning</a> · <a href="11-hugging-face.html">11 · Hugging Face</a> · <a href="05-training-intuitiv.html">05 · Training</a> · <a href="15-evaluierung-metriken.html">15 · Eval</a></li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen</span>
+      • Welche target_modules (10)?<br/>
+      • Wie viel Daten reicht wirklich?<br/>
+      • Overfitting erkennen (15)?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>
