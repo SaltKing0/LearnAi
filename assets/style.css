@@ -227,3 +227,27 @@ textarea {
 }
 
 .meta { color: var(--fg-dim); font-family: var(--mono); font-size: 13px; }
+
+/* ---- Mermaid-Diagramme (Dark-Theme, passend zum Rest) ---- */
+.mermaid {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  margin: 22px 0;
+  text-align: center;
+  overflow-x: auto;
+}
+.mermaid svg { max-width: 100%; height: auto; display: inline-block; }
+.mermaid + .diagram-cap,
+.diagram-cap {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--fg-dim);
+  text-align: center;
+  margin: -10px 0 22px;
+}
+/* Kleinste Anpassung: Mermaid-SVG-Text soll unsere Schrift nutzen */
+.mermaid text, .mermaid .nodeLabel, .mermaid .edgeLabel {
+  font-family: var(--mono) !important;
+}

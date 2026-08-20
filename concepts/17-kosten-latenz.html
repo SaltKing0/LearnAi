@@ -41,6 +41,18 @@
         gleichzeitig → bei Last schwankt die Latenz.</li>
     </ul>
 
+    <div class="mermaid">
+flowchart LR
+    IN["Input-Tokens<br/>(System + Prompt)"] --> OUT["Output-Tokens<br/>(autoregressiv)"]
+    OUT -->|"1 Token = 1 Schritt"| L["Latenz ∝ Antwortlänge"]
+    IN -->|"längerer Kontext"| Q["Quadratischer<br/>Attention-Aufwand"]
+    Q --> L2["Latenz ↑ bei langem Kontext"]
+    PR["Kosten = (In + Out) × Preis/Token"] --> B{Modellgröße?}
+    B -->|größer| T1["teurer / oft besser"]
+    B -->|kleiner| T2["günstiger / evtl. schwächer"]
+    </div>
+    <p class="diagram-cap">Kosten sind linear in Tokens, Latenz wächst mit Antwortlänge und (quadratisch) mit Kontext.</p>
+
     <h2>Demo: Kosten/Latenz-Rechner (vereinfacht)</h2>
     <div class="demo-box">
       <div class="controls">
@@ -95,5 +107,9 @@
         `Geschätzte Kosten: ${cost} (fiktiv) · Latenz ~${lat}s · Tokens: ${tok}`;
     });
   </script>
+
+  <!-- Mermaid für Fluss-/Architekturdiagramme (CDN, kein Build-Step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
 </body>
 </html>

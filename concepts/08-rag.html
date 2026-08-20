@@ -28,6 +28,24 @@
       <li><strong>Generation</strong> — das Modell beantwortet auf Basis davon.</li>
     </ul>
 
+    <div class="mermaid">
+flowchart LR
+    subgraph OFF["Offline · Index aufbauen"]
+        D[Dokumente] --> C[Chunking]
+        C --> E[Embedding je Chunk]
+        E --> DB[(Vektordatenbank)]
+    end
+    subgraph LIVE["Zur Laufzeit · Anfrage"]
+        Q[Frage] --> QE[Frage einbetten]
+        QE --> R[Top-k ähnliche Chunks<br/>via Cosine-Similarity]
+        DB --> R
+        R --> A[Prompt = Frage + Context]
+        A --> G[Modell generiert Antwort]
+        G --> Z[Antwort mit Quelle / Zitat]
+    end
+    </div>
+    <p class="diagram-cap">RAG in zwei Phasen: einmalig indexieren, dann pro Frage retrieven &amp; generieren.</p>
+
     <h2>Wie die Suche funktioniert (Verbindung zu Konzept 02)</h2>
     <p>Die Dokumente werden in Stücke (Chunks) zerlegt und each in ein
        <strong>Embedding</strong> (Vektor) gewandelt — genau wie Tokens in Konzept 02.
@@ -103,5 +121,9 @@
       if (e.key === "Enter") document.getElementById("go").click();
     });
   </script>
+
+  <!-- Mermaid für Fluss-/Architekturdiagramme (CDN, kein Build-Step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
 </body>
 </html>

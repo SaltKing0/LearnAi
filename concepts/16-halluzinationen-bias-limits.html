@@ -33,6 +33,18 @@
         Fehler; „ich weiß es nicht“ erzwingen per Prompt (07).</li>
     </ul>
 
+    <div class="mermaid">
+flowchart TD
+    P["Modell rät nächstes Wort<br/>(P(next|context))"] --> T{Weiß es die<br/>Antwort?}
+    T -->|"ja, im Kontext"| A[Antwort stimmt]
+    T -->|"nein / seltenes Faktum"| H["Halluzination:<br/>klingt selbstsicher, ist falsch"]
+    H --> G["Gegenmittel"]
+    G --> G1["RAG: Quelle einbinden (08)"]
+    G --> G2["Eval: Fehler messen (15)"]
+    G --> G3["Prompt: 'Ich weiß es nicht' (07)"]
+    </div>
+    <p class="diagram-cap">Halluzinationen entstehen, weil das Modell rät statt weiß — und lassen sich mit drei Hebeln eindämmen.</p>
+
     <h2>Bias (Verzerrung)</h2>
     <p>Modelle lernen aus menschlichen Texten (05) — inklusive deren Vorurteile,
        Stereotypen, Ungleichgewichte. Das Modell <em>spiegelt</em> den Trainingsdatensatz.
@@ -94,5 +106,9 @@
     }
     document.getElementById("hall").addEventListener("click", ask);
   </script>
+
+  <!-- Mermaid für Fluss-/Architekturdiagramme (CDN, kein Build-Step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
 </body>
 </html>

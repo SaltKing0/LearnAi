@@ -36,6 +36,17 @@
         Misst Sprachmodell-Qualität <em>ohne</em> Labels, nur am Text selbst.</li>
     </ul>
 
+    <div class="mermaid">
+flowchart LR
+    T[("Test-Set:<br/>Frage + Musterlösung")] --> M[Modell beantwortet]
+    M --> V[Vergleich mit Erwartet]
+    V --> ME[Metrik:<br/>Accuracy / F1 / Perplexity]
+    ME --> R{Entscheidung}
+    R -->|besser| K1[Modell / Prompt übernehmen]
+    R -->|schlechter| K2[verwerfen / nachbessern]
+    </div>
+    <p class="diagram-cap">Eval ist kein einmaliger Test, sondern eine Schleife für jede Änderung.</p>
+
     <h2>Demo: Accuracy eines „Modells“ (vereinfacht)</h2>
     <div class="demo-box">
       <div class="controls"><button id="eval" style="background:#58a6ff;color:#0e1116;border:none;border-radius:8px;padding:8px 16px;font-family:monospace;cursor:pointer;">Eval-Lauf starten →</button></div>
@@ -100,5 +111,9 @@
       document.getElementById("accLine").textContent = `Accuracy: ${acc}%  (${ok}/${TASKS.length} richtig)`;
     });
   </script>
+
+  <!-- Mermaid für Fluss-/Architekturdiagramme (CDN, kein Build-Step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
 </body>
 </html>

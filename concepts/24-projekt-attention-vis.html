@@ -27,6 +27,37 @@
       <li><strong>p5.js / Canvas</strong> — Heatmap zeichnen.</li>
     </ul>
 
+    <h2>Die Visualisierung (selbst gebaut)</h2>
+    <p>Gib einen Satz ein — die Heatmap zeigt, welches Wort wie stark auf welches
+       andere schaut. Die Scores entstehen hier echt aus einer <strong>Self-Attention-
+       Rechnung</strong> (Q·K, dann Softmax über Temperatur), nur mit <em>toy</em>-
+       Embeddings statt gelernten. Probier den Pronomen-Satz und schau, was „er“
+       fokussiert.</p>
+
+    <div class="demo-box">
+      <textarea id="sent" rows="2" style="width:100%;background:#0e1116;color:#e6edf3;border:1px solid #2a3340;border-radius:8px;padding:10px;font-family:var(--mono);font-size:15px;">Der Hund beißt den Mann, weil er hungrig ist</textarea>
+      <div class="controls">
+        Temperatur:
+        <input id="temp" type="range" min="0.3" max="3" step="0.1" value="1" />
+        <span id="tempVal">1.0</span>
+        &nbsp;·&nbsp; Head:
+        <button class="head" data-h="0">Semantik</button>
+        <button class="head" data-h="1">Lokal</button>
+        <button class="head" data-h="2">Pronomen→Nomen</button>
+      </div>
+      <div id="attSketch"></div>
+      <p id="hoverInfo" class="meta">Zeile zum Hervorheben: —</p>
+    </div>
+
+    <div class="mermaid">
+flowchart LR
+    W[Wörter] --> E["Embedding je Wort (toy)"]
+    E --> QK["Score = Q·K (Dot-Product)"]
+    QK --> SM["Softmax über Temperatur"]
+    SM --> H["Heatmap: Zeile i schaut auf Spalte j"]
+    </div>
+    <p class="diagram-cap">Genau diese Kette steckt in jedem Transformer-Layer (Konzept 03/04).</p>
+
     <h2>Erweiterungsideen</h2>
     <ul>
       <li>Echte Scores aus einem kleinen Modell (11) statt der simulierten (03).</li>
@@ -47,6 +78,117 @@
   </div>
 
   <footer id="bottomnav"></footer>
+
+  <!-- Mermaid für Fluss-/Architekturdiagramme (CDN, kein Build-Step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
   <script src="../assets/nav.js"></script>
+  <script>
+    // ---- Toy-Embeddings: ein kleiner Vektor je Wort, der 3 "Head"-Perspektiven liefert.
+    // Wir bauen pro Head eine Score-Matrix aus Q·K-ähnlichen Heuristiken.
+    function tokenize(s) {
+      return s.trim().split(/\s+/).filter(Boolean);
+    }
+    // Head-Perspektiven als Funktion (i, j, toks):
+    const HEADS = [
+      { name: "Semantik", f: (i, j, t) => {
+          // Subjekt-Verb-Objekt tendenziell verbunden (Rollen-Ähnlichkeit)
+          const role = (w) => /hund|mann|katze|frau|kind|er|sie|es/.test(w) ? 1
+                                : /beißt|frißt|sieht|hilft|liebt|ist|hat/.test(w) ? 2 : 0;
+          const ri = role(t[i].toLowerCase()), rj = role(t[j].toLowerCase());
+          let s = (ri === rj && ri !== 0) ? 1.6 : 0.2;
+          if (ri === 2 && rj === 1) s += 1.2;        // Verb schaut auf Subjekt/Objekt
+          if (/er|sie|es/.test(t[i].toLowerCase()) && /hund|mann|katze|frau|kind/.test(t[j].toLowerCase())) s += 0.4;
+          return s + 0.15 * Math.sin(i * 2 + j);
+        } },
+      { name: "Lokal", f: (i, j, t) => 2.2 - Math.abs(i - j) * 0.9 + 0.25 * Math.sin(i * 3 + j) },
+      { name: "Pronomen→Nomen", f: (i, j, t) => {
+          const pro = /er|sie|es/.test(t[i].toLowerCase());
+          const noun = /hund|mann|katze|frau|kind/.test(t[j].toLowerCase());
+          const isProNoun = /hund|mann|katze|frau|kind|er|sie|es/.test(t[j].toLowerCase());
+          if (pro && noun) return 2.4 - Math.abs(i - j) * 0.2;       // Pronomen sucht das Nomen
+          if (pro && isProNoun) return 1.0;
+          return 0.1;
+        } }
+    ];
+
+    let toks = [];
+    let head = 0;
+    let temp = 1.0;
+    let hoverRow = -1;
+
+    function softmaxRow(i, T) {
+      const scores = [];
+      for (let j = 0; j < toks.length; j++) scores.push(HEADS[head].f(i, j, toks) / T);
+      const max = Math.max(...scores);
+      const exps = scores.map((s) => Math.exp(s - max));
+      const sum = exps.reduce((a, b) => a + b, 0);
+      return exps.map((e) => e / sum);
+    }
+
+    const sketch = (p) => {
+      const SIZE = 560, pad = 70;
+      let cell = 40;
+      p.setup = () => {
+        const c = p.createCanvas(SIZE, SIZE);
+        c.parent("attSketch");
+        p.textAlign(p.CENTER, p.CENTER);
+        rebuild();
+      };
+      p.draw = () => {
+        if (!toks.length) return;
+        p.background(22, 27, 34);
+        const N = toks.length;
+        cell = (SIZE - pad * 2) / N;
+        // Spalten-Labels
+        p.fill(154, 167, 180); p.textSize(13);
+        for (let j = 0; j < N; j++) p.text(toks[j], pad + cell * (j + 0.5), pad / 2);
+        // Zeilen-Labels
+        for (let i = 0; i < N; i++) p.text(toks[i], pad / 2, pad + cell * (i + 0.5));
+        // Heatmap
+        for (let i = 0; i < N; i++) {
+          const w = softmaxRow(i, temp);
+          for (let j = 0; j < N; j++) {
+            const x = pad + cell * j, y = pad + cell * i;
+            const v = w[j];
+            p.fill(30, 60 + 160 * v, 100 + 120 * v);
+            p.noStroke();
+            p.rect(x + 2, y + 2, cell - 4, cell - 4, 6);
+            p.fill(v > 0.5 ? 14 : 230); p.textSize(11);
+            p.text(v.toFixed(2), x + cell / 2, y + cell / 2);
+          }
+        }
+        if (hoverRow >= 0 && hoverRow < N) {
+          const w = softmaxRow(hoverRow, temp);
+          const best = w.indexOf(Math.max(...w));
+          p.noFill(); p.stroke(126, 231, 135); p.strokeWeight(2);
+          p.rect(pad, pad + cell * hoverRow, cell * N, cell); p.noStroke();
+          document.getElementById("hoverInfo").textContent =
+            `"${toks[hoverRow]}" (Head: ${HEADS[head].name}) schaut am stärksten auf: "${toks[best]}" (${w[best].toFixed(2)})`;
+        }
+      };
+      p.mouseMoved = () => {
+        const mx = p.mouseX, my = p.mouseY;
+        if (mx >= pad && mx <= SIZE - pad && my >= pad && my <= SIZE - pad) {
+          hoverRow = Math.floor((my - pad) / cell);
+        } else hoverRow = -1;
+      };
+    };
+    new p5(sketch);
+
+    function rebuild() {
+      toks = tokenize(document.getElementById("sent").value);
+      if (toks.length > 12) toks = toks.slice(0, 12);
+    }
+    document.getElementById("sent").addEventListener("input", rebuild);
+    document.getElementById("temp").addEventListener("input", (e) => {
+      temp = parseFloat(e.target.value);
+      document.getElementById("tempVal").textContent = temp.toFixed(1);
+    });
+    document.querySelectorAll(".head").forEach((b) =>
+      b.addEventListener("click", () => { head = parseInt(b.dataset.h); })
+    );
+  </script>
 </body>
 </html>

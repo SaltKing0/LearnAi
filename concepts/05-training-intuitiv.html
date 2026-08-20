@@ -51,11 +51,16 @@
       <div id="lossSketch"></div>
       <div class="controls">
         Lernrate:
-        <input id="lr" type="range" min="0.01" max="0.6" step="0.01" value="0.12" />
+        <input id="lr" type="range" min="0.005" max="0.9" step="0.005" value="0.12" />
         <span id="lrVal">0.12</span>
+        &nbsp;·&nbsp; Rauschen (Mini-Batch):
+        <input id="noise" type="range" min="0" max="1" step="0.05" value="0.35" />
+        <span id="noiseVal">0.35</span>
+        &nbsp;·&nbsp; <button id="restart">Neu starten</button>
       </div>
-      <p class="meta">Animation: Das Modell macht Schritte den Berg hinunter. Die
-        Kurve zeigt den Loss. Zu hohe Lernrate (ganz rechts) lässt ihn hüpfen/divergieren.</p>
+      <p class="meta">Die grüne Kurve ist der <strong>train loss</strong> (mit Rauschen,
+        wie in echten Mini-Batches), die türkise Linie ist der glatte Trend. Zu kleine
+        Lernrate = kriecht ewig; zu groß (ganz rechts) = hüpft/divergiert.</p>
     </div>
 
     <h2>Was du als Code-Nutzer wirklich wissen musst</h2>
@@ -91,67 +96,87 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
   <script src="../assets/nav.js"></script>
   <script>
-    // Loss-Landschaft: ein Ball rollt den Berg runter.
-    let lr = 0.12;
-    let pos = -2.2;      // x-Position des Balls
-    let steps = 0;
-    const history = [];  // gesammelter loss
-    function lossAt(x) { return 0.4 * (x * x); }  // Parabel: Minimum bei x=0
+    // ---- Interaktive Loss-Kurve ----
+    // target(t) = exponentiell abklingender Soll-Loss. Der "train loss" hopst
+    // um diesen Trend herum (Mini-Batch-Rauschen). Lernrate steuert, wie schnell
+    // der Trend fällt; zu hoch -> Oszillation/Divergenz.
+    let lr = 0.12, noise = 0.35;
+    let t = 0, cur = 2.4, trend = 2.4;
+    const W = 720, H = 320, padX = 50, padY = 30;
+    const Tmax = 200;
+    const pts = [];
+    function target(tt) { return 0.15 + 2.25 * Math.exp(-tt / 35); }
 
     const sketch = (p) => {
       p.setup = () => {
-        const c = p.createCanvas(420, 240);
+        const c = p.createCanvas(W, H);
         c.parent("lossSketch");
-        p.frameRate(20);
-        p.textAlign(p.LEFT, p.CENTER);
+        p.frameRate(30);
+        reset();
       };
       p.draw = () => {
         p.background(22, 27, 34);
-        const W = 420, H = 240, midY = 200, scaleY = 160, scaleX = 70;
-        // Landschaft zeichnen
-        p.noFill();
-        p.stroke(60, 70, 85);
+        // Achsen
+        p.stroke(42, 51, 64); p.strokeWeight(1);
+        const x0 = padX, y0 = H - padY, x1 = W - 10, y1 = padY;
+        p.line(x0, y1, x0, y0);
+        p.line(x0, y0, x1, y0);
+        p.noStroke();
+        p.fill(154, 167, 180); p.textSize(12); p.textAlign(p.LEFT, p.CENTER);
+        p.text("Loss", 8, y1 + 6);
+        p.textAlign(p.CENTER, p.TOP);
+        p.text("Schritte (Epochen)", (x0 + x1) / 2, y0 + 6);
+
+        // einen Schritt weiter
+        const tgt = target(t);
+        // Trend folgt dem Soll, Lernrate bestimmt Geschwindigkeit
+        trend += lr * (tgt - trend);
+        // Rauschen: echter Batch-Loss hopst um den Trend
+        const n = (p.random(-1, 1)) * noise * (0.4 + trend * 0.25);
+        cur = trend + n;
+        cur = Math.max(0, cur);
+        pts.push(cur);
+        t++;
+        if (pts.length > Tmax) pts.shift();
+
+        // Kurve (grün, mit Rauschen)
+        p.stroke(126, 231, 135); p.strokeWeight(1.5); p.noFill();
         p.beginShape();
-        for (let px = 0; px <= W; px++) {
-          const x = (px - W / 2) / scaleX;
-          const y = midY - lossAt(x) * scaleY;
-          p.vertex(px, y);
+        for (let i = 0; i < pts.length; i++) {
+          const x = x0 + (i / Tmax) * (x1 - x0);
+          const y = y0 - (pts[i] / 2.6) * (y0 - y1);
+          p.vertex(x, y);
         }
         p.endShape();
-        // Ball
-        const bx = W / 2 + pos * scaleX;
-        const by = midY - lossAt(pos) * scaleY;
-        p.noStroke();
-        p.fill(88, 166, 255);
-        p.ellipse(bx, by, 16, 16);
-        // Schritt: gradient = ableitung = 0.8*x ; ziehe in umgekehrte Richtung
-        const grad = 0.8 * pos;
-        pos = pos - lr * grad;
-        if (pos > 3) pos = 3; if (pos < -3) pos = -3;
-        // Loss-Kurve unten rechts
-        history.push(lossAt(pos));
-        if (history.length > 200) history.shift();
-        p.fill(154, 167, 180);
-        p.textSize(13);
-        p.text("Loss: " + lossAt(pos).toFixed(3), 12, 16);
-        // mini-loss-kurve
-        p.stroke(126, 231, 135); p.noFill();
+        // Trend (türkis, glatt)
+        p.stroke(88, 166, 255); p.strokeWeight(2.5);
         p.beginShape();
-        history.forEach((v, i) => {
-          const x = W - 200 + i;
-          const y = 50 + (v / 4) * 40;
+        for (let i = 0; i < pts.length; i++) {
+          const x = x0 + (i / Tmax) * (x1 - x0);
+          const y = y0 - (trend / 2.6) * (y0 - y1);
           p.vertex(x, y);
-        });
+        }
         p.endShape();
-        steps++;
-        if (steps % 400 === 0) { pos = -2.2; } // reset für Loop
+
+        // aktueller Wert
+        p.noStroke(); p.fill(230); p.textAlign(p.RIGHT, p.TOP); p.textSize(14);
+        p.text("train loss: " + cur.toFixed(3), x1, y1);
+        p.fill(88, 166, 255);
+        p.text("trend: " + trend.toFixed(3), x1, y1 + 20);
       };
     };
     new p5(sketch);
+
+    function reset() { t = 0; cur = 2.4; trend = 2.4; pts.length = 0; }
     document.getElementById("lr").addEventListener("input", (e) => {
       lr = parseFloat(e.target.value);
-      document.getElementById("lrVal").textContent = lr.toFixed(2);
+      document.getElementById("lrVal").textContent = lr.toFixed(3);
     });
+    document.getElementById("noise").addEventListener("input", (e) => {
+      noise = parseFloat(e.target.value);
+      document.getElementById("noiseVal").textContent = noise.toFixed(2);
+    });
+    document.getElementById("restart").addEventListener("click", reset);
   </script>
 </body>
 </html>

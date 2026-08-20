@@ -41,6 +41,18 @@
         parsebar in Code.</li>
     </ul>
 
+    <div class="mermaid">
+flowchart TD
+    S[Task vorhanden] --> Q1{Braucht strukturierte<br/>Ausgabe?}
+    Q1 -->|Ja| JSON["Structured Output / System-Prompt:<br/>'Antworte als JSON'"]
+    Q1 -->|Nein| Q2{Braucht das Modell<br/>Beispiele?}
+    Q2 -->|Ja| FEW["Few-shot:<br/>2–5 Input → Output Beispiele"]
+    Q2 -->|Nein| Q3{Logik / Mathe /<br/>Mehrstufig?}
+    Q3 -->|Ja| COT["Chain-of-Thought:<br/>'Denk schrittweise'"]
+    Q3 -->|Nein| ZERO[Zero-shot:<br/>schlichte Aufgabe]
+    </div>
+    <p class="diagram-cap">Faustregel zur Pattern-Wahl — günstigster Hebel zuerst.</p>
+
     <h2>Demo: Zero-shot vs. Few-shot vs. CoT (illustriert)</h2>
     <div class="demo-box">
       <div class="controls">
@@ -104,5 +116,9 @@
     });
     show("zero");
   </script>
+
+  <!-- Mermaid für Fluss-/Architekturdiagramme (CDN, kein Build-Step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
 </body>
 </html>

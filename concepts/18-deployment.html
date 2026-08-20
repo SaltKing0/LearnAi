@@ -32,6 +32,22 @@
         verlassen das Haus (14).</li>
     </ul>
 
+    <div class="mermaid">
+flowchart LR
+    subgraph C["Cloud / API"]
+        S1["Inference-Server<br/>(vLLM, Ollama)"] --> U1["Nutzer via API (12)"]
+    end
+    subgraph E["Edge / Lokal"]
+        S2["llama.cpp / WebGPU<br/>im Browser/Laptop"] --> U2["privat, offline"]
+    end
+    subgraph O["On-Premise"]
+        S3["eigenes Rechenzentrum"] --> U3["keine Daten verlassen Haus"]
+    end
+    Q["Quantisierung (INT8/INT4)"] -->|"Modell schrumpft ~4×"| E
+    Q -->|"läuft auch auf schwacher HW"| O
+    </div>
+    <p class="diagram-cap">Drei Deployment-Wege; Quantisierung macht besonders Edge/On-Premise erst möglich.</p>
+
     <h2>Quantisierung (Verbindung zu 04/17)</h2>
     <p>Modelle speichern Gewichte als 16-Bit-Floats. <strong>Quantisierung</strong>
        reduziert sie auf 8/4 Bit — das Modell wird ~4× kleiner und schneller, oft mit
@@ -99,5 +115,9 @@
     });
     show("16");
   </script>
+
+  <!-- Mermaid für Fluss-/Architekturdiagramme (CDN, kein Build-Step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
 </body>
 </html>
