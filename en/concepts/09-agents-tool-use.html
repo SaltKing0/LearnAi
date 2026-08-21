@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>09 · Agents / Tool-Use — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 09 · Stage C</p>
+    <h1>09 · Agents / Tool-Use</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Imagine you have a smart assistant. You say "What's the weather?" and it tells you. But what if you say "If it's raining tomorrow, text my mom we'll stay home"? The assistant needs to check the weather (tool 1), make a decision (reasoning), and send a text (tool 2). That's an agent — a model that can use tools.
+    </div>
+
+    <h2>What is an Agent?</h2>
+    <p>An agent is a model that can take actions in the world — not just answer questions, but call APIs, run code, send emails, query databases. The model decides which tool to use, when, and with what parameters.</p>
+
+    <h2>The Agent Loop</h2>
+    <ol>
+      <li><strong>Observe</strong> → What is the current state?</li>
+      <li><strong>Think</strong> → What should I do next?</li>
+      <li><strong>Act</strong> → Call a tool</li>
+      <li><strong>Observe</strong> → What was the result?</li>
+      <li><strong>Repeat</strong> → Until task is complete</li>
+    </ol>
+
+    <h2>Types of Tools</h2>
+    <ul>
+      <li><strong>APIs</strong> → Weather, stocks, news</li>
+      <li><strong>Code execution</strong> → Run Python, SQL</li>
+      <li><strong>Web browsing</strong> → Search, scrape</li>
+      <li><strong>File operations</strong> → Read, write, delete</li>
+      <li><strong>Communication</strong> → Email, Slack, SMS</li>
+    </ul>
+
+    <h2>Why this matters to you</h2>
+    <ul>
+      <li><strong>Automation</strong> → Build bots that do real work</li>
+      <li><strong>Multi-step tasks</strong> → Break complex problems into steps</li>
+      <li><strong>Reliability</strong> → Tools provide ground truth, not just model knowledge</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="29-function-calling-deep-dive.html">29 · Function Calling</a> → How tools are defined</li>
+      <li><a href="26-security-prompt-injection.html">26 · Security</a> → Agents are vulnerable to injection</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • How to handle tool failures gracefully?<br/>
+      • When should the agent ask for human help?<br/>
+      • How to prevent infinite loops?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>
+

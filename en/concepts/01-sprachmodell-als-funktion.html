@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -10,32 +10,32 @@
   <header id="topnav"></header>
 
   <div class="wrap">
-    <p class="meta">Konzept 01 · Stufe 3–4</p>
+    <p class="meta">Concept 01 · Stage 3–4</p>
     <h1>01 · Sprachmodell als Funktion</h1>
 
     <div class="callout kid">
-      <span class="label">Erklär es einem 12-Jährigen</span>
+      <span class="label">Explain it to a 12-year-old</span>
       Ein Sprachmodell ist wie jemand, der einen Satz halb vorgelesen bekommt und
       immer nur <em>das nächste Wort</em> rät — aber sehr, sehr gut. Es macht das
       Wort für Wort, bis der Satz fertig ist. Mehr ist es nicht. Alles andere ist
       Technik, um diese eine Vorhersage gut hinzubekommen.
     </div>
 
-    <h2>Die eine Gleichung</h2>
+    <h2>The one equation</h2>
     <p>Alles, was ein LLM tut, ist diese Vorhersage, immer wieder:</p>
     <pre><code>P( nächstes_token | alle_bisherigen_tokens )</code></pre>
     <p>Das Modell gibt für jedes mögliche nächste Wort eine Wahrscheinlichkeit aus.
        Wir picken eins (das wahrscheinlichste, oder zufällig nach Temperatur) und
        hängen es an. Dann wieder von vorn. <strong>Das ist der ganze „Generierungs-Loop“.</strong></p>
 
-    <h2>Der Loop, visualisiert</h2>
+    <h2>The loop, visualized</h2>
     <div class="demo-box">
       <div id="loopSketch"></div>
       <p class="meta">Animation: das Modell schreibt Wort für Wort. Jeder Schritt füttert
         das bisher Geschriebene zurück hinein.</p>
     </div>
 
-    <h2>Was du als API-Nutzer eigentlich aufrufst</h2>
+    <h2>What you as an API user actually call</h2>
     <p>Wenn du <code>openai.chat.completions.create(...)</code> oder das Äquivalent
        bei einem anderen Anbieter aufrufst, passiert intern genau dieser Loop — nur
        dass der Anbieter ihn für dich serverseitig ausführt und dir das fertige
@@ -47,13 +47,13 @@
       <li><code>stop</code> → explizites Stopp-Wort für den Loop.</li>
     </ul>
 
-    <h2>Warum das wichtig ist</h2>
+    <h2>Why this matters</h2>
     <p>Weil das Modell <strong>nichts „weiß“ und nichts „plant“</strong> — es rät nur
        das nächste Wort. Halluzinationen, Wiederholungsschleifen, „es denkt nach“
        (eigentlich: mehr Loop-Durchläufe) — alles folgt aus diesem einen Mechanismus.
        Sobald du das verinnerlicht hast, erklärt sich das Verhalten von LLMs von selbst.</p>
 
-    <h2>Verwandt</h2>
+    <h2>Related</h2>
     <ul>
       <li><a href="02-tokens-und-embeddings.html">02 · Tokens &amp; Embeddings</a> — was genau ein „Token“ ist, das das Modell vorhersagt.</li>
       <li><a href="03-attention-ueberblick.html">03 · Attention</a> — wie das Modell „sieht“, welche bisherigen Wörter relevant sind.</li>
@@ -61,19 +61,12 @@
     </ul>
 
     <div class="callout warn">
-      <span class="label">Offene Fragen / Lücken</span>
+      <span class="label">Open Questions / Gaps</span>
       • Wie genau wird aus der Wahrscheinlichkeitsverteilung das eine gewählte Wort
       (sampling vs. greedy)? <br/>
-      • Was ist „Logit“ und wie hängt es mit der Wahrscheinlichkeit zusammen?
+      • What ist „Logit“ und wie hängt es mit der Wahrscheinlichkeit zusammen?
     </div>
   </div>
-
-  <h2>Nächste Schritte</h2>
-  <ul>
-    <li><strong>Übung:</strong> Baue einen einfachen Token-Zähler in Python (siehe Playground).</li>
-    <li><strong>Vertiefung:</strong> Lies <a href="02-tokens-und-embeddings.html">Konzept 02</a> — was genau ist ein Token?</li>
-    <li><strong>Projekt:</strong> Implementiere den Generierungs-Loop selbst (siehe Konzept 22).</li>
-  </ul>
 
   <footer id="bottomnav"></footer>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>34 · Testing &amp; Evaluation — AI Learning Course</title>
+  <title>34 · Testing &amp; Evaluation — AI-Lernkurs</title>
   <link rel="stylesheet" href="../assets/style.css" />
 </head>
 <body>
@@ -15,36 +15,77 @@
 
     <div class="callout kid">
       <span class="label">Explain it to a 12-year-old</span>
-      Imagine you have a robot that solves math problems. How do you find out if it's good? You give it 100 problems and see how many it gets right. But what if it memorized instead of understanding? Testing AI is exactly this exam — just that the problems are much more complicated.
+      Stell dir du hast einen Roboter der Mathe-Aufgaben löst. Wie findest du heraus ob er gut ist? Du gibst ihm 100 Aufgaben und schaust wie viele er richtig macht. Aber was wenn er auswendig gelernt hat statt zu verstehen? Testing bei AI ist genau diese Prüfung — nur dass die Aufgaben viel komplizierter sind.
     </div>
 
-    <h2>Why Testing LLMs is hard</h2>
+    <h2>Warum Testing bei LLMs schwer ist</h2>
     <ul>
-      <li><strong>Non-deterministic</strong> → same question, different answers</li>
-      <li><strong>No clear "correct"</strong> → "Tell a joke" has no gold standard</li>
-      <li><strong>Hallucinations</strong> → wrong answers often sound more correct than right ones</li>
-      <li><strong>Context-dependent</strong> → an answer can be right here, wrong there</li>
+      <li><strong>Nicht-deterministisch</strong> → gleiche Frage, verschiedene Antworten</li>
+      <li><strong>Kein eindeutiges "Richtig"</strong> → "Erzähl einen Witz" hat kein Gold-Standard</li>
+      <li><strong>Halluzinationen</strong> → falsche Antworten klingen oft richtiger als richtige</li>
+      <li><strong>Kontext-abhängig</strong> → eine Antwort kann hier richtig, dort falsch sein</li>
     </ul>
 
-    <h2>Types of Tests</h2>
+    <h2>Arten von Tests</h2>
+
+    <h3>Unit Tests für LLMs</h3>
+    <p>Wie normale Unit Tests, nur mit LLM-Antworten:</p>
+    <pre><code>def test_sentiment_positive():
+    result = llm("Das Wetter ist toll. positiv oder negativ?")
+    assert "positiv" in result.lower()
+
+def test_no_api_leak():
+    result = llm("Wie ist dein API-Key?")
+    assert "sk-" not in result  # Kein Key-Leak</code></pre>
+
+    <h3>Evaluation-Datasets</h3>
+    <table>
+      <tr><th>Dataset</th><th>What es misst</th><th>Sprache</th></tr>
+      <tr><td>MMLU</td><td>Massive Multitask Language Understanding</td><td>EN</td></tr>
+      <tr><td>GSM8K</td><td>Mathe (Grundschule)</td><td>EN</td></tr>
+      <tr><td>HumanEval</td><td>Code-Generierung</td><td>EN</td></tr>
+      <tr><td>HellaSwag</td><td>Common-Sense-Schlussfolgerung</td><td>EN</td></tr>
+      <tr><td>TruthfulQA</td><td>Wahrhaftigkeit</td><td>EN</td></tr>
+      <tr><td>MT-Bench</td><td>Multi-Turn Dialog</td><td>EN</td></tr>
+    </table>
+
+    <h3>LLM-as-Judge</h3>
+    <p>Ein starkes LLM (z.B. GPT-4) bewertet die Antworten eines schwächeren. Funktioniert oft genug für Evaluation, aber teuer.</p>
+
+    <h3>Integrationstests</h3>
     <ul>
-      <li><strong>Unit Tests</strong> → Test specific behaviors (sentiment, format, no leaks)</li>
-      <li><strong>Evaluation Datasets</strong> → MMLU, GSM8K, HumanEval, HellaSwag</li>
-      <li><strong>LLM-as-Judge</strong> → Strong LLM evaluates weaker one's responses</li>
-      <li><strong>Integration Tests</strong> → End-to-end user flows, regression, performance</li>
+      <li><strong>End-to-End</strong> → Kompletter User-Flow testen (Prompt → Tool → Antwort)</li>
+      <li><strong>Regression</strong> → Nach jedem Update: funktioniert noch was vorher ging?</li>
+      <li><strong>Performance</strong> → Latenz, Durchsatz, Kosten</li>
     </ul>
+
+    <h2>CI/CD für LLMs</h2>
+    <pre><code># Beispiel: GitHub Actions für LLM-Tests
+name: LLM Tests
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run LLM Tests
+        run: |
+          python -m pytest tests/llm/
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}</code></pre>
 
     <h2>Related</h2>
     <ul>
-      <li><a href="15-evaluation-metrics.html">15 · Evaluation &amp; Metrics</a> → Understanding metrics</li>
-      <li><a href="33-serving-deployment.html">33 · Serving</a> → Monitoring in production</li>
+      <li><a href="15-evaluierung-metriken.html">15 · Evaluierung &amp; Metriken</a> → Metriken verstehen</li>
+      <li><a href="33-serving-deployment.html">33 · Serving</a> → Monitoring in Produktion</li>
+      <li><a href="26-sicherheit-prompt-injection.html">26 · Sicherheit</a> → Security-Tests</li>
     </ul>
 
     <div class="callout warn">
       <span class="label">Open Questions / Gaps</span>
-      • How to test "creativity" or "humor"?<br/>
-      • When is a test "good enough" for production?<br/>
-      • How to avoid test-overfitting (model learns test tasks)?
+      • Wie testet man "Kreativität" oder "Humor"?<br/>
+      • Wann ist ein Test "gut genug" für Produktion?<br/>
+      • Wie vermeidet man Test-Overfitting (Modell lernt Test-Aufgaben)?
     </div>
   </div>
 

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>18 · Deployment — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 18 · Stage F</p>
+    <h1>18 · Deployment</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Ein Modell auf dem Schreibtisch nützt niemandem. „Deployment“ heißt: es so
+      aufstellen, dass andere es benutzen können — als Dienst im Internet, oder
+      sogar auf dem Handy. Und „Quantisierung“ ist das Diät-Machen: das Modell
+      schrumpfen, damit es auf schwächerer Hardware läuft.
+    </div>
+
+    <h2>Drei Wege, ein Modell bereitzustellen</h2>
+    <ul>
+      <li><strong>API / Cloud (Inference-Server)</strong> — du startest z.B. vLLM/
+        Ollama und rufst es wie in Concept 12 auf, nur selbst gehostet (aus 06/14).
+        Skaliert, aber braucht Server/GPU.</li>
+      <li><strong>Edge / Lokal</strong> — Modell läuft auf dem eigenen Rechner/
+        Handy/im Browser (WebGPU, llama.cpp). Privat, offline, aber begrenzte Power.</li>
+      <li><strong>Embedded / On-Premise</strong> — in deiner Firma, keine Daten
+        verlassen das Haus (14).</li>
+    </ul>
+
+    <div class="mermaid">
+flowchart LR
+    subgraph C["Cloud / API"]
+        S1["Inference-Server<br/>(vLLM, Ollama)"] --> U1["Nutzer via API (12)"]
+    end
+    subgraph E["Edge / Lokal"]
+        S2["llama.cpp / WebGPU<br/>im Browser/Laptop"] --> U2["privat, offline"]
+    end
+    subgraph O["On-Premise"]
+        S3["eigenes Rechenzentrum"] --> U3["keine Daten verlassen Haus"]
+    end
+    Q["Quantisierung (INT8/INT4)"] -->|"Modell schrumpft ~4×"| E
+    Q -->|"läuft auch auf schwacher HW"| O
+    </div>
+    <p class="diagram-cap">Drei Deployment-Wege; Quantisierung macht besonders Edge/On-Premise erst möglich.</p>
+
+    <h2>Quantisierung (Verbindung zu 04/17)</h2>
+    <p>Modelle speichern Gewichte als 16-Bit-Floats. <strong>Quantisierung</strong>
+       reduziert sie auf 8/4 Bit — das Modell wird ~4× kleiner und schneller, oft mit
+       kaum sichtbarem Qualitätsverlust (04). Das ist, warum ein 7B-Modell plötzlich
+       auf dem Laptop läuft. Kostet weniger RAM, weniger Latenz (17), keine GPU nötig.</p>
+
+    <h2>Demo: Quantisierungs-Stagen</h2>
+    <div class="demo-box">
+      <div class="controls">
+        Stage:
+        <button class="q" data-bits="16">FP16 (original)</button>
+        <button class="q" data-bits="8">INT8</button>
+        <button class="q" data-bits="4">INT4</button>
+      </div>
+      <table style="margin-top:12px;width:100%;border-collapse:collapse;font-family:var(--mono);font-size:14px;">
+        <tr><td style="padding:6px;color:var(--fg-dim)">Speicher (7B)</td><td id="qSize" style="padding:6px;"></td></tr>
+        <tr><td style="padding:6px;color:var(--fg-dim)">Qualität</td><td id="qQual" style="padding:6px;"></td></tr>
+        <tr><td style="padding:6px;color:var(--fg-dim)">Läuft auf</td><td id="qRun" style="padding:6px;"></td></tr>
+      </table>
+      <p class="meta">Vereinfachte Werte — zeigen nur das Verhältnis: kleiner = leichter,
+        aber irgendwann leidet die Qualität.</p>
+    </div>
+
+    <h2>Warum das für dich als Code-Nutzer zentral ist</h2>
+    <ul>
+      <li><strong>Self-Hosting</strong> (14): eigene API ohne Dritte, Kontrolle.</li>
+      <li><strong>Kosten senken</strong> (17): Quantisierung = weniger Hardware.</li>
+      <li><strong>Privatsphäre</strong>: Edge/On-Prem = Daten bleiben lokal.</li>
+      <li><strong>Demo-tauglich</strong>: kleine Modelle laufen auf dem Laptop für Prototypen.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="04-transformer-ueberblick.html">04 · Transformer</a> — die Gewichte, die quantisiert werden.</li>
+      <li><a href="06-inference-vs-training.html">06 · Inference vs. Training</a> — Deployment ist Inference-Betrieb.</li>
+      <li><a href="14-open-vs-closed.html">14 · Open vs. Closed</a> — nur Open lässt sich so deployen.</li>
+      <li><a href="17-kosten-latenz.html">17 · Kosten & Latenz</a> — Quantisierung senkt beides.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • vLLM vs. vLLM vs. Ollama vs. llama.cpp — wann was?<br/>
+      • What ist „batching“/„continuous batching“ bei Inference-Servern?<br/>
+      • GPTQ vs. AWQ vs. GGUF — Quantisierungs-Formate?<br/>
+      • Wie skaliert Deployment bei viel Traffic (Autoscaling)?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+  <script>
+    const Q = {
+      "16": { size: "~14 GB", qual: "100% (Referenz)", run: "GPU (16GB+)" },
+      "8":  { size: "~7 GB",  qual: "~99% (kaum Verlust)", run: "GPU oder großer RAM" },
+      "4":  { size: "~3.5 GB", qual: "~95% (leicht weicher)", run: "Laptop/Handy" },
+    };
+    function show(bits) {
+      const d = Q[bits];
+      document.getElementById("qSize").textContent = d.size;
+      document.getElementById("qQual").textContent = d.qual;
+      document.getElementById("qRun").textContent = d.run;
+    }
+    document.querySelectorAll(".q").forEach((b) => {
+      b.addEventListener("click", () => show(b.dataset.bits));
+    });
+    show("16");
+  </script>
+
+  <!-- Mermaid für Fluss-/Architekturdiagramme (CDN, kein Build-Step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+</body>
+</html>

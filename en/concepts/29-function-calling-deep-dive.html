@@ -3,31 +3,31 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>29 · Function Calling (Deep Dive) — AI Learning Course</title>
+  <title>29 · Function Calling (Deep Dive) — AI-Lernkurs</title>
   <link rel="stylesheet" href="../assets/style.css" />
 </head>
 <body>
   <header id="topnav"></header>
 
   <div class="wrap">
-    <p class="meta">Concept 29 · Stage C · Practice</p>
+    <p class="meta">Concept 29 · Stage C · Praxis</p>
     <h1>29 · Function Calling (Deep Dive)</h1>
 
     <div class="callout kid">
       <span class="label">Explain it to a 12-year-old</span>
-      Imagine you're in a restaurant. You say to the waiter "I'd like the menu". The waiter brings it to you. Function Calling is like that waiter — the model says "I need this now" and the tool delivers it.
+      Stell dir vor, du bist in einem Restaurant. Du sagst dem Kellner "Ich möchte die Speisekarte". Der Kellner bringt sie dir. Function Calling ist wie dieser Kellner — das Modell sagt "Ich brauche das jetzt" und das Tool liefert es.
     </div>
 
-    <h2>The Loop in Detail</h2>
+    <h2>The loop im Detail</h2>
     <ol>
-      <li>User asks: "What's the weather in Berlin?"</li>
-      <li>Model recognizes: "I need weather data" → outputs function call</li>
-      <li>Your code executes the tool: <code>get_weather("Berlin")</code></li>
-      <li>Result is returned to the model</li>
-      <li>Model formulates answer: "In Berlin it's 18°C and sunny"</li>
+      <li>User fragt: "Wie ist das Wetter in Berlin?"</li>
+      <li>Modell erkennt: "Ich brauche Wetterdaten" → gibt Function-Call aus</li>
+      <li>Dein Code führt das Tool aus: <code>get_weather("Berlin")</code></li>
+      <li>Ergebnis wird dem Modell zurückgegeben</li>
+      <li>Modell formuliert Antwort: "In Berlin sind 18°C und sonnig"</li>
     </ol>
 
-    <h2>Tool Definition (OpenAI Format)</h2>
+    <h2>Tool-Definition (OpenAI-Format)</h2>
     <pre><code>{
   "name": "get_weather",
   "description": "Get current weather for a city",
@@ -44,32 +44,35 @@
 }</code></pre>
 
     <h2>Multi-Tool Calls</h2>
-    <p>Model can call multiple tools simultaneously:</p>
-    <pre><code>// Model returns two calls:
+    <p>Modell kann mehrere Tools gleichzeitig aufrufen:</p>
+    <pre><code>// Modell gibt zwei Calls zurück:
 [
   { "name": "get_weather", "args": { "city": "Berlin" } },
-  { "name": "get_weather", "args": { "city": "Munich" } }
+  { "name": "get_weather", "args": { "city": "München" } }
 ]</code></pre>
 
     <h2>Error Handling</h2>
-    <p>What if the tool fails?</p>
+    <p>What wenn das Tool fehlschlägt?</p>
     <ul>
-      <li><strong>Retry</strong> → Model tries with different parameters</li>
-      <li><strong>Fallback</strong> → Suggest alternative tools</li>
-      <li><strong>Ask user</strong> → "I couldn't find that, did you mean...?"</li>
+      <li><strong>Retry</strong> → Modell versucht es mit anderen Parametern</li>
+      <li><strong>Fallback</strong> → Alternative Tools vorschlagen</li>
+      <li><strong>User fragen</strong> → "Ich konnte das nicht finden, meinst du...?"</li>
     </ul>
+
+    <h2>Streaming mit Function Calls</h2>
+    <p>Bei Streaming kommen die Calls Stück für Stück. Dein Code muss "Function Call Accumulation" machen — die Teile sammeln und erst ausführen wenn alles da ist.</p>
 
     <h2>Related</h2>
     <ul>
-      <li><a href="09-agents-tool-use.html">09 · Agents / Tool-Use</a> → The agent loop</li>
-      <li><a href="12-llm-apis-practically.html">12 · LLM APIs Practically</a> → API calls</li>
+      <li><a href="09-agents-tool-use.html">09 · Agents / Tool-Use</a> → Der Agent-Loop</li>
+      <li><a href="12-llm-apis-praktisch.html">12 · LLM-APIs praktisch</a> → API-Aufrufe</li>
     </ul>
 
     <div class="callout warn">
       <span class="label">Open Questions / Gaps</span>
-      • How to test function calling?<br/>
-      • What about 100+ tools (choice overload)?<br/>
-      • How to prevent "tool abuse"?
+      • Wie testet man Function Calling?<br/>
+      • What bei 100+ Tools (Overwahl)?<br/>
+      • Wie verhindert man "Tool Missbrauch"?
     </div>
   </div>
 

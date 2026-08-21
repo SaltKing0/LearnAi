@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>16 · Halluzinationen, Bias, Limits — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 16 · Stage E</p>
+    <h1>16 · Halluzinationen, Bias, Limits</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Das Modell „erfindet“ manchmal Dinge, die nicht stimmen — wie jemand, der
+      raten muss und so tut, als wüsste er es genau. Es macht das nicht aus Bösem,
+      sondern weil es nur das nächste Wort rät (Concept 01) und nicht „weiß“, was
+      wahr ist.
+    </div>
+
+    <h2>Halluzinationen</h2>
+    <p>Weil das Modell <strong>nichts weiß, sondern nur Wahrscheinlichkeiten rät</strong>
+       (Concept 01), klingt eine falsche Antwort genauso selbstsicher wie eine echte.
+       Es gibt kein internes „Wahr/Falsch“-Filter — es optimiert auf „plausibel
+       weitergehenden Text“. Besonders bei seltenen Fakten oder fehlendem Kontext.</p>
+    <ul>
+      <li><strong>Ursache aus Architektur</strong>: Attention (03) mischt nur Kontext,
+        trainiert auf „was steht oft danach“ (05) — nicht auf „was ist wahr“.</li>
+      <li><strong>Gegenmittel</strong>: RAG (08) bindet Quellen ein; Eval (15) fängt
+        Fehler; „ich weiß es nicht“ erzwingen per Prompt (07).</li>
+    </ul>
+
+    <div class="mermaid">
+flowchart TD
+    P["Modell rät nächstes Wort<br/>(P(next|context))"] --> T{Weiß es die<br/>Antwort?}
+    T -->|"ja, im Kontext"| A[Antwort stimmt]
+    T -->|"nein / seltenes Faktum"| H["Halluzination:<br/>klingt selbstsicher, ist falsch"]
+    H --> G["Gegenmittel"]
+    G --> G1["RAG: Quelle einbinden (08)"]
+    G --> G2["Eval: Fehler messen (15)"]
+    G --> G3["Prompt: 'Ich weiß es nicht' (07)"]
+    </div>
+    <p class="diagram-cap">Halluzinationen entstehen, weil das Modell rät statt weiß — und lassen sich mit drei Hebeln eindämmen.</p>
+
+    <h2>Bias (Verzerrung)</h2>
+    <p>Modelle lernen aus menschlichen Texten (05) — inklusive deren Vorurteile,
+       Stereotypen, Ungleichgewichte. Das Modell <em>spiegelt</em> den Trainingsdatensatz.
+       Bewusstsein + Gegenmaßnahmen (Diversität im Daten, RLHF/DPO aus 10) nötig.</p>
+
+    <h2>Harte Limits</h2>
+    <ul>
+      <li><strong>Kein echtes Wissen/Zählen/Logik</strong> im Kern — es rät Mustern.</li>
+      <li><strong>Kontext-Länge begrenzt</strong> (02/04) — zu langer Text fällt „raus“.</li>
+      <li><strong>Kein Zugriff auf die Welt</strong> ohne Tools (09) — keine Live-Daten.</li>
+      <li><strong>Kein Bewusstsein</strong> — „Denken“ ist gewichtete Informationsmischung.</li>
+    </ul>
+
+    <h2>Demo: Quelle vs. keine Quelle</h2>
+    <div class="demo-box">
+      <div class="controls">
+        <button id="hall" style="background:#58a6ff;color:#0e1116;border:none;border-radius:8px;padding:8px 16px;font-family:monospace;cursor:pointer;">Frage stellen →</button>
+      </div>
+      <p id="hallOut" style="font-family:var(--mono);margin-top:10px;min-height:40px;"></p>
+      <p class="meta">Simulation: ohne Quelle „erfindet“ das Modell eine Studie; mit
+        RAG (08) nennt es die Quelle und ist vorsichtiger.</p>
+    </div>
+
+    <h2>Warum das für dich als Code-Nutzer zentral ist</h2>
+    <ul>
+      <li><strong>Nie blind vertrauen</strong>: bei Fakten RAG + Zitate (08), bei
+        kritischen Outputs Eval/Humannachlesen (15).</li>
+      <li><strong>Prompting</strong> (07): „Wenn unsicher, sag es“ reduziert Halluzination.</li>
+      <li><strong>Compliance/Risiko</strong>: Bias in Produkten ist ein echtes Problem.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="01-sprachmodell-als-funktion.html">01 · Sprachmodell als Funktion</a> — die Wurzel: es rät nur.</li>
+      <li><a href="08-rag.html">08 · RAG</a> — wirksamstes Mittel gegen Halluzination.</li>
+      <li><a href="15-evaluierung-metriken.html">15 · Evaluierung</a> — wie man Limits messbar macht.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • What ist „RLHF“ (Reinforcement Learning from Human Feedback)?<br/>
+      • Confidence-Calibration: kann man Unsicherheit messen?<br/>
+      • Synthetic data &amp; „model collapse“ — Selbsttrainings-Schleifen?<br/>
+      • Hallucination bei Reasoning-Modellen (CoT, 07) besser/schlechter?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+  <script>
+    const HALL_NO = "Studie der Universität X (2023) zeigt: 73% der Nutzer..."; // erfunden
+    const HALL_RAG = "[Quelle: paper.pdf S.4] Die Studie berichtet 73% — siehe Zitat. Hinweis: exakte Zahl bitte im Dokument prüfen.";
+    let rag = false;
+    function ask() {
+      rag = !rag; // Visualisierung: jedes Mal toggeln zur Demo
+      document.getElementById("hallOut").style.color = rag ? "#7ee787" : "#ffa657";
+      document.getElementById("hallOut").textContent =
+        (rag ? "[mit RAG] " : "[ohne Quelle] ") + (rag ? HALL_RAG : HALL_NO);
+    }
+    document.getElementById("hall").addEventListener("click", ask);
+  </script>
+
+  <!-- Mermaid für Fluss-/Architekturdiagramme (CDN, kein Build-Step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+</body>
+</html>

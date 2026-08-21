@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>10 · Fine-Tuning — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 10 · Stage C</p>
+    <h1>10 · Fine-Tuning (LoRA / PEFT)</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Imagine you have a chef who knows how to cook everything. Now you want them to specialize in pizza. Instead of teaching them to cook from scratch (that's pre-training), you just have them practice pizza for a week. That's fine-tuning — taking a generalist and making them a specialist.
+    </div>
+
+    <h2>What is Fine-Tuning?</h2>
+    <p>Fine-tuning takes a pre-trained model and continues training on a smaller, specialized dataset. The model retains its general knowledge but becomes better at specific tasks.</p>
+
+    <h2>When to Fine-Tune?</h2>
+    <ul>
+      <li><strong>Domain expertise</strong> → Medical, legal, technical jargon</li>
+      <li><strong>Style/voice</strong> → Match your brand's tone</li>
+      <li><strong>Format</strong> → Always output JSON, specific templates</li>
+      <li><strong>Behavior</strong> → How to handle edge cases</li>
+    </ul>
+
+    <h2>LoRA / PEFT</h2>
+    <p>Full fine-tuning is expensive — you update all billions of parameters. LoRA (Low-Rank Adaptation) only updates small "adapter" layers. Same result, 1% of the cost.</p>
+
+    <h2>Fine-Tuning vs. RAG vs. Prompting</h2>
+    <table>
+      <tr><th>Method</th><th>Cost</th><th>When</th></tr>
+      <tr><td>Prompting</td><td>Free</td><td>Simple tasks, quick iteration</td></tr>
+      <tr><td>RAG</td><td>Low</td><td>Need external/up-to-date knowledge</td></tr>
+      <tr><td>Fine-Tuning</td><td>High</td><td>Need specific behavior/style</td></tr>
+    </table>
+
+    <h2>Why this matters to you</h2>
+    <ul>
+      <li><strong>Custom models</strong> → Build models that match your exact needs</li>
+      <li><strong>Privacy</strong> → Keep sensitive data in-house</li>
+      <li><strong>Cost</strong> → Smaller fine-tuned models can replace larger general ones</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="05-training-intuitively.html">05 · Training Intuitively</a> → How training works</li>
+      <li><a href="08-rag.html">08 · RAG</a> → Alternative to fine-tuning</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • How much data do you need for fine-tuning?<br/>
+      • How to avoid "catastrophic forgetting"?<br/>
+      • When is full fine-tuning worth it over LoRA?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>
+

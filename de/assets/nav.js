@@ -268,4 +268,5 @@ document.addEventListener("DOMContentLoaded", () => {
   buildHub();
   buildBottomNav();
   wireDropdowns();
+  initSearch();
 });

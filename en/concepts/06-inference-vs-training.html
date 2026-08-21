@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>06 · Inference vs. Training — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 06 · Stage B</p>
+    <h1>06 · Inference vs. Training</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Training is like studying for a test — you learn from books, make mistakes, try again. Inference is the test itself — you use what you learned to answer questions. Training takes days and expensive computers. Inference takes seconds and runs on your phone.
+    </div>
+
+    <h2>Training</h2>
+    <p>Training is the process of teaching the model. It requires massive compute (thousands of GPUs), massive data (terabytes of text), and massive time (weeks to months). The result is a model file.</p>
+
+    <h2>Inference</h2>
+    <p>Inference is using the trained model. You give it input, it gives output. Much cheaper than training — can run on a laptop for small models, or a server for large ones.</p>
+
+    <h2>Key Differences</h2>
+    <table>
+      <tr><th></th><th>Training</th><th>Inference</th></tr>
+      <tr><td>What</td><td>Learning</td><td>Using</td></tr>
+      <tr><td>Compute</td><td>1000s of GPUs</td><td>1 GPU or CPU</td></tr>
+      <tr><td>Time</td><td>Weeks</td><td>Milliseconds</td></tr>
+      <tr><td>Cost</td><td>Millions of dollars</td><td>Cents per query</td></tr>
+      <tr><td>Who does it</td><td>OpenAI, Anthropic, Meta</td><td>You, API users</td></tr>
+    </table>
+
+    <h2>Why this matters to you</h2>
+    <ul>
+      <li><strong>API costs</strong> → You pay for inference, not training</li>
+      <li><strong>Latency</strong> → Inference speed determines user experience</li>
+      <li><strong>Fine-tuning</strong> → You can do "mini-training" on your data</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="05-training-intuitively.html">05 · Training Intuitively</a> → How training works</li>
+      <li><a href="17-cost-latency.html">17 · Cost &amp; Latency</a> → Inference costs</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • How do you optimize inference speed?<br/>
+      • What's the environmental impact of training vs inference?<br/>
+      • When does training happen vs inference in a chat session?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>
+

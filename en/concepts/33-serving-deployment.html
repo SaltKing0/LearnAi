@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>33 · Serving &amp; Production Deployment — AI Learning Course</title>
+  <title>33 · Serving &amp; Production Deployment — AI-Lernkurs</title>
   <link rel="stylesheet" href="../assets/style.css" />
 </head>
 <body>
@@ -15,33 +15,70 @@
 
     <div class="callout kid">
       <span class="label">Explain it to a 12-year-old</span>
-      Imagine you have a chef (the model) who bakes fantastic pizza. But he bakes in your kitchen (your laptop) and only for you. Serving is like opening a restaurant: The chef works in the kitchen, but 100 people can order at the same time, and all get their pizza in 5 minutes. Serving makes the model scalable.
+      Stell dir du hast einen Koch (das Modell) der fantastische Pizza backt. Aber er backt in deiner Küche (deinem Laptop) und nur für dich. Serving ist wie ein Restaurant aufmachen: Der Koch arbeitet in der Küche, aber 100 Leute können gleichzeitig bestellen, und alle bekommen ihre Pizza in 5 Minuten. Serving macht das Modell skalierbar.
     </div>
 
-    <h2>Why Serving is different from Inference</h2>
-    <p>Single inference (one prompt → one answer) is simple. But what if 1000 users send a request simultaneously? What if a request consists of 10,000 tokens? What if the model needs to be reloaded without downtime?</p>
+    <h2>Warum Serving anders ist als Inference</h2>
+    <p>Einzelne Inference (ein Prompt → eine Antwort) ist einfach. Aber was wenn 1000 User gleichzeitig einen Request senden? What wenn ein Request aus 10.000 Tokens besteht? What wenn das Modell neu geladen werden muss ohne Downtime?</p>
 
-    <h2>Serving Tools Overview</h2>
+    <h2>Serving-Tools im Überblick</h2>
     <table>
-      <tr><th>Tool</th><th>Language</th><th>Focus</th></tr>
-      <tr><td>vLLM</td><td>Python</td><td>PagedAttention, Continuous Batching, fastest inference</td></tr>
-      <tr><td>TensorRT-LLM</td><td>C++/Python</td><td>NVIDIA-optimized, best performance on A100/H100</td></tr>
-      <tr><td>TGI</td><td>Rust</td><td>HuggingFace's official server, production-ready</td></tr>
-      <tr><td>SGLang</td><td>Python</td><td>RadixAttention, Multi-Modal, complex routing</td></tr>
-      <tr><td>llama.cpp</td><td>C++</td><td>CPU/GPU hybrid, minimal, local</td></tr>
+      <tr><th>Tool</th><th>Sprache</th><th>Schwerpunkt</th></tr>
+      <tr><td>vLLM</td><td>Python</td><td>PagedAttention, Continuous Batching, schnellste Inference</td></tr>
+      <tr><td>TensorRT-LLM</td><td>C++/Python</td><td>NVIDIA-optimiert, beste Performance auf A100/H100</td></tr>
+      <tr><td>TGI (Text Generation Inference)</td><td>Rust</td><td>HuggingFace's offizieller Server, Production-ready</td></tr>
+      <tr><td>SGLang</td><td>Python</td><td>RadixAttention, Multi-Modal, komplexe Routing-Logik</td></tr>
+      <tr><td>llama.cpp</td><td>C++</td><td>CPU/GPU hybrid, minimal, lokal</td></tr>
+      <tr><td>Ollama</td><td>Go</td><td>Einfachster Entry-Point, API + CLI</td></tr>
     </table>
+
+    <h2>Kern-Concepte</h2>
+    <ul>
+      <li><strong>Batching</strong> → Mehrere Requests zusammen verarbeiten → höherer Durchsatz</li>
+      <li><strong>Continuous Batching</strong> → Requests die fertig sind raus, neue rein → keine GPU-Leerläufe</li>
+      <li><strong>KV-Cache</strong> → Key-Value-Cache für Attention zwischenspeichern → weniger Berechnung</li>
+      <li><strong>Quantisierung</strong> → Modell komprimieren → weniger Speicher (siehe Concept 31)</li>
+      <li><strong>Model Parallelism</strong> → Modell auf mehrere GPUs verteilen</li>
+      <li><strong>Tensor Parallelism</strong> → Jeder Layer auf eine andere GPU</li>
+    </ul>
+
+    <h2>Monitoring & Observability</h2>
+    <ul>
+      <li><strong>Latency</strong> → Time to First Token (TTFT), Time per Output Token (TPOT)</li>
+      <li><strong>Throughput</strong> → Tokens/Second, Requests/Minute</li>
+      <li><strong>GPU-Auslastung</strong> → VRAM-Verbrauch, GPU-Utilization</li>
+      <li><strong>Queue-Depth</strong> → Wie viele Requests warten?</li>
+      <li><strong>Error-Rate</strong> → Timeout, OOM, fehlgeschlagene Generierungen</li>
+    </ul>
+
+    <h2>Deployment-Architektur</h2>
+    <div class="mermaid">
+flowchart LR
+    User[User] --> LB[Load Balancer]
+    LB --> API[API Gateway]
+    LB --> Queue[Message Queue]
+    API --> Cache[KV Cache]
+    Queue --> GPU1[GPU 1]
+    Queue --> GPU2[GPU 2]
+    Queue --> GPU3[GPU 3]
+    GPU1 --> Cache
+    GPU2 --> Cache
+    GPU3 --> Cache
+    Cache --> API
+    </div>
 
     <h2>Related</h2>
     <ul>
-      <li><a href="18-deployment.html">18 · Deployment</a> → General deployment strategies</li>
-      <li><a href="31-quantization-compression.html">31 · Quantization</a> → Compress model for less hardware</li>
+      <li><a href="18-deployment.html">18 · Deployment</a> → Allgemeine Deployment-Strategien</li>
+      <li><a href="31-quantisierung-kompression.html">31 · Quantisierung</a> → Modell komprimieren für weniger Hardware</li>
+      <li><a href="27-lokale-modelle.html">27 · Lokale Modelle</a> → Einstieg auf dem eigenen Rechner</li>
     </ul>
 
     <div class="callout warn">
       <span class="label">Open Questions / Gaps</span>
-      • How to scale vertically (bigger GPU) vs. horizontally (more GPUs)?<br/>
-      • When does Kubernetes vs. simple Docker make sense?<br/>
-      • How to test serving load (load testing)?
+      • Wie skaliert man vertikal (größere GPU) vs. horzontal (mehrere GPUs)?<br/>
+      • Wann lohnt sich Kubernetes vs. simpler Docker?<br/>
+      • Wie testet man Serving-Last (Load-Testing)?
     </div>
   </div>
 

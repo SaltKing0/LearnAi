@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>08 · RAG — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 08 · Stage C</p>
+    <h1>08 · RAG (Retrieval Augmented Generation)</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Imagine you're taking a test and you're allowed to look things up in your textbook. RAG is like that — the model doesn't need to know everything by heart. It can "look up" relevant information before answering. This way, it can answer questions about things it was never trained on.
+    </div>
+
+    <h2>What is RAG?</h2>
+    <p>RAG = Retrieval Augmented Generation. Instead of relying only on what the model learned during training, RAG retrieves relevant documents at query time and includes them in the prompt.</p>
+
+    <h2>Why RAG?</h2>
+    <ul>
+      <li><strong>Up-to-date info</strong> → Model knowledge has a cutoff date</li>
+      <li><strong>Domain knowledge</strong> → Your company docs, private data</li>
+      <li><strong>Hallucination reduction</strong> → Ground answers in real documents</li>
+      <li><strong>Source attribution</strong> → Show where the answer came from</li>
+    </ul>
+
+    <h2>The RAG Pipeline</h2>
+    <ol>
+      <li><strong>Index</strong> → Split documents into chunks, embed them, store in vector DB</li>
+      <li><strong>Retrieve</strong> → User query → embed → find similar chunks</li>
+      <li><strong>Augment</strong> → Insert retrieved chunks into prompt</li>
+      <li><strong>Generate</strong> → Model answers based on retrieved context</li>
+    </ol>
+
+    <h2>Why this matters to you</h2>
+    <ul>
+      <li><strong>Chat with your data</strong> → Build a bot that knows your docs</li>
+      <li><strong>Cost-effective</strong> → Cheaper than fine-tuning for most use cases</li>
+      <li><strong>Fast iteration</strong> → Add new docs without retraining</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="02-tokens-and-embeddings.html">02 · Tokens &amp; Embeddings</a> → How similarity works</li>
+      <li><a href="30-embedding-search-vector-search.html">30 · Embedding Search</a> → The retrieval part</li>
+      <li><a href="../playground/rag-demo.html">Playground · RAG Demo</a></li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • How to choose the right chunk size?<br/>
+      • What if retrieved chunks are irrelevant?<br/>
+      • How to evaluate RAG quality?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>
+

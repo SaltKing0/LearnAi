@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>13 · Notebook-Workflow — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 13 · Stage D</p>
+    <h1>13 · Notebook-Workflow</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Ein Notebook ist wie ein Heft, in dem Code und Erklärung nebeneinander stehen
+      und du jeden Abschnitt einzeln ausführen kannst. Wenn ein Stück nicht klappt,
+      änderst du nur dieses eine und probierst es neu — ohne das ganze Heft neu
+      schreiben zu müssen.
+    </div>
+
+    <h2>What ein Notebook ist</h2>
+    <p>Ein <strong>Jupyter/Colab-Notebook</strong> ist eine Folge von Zellen: mal Text
+       (Markdown), mal ausführbarer Code (Python). Du führst Zelle für Zelle aus; der
+       Zustand (Variablen, geladene Modelle) bleibt für die nächste erhalten. Das ist
+       perfekt für experimentelles KI-Arbeiten — genau das, was du in diesem Kurs
+       tust.</p>
+
+    <h2>Warum Notebooks bei KI so üblich sind</h2>
+    <ul>
+      <li><strong>GPU in der Cloud</strong>: Colab gibt dir (kostenlos) eine GPU —
+        nötig für Inference/Training großer Modelle (Concept 06).</li>
+      <li><strong>Reproduzierbar</strong>: du teilst das Notebook, jemand anders
+        klickt „Alles ausführen“ und sieht dasselbe.</li>
+      <li><strong>Interaktiv</strong>: Zwischenergebnisse, Plots, Demo sofort sichtbar.</li>
+    </ul>
+
+    <h2>Demo: Zelle ausführen (simuliert)</h2>
+    <div class="demo-box">
+      <div style="font-family:var(--mono);font-size:13px;color:var(--fg-dim);">[1]</div>
+      <pre style="margin-top:4px;">from transformers import pipeline
+gen = pipeline("text-generation", model="gpt2")</pre>
+      <div style="font-family:var(--mono);font-size:13px;color:var(--fg-dim);margin-top:10px;">[2]</div>
+      <pre style="margin-top:4px;">gen("Die KI lernt, indem sie", max_new_tokens=8)</pre>
+      <div class="controls" style="margin-top:10px;">
+        <button id="runCell" style="background:#58a6ff;color:#0e1116;border:none;border-radius:8px;padding:8px 16px;font-family:monospace;cursor:pointer;">Zelle [2] ausführen</button>
+      </div>
+      <pre id="cellOut" style="white-space:pre-wrap;min-height:40px;margin-top:10px;"></pre>
+    </div>
+
+    <h2>Warum das für dich als Code-Nutzer zentral ist</h2>
+    <ul>
+      <li><strong>Schnelles Prototyping</strong>: Idee → laufender Code in Minuten.</li>
+      <li><strong>Brücke zu Produktion</strong>: funktionierende Zellen → später in
+        echte .py-Dateien/Module überführen (Stage F).</li>
+      <li><strong>Lernen</strong>: fast jedes Hugging-Face-/RAG-Tutorial ist ein Notebook.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="11-hugging-face.html">11 · Hugging Face</a> — Notebooks sind der typische Einstieg dafür.</li>
+      <li><a href="08-rag.html">08 · RAG</a> — viele RAG-Tutorials sind Notebooks.</li>
+      <li><a href="06-inference-vs-training.html">06 · Inference vs. Training</a> — Notebooks meist für Inference/Experimente.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • Wann Notebooks (Experiment) vs. echtes Skript (Produktion)?<br/>
+      • What ist „Kernel“ und warum hängt er manchmal?<br/>
+      • Colab kostenlos vs. Pro — wo ist das Limit?<br/>
+      • Wie teilt man Notebooks versioniert (Git + nbconvert)?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+  <script>
+    const SAMPLE = [
+      "Die KI lernt, indem sie Muster in Daten erkennt.",
+      "Die KI lernt, indem sie Fehler minimiert.",
+      "Die KI lernt, indem sie Gewichte anpasst.",
+    ];
+    let i = 0;
+    document.getElementById("runCell").addEventListener("click", () => {
+      const out = document.getElementById("cellOut");
+      out.textContent = "› " + SAMPLE[i++ % SAMPLE.length];
+    });
+  </script>
+</body>
+</html>

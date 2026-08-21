@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>27 · Lokale Modelle — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 27 · Stage D · Praxis</p>
+    <h1>27 · Lokale Modelle (Ollama, LM Studio, vLLM)</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Stell dir vor, du willst ein Kuchen-backen. Bisher gehst du immer zu einem Bäcker (API) und kaufst den Kuchen. Lokale Modelle sind wie ein eigener Backofen — du kannst die Kuchen backen wann du willst, sie kosten nichts pro Stück, aber du musst dir den Backofen (GPU) leisten.
+    </div>
+
+    <h2>Warum lokal?</h2>
+    <ul>
+      <li><strong>Datenschutz</strong> → Daten verlassen dein Gerät nie</li>
+      <li><strong>Kosten</strong> → Keine API-Kosten nach Nutzung</li>
+      <li><strong>Offline</strong> → Funktioniert ohne Internet</li>
+      <li><strong>Kontrolle</strong> → Du bestimmst wann geupdated wird</li>
+    </ul>
+
+    <h2>Die Tools</h2>
+    <table>
+      <tr><th>Tool</th><th>Plattform</th><th>Schwerpunkt</th></tr>
+      <tr><td>Ollama</td><td>Mac, Linux, Windows</td><td>Einfachste Einsteigerlösung</td></tr>
+      <tr><td>LM Studio</td><td>Mac, Windows</td><td>GUI-basiert, Modelle browsen</td></tr>
+      <tr><td>vLLM</td><td>Linux (Server)</td><td>High-Performance Serving</td></tr>
+      <tr><td>llama.cpp</td><td>Alle</td><td>C++ Implementierung, minimal</td></tr>
+    </table>
+
+    <h2>Hardware-Anforderungen</h2>
+    <table>
+      <tr><th>Modell-Größe</th><th>RAM benötigt</th><th>GPU empfohlen</th></tr>
+      <tr><td>7B</td><td>8 GB</td><td>GTX 1070 (8GB)</td></tr>
+      <tr><td>13B</td><td>16 GB</td><td>RTX 3060 (12GB)</td></tr>
+      <tr><td>34B</td><td>32 GB</td><td>RTX 4090 (24GB)</td></tr>
+      <tr><td>70B</td><td>64 GB</td><td>2x RTX 4090 oder A100</td></tr>
+    </table>
+
+    <h2>Quantisierung</h2>
+    <p>Große Modelle passen nicht in jeden Speicher. Quantisierung reduziert die Präzision (z.B. von 16-bit auf 4-bit) — das Modell wird kleiner, minimal weniger gut.</p>
+    <ul>
+      <li><strong>Q4</strong> → 4-bit, kleinster Speicherverbrauch</li>
+      <li><strong>Q5</strong> → 5-bit, guter Kompromiss</li>
+      <li><strong>Q8</strong> → 8-bit, fast keine Qualitätseinbußen</li>
+    </ul>
+
+    <h2>Schnellstart mit Ollama</h2>
+    <pre><code># Ollama installieren
+brew install ollama  # Mac
+# oder: https://ollama.com/download
+
+# Modell herunterladen
+ollama pull llama3.1
+
+# Modell starten
+ollama run llama3.1
+
+# API-Modus (für eigene Tools)
+ollama serve
+# dann: curl http://localhost:11434/api/generate</code></pre>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="14-open-vs-closed.html">14 · Open vs. Closed</a> → Warum Open-Source lokal lohnt sich</li>
+      <li><a href="18-deployment.html">18 · Deployment</a> → Modelle in Produktion bringen</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • Wie wählt man das richtige Modell für den Use-Case?<br/>
+      • Wann lohnt sich lokal vs. API?<br/>
+      • Wie hostet man lokal mehrere Modelle effizient?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>19 · Papers & News lesen — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 19 · Stage F</p>
+    <h1>19 · Papers &amp; News lesen</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Die KI-Welt bewegt sich so schnell, dass Bücher schon alt sind, wenn sie
+      gedruckt werden. Wer dranbleiben will, liest die Kurzmitteilungen der Forscher
+      („Papers“) und schaut, was gerade passiert — aber man muss nicht jedes Wort
+      verstehen, nur das Wichtigste.
+    </div>
+
+    <h2>Wo die Informationen sind</h2>
+    <ul>
+      <li><strong>arXiv</strong> (arxiv.org) — täglich neue Forschungs-Papers.
+        cs.CL (Sprach-KI), cs.LG (Machine Learning), cs.AI.</li>
+      <li><strong>Hugging Face Blog / Model Cards</strong> (11) — praxisnah, oft mit
+        Beispielen statt Formeln.</li>
+      <li><strong>Lab-Blogs</strong> (OpenAI, Anthropic, Google DeepMind, Meta) —
+        Produkt + High-Level-Erklärung.</li>
+      <li><strong>Newsletter / Podcasts</strong> — kuratierte Zusammenfassungen.</li>
+    </ul>
+
+    <h2>Wie man ein Paper „liest“ (ohne alles zu verstehen)</h2>
+    <pre><code>1. Abstract + Conclusion  →  „What behaupten sie?“
+2. Figures/Tables         →  „What zeigen die Ergebnisse?“
+3. Related Work           →  „Wo steht's im Feld?“
+4. Method nur bei Bedarf  →  die Mathe ist meist optional</code></pre>
+    <p>Die meiste <strong>Intuition</strong> steckt in Abstract + Bildern. Die tiefe
+       Math brauchst du nur, wenn du es selbst nachbauen willst (→ Notebooks, 13).</p>
+
+    <h2>Demo: Paper-Struktur durchschalten</h2>
+    <div class="demo-box">
+      <div class="controls">
+        <button class="pp" data-s="abs">Abstract</button>
+        <button class="pp" data-s="fig">Figures</button>
+        <button class="pp" data-s="meth">Method</button>
+        <button class="pp" data-s="conc">Conclusion</button>
+      </div>
+      <div id="paperOut" style="font-family:var(--mono);font-size:14px;margin-top:12px;white-space:pre-wrap;"></div>
+      <p class="meta">Beispiel: ein fiktives Paper. Zeigt, welcher Teil was liefert.</p>
+    </div>
+
+    <h2>Warum das für dich als Code-Nutzer zentral ist</h2>
+    <ul>
+      <li><strong>Tool-Auswahl</strong>: neue Methode → ist sie schon als Lib da?</li>
+      <li><strong>Nicht hinterherhinken</strong>: in 6 Monaten ist vieles anders.</li>
+      <li><strong>Quelle vs. Hype</strong>: Papers entmystifizieren Buzzwords.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="05-training-intuitiv.html">05 · Training</a> — Papers erklären oft neue Trainings-Tricks.</li>
+      <li><a href="10-fine-tuning.html">10 · Fine-Tuning</a> — viel Forschung passiert hier.</li>
+      <li><a href="16-halluzinationen-bias-limits.html">16 · Halluzinationen/Bias</a> — ein aktives Forschungsfeld.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • What ist „SOTA“ (state of the art) und warum wichtig?<br/>
+      • Preprint vs. peer-reviewed — Vertrauen?<br/>
+      • Wie Papers effizient filtern (zu viele)?<br/>
+      • What ist ein „benchmark“ und wie liest man die Tabelle?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+  <script>
+    const P = {
+      abs:  "ABSTRACT\nEin neues Verfahren X verbessert Reasoning um 12% auf GSM8K,\nohne mehr Parameter. Wir zeigen, dass Y der Schlüssel ist.",
+      fig:  "FIGURES\nAbb.1: X schneidet besser ab als Baseline (blau > grün).\nTab.2: +12% auf GSM8K, +5% auf MMLU.",
+      meth: "METHOD (vereinfacht)\nWir modifizieren die Attention-Schicht (siehe 03) und\nfügen einen Auxiliary-Loss während Training (05) hinzu.",
+      conc: "CONCLUSION\nX ist einfach und effektiv. Code + Modell auf HF (11) verfügbar.",
+    };
+    function show(s) { document.getElementById("paperOut").textContent = P[s]; }
+    document.querySelectorAll(".pp").forEach((b) => {
+      b.addEventListener("click", () => show(b.dataset.s));
+    });
+    show("abs");
+  </script>
+</body>
+</html>
