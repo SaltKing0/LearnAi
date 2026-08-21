@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>36 · Context Engineering — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept · Level 3–4</p>
+    <h1>36 · Context Engineering</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Think of a backpack: you can't carry everything at once. While packing you decide what
+      matters, and you put the unimportant stuff away so there's room for what matters.
+      That's context engineering for LLMs.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>The context (everything you hand the model) is a <strong>finite and expensive</strong>
+       resource. Every token in the prompt is reprocessed at every step — more context means more
+       cost and (often) worse answers, because the model gets “distracted.” Context engineering
+       means choosing the <em>smallest set of high-signal tokens</em> that maximizes the desired
+       behavior.</p>
+    <p>Especially with <strong>agents</strong> the problem explodes: each loop step re-sends the whole
+       history → the context grows quadratically over time (the O(n²) problem). That's why
+       context management is the biggest cost lever of a harness.</p>
+
+    <h2>What happens technically</h2>
+    <h3>1) Prompt caching (cache shape)</h3>
+    <p>Anthropic/OpenAI cache a <em>byte-stable prefix</em> (system prompt + tool schemas + prior
+       conversation). If you put the stable part first and the volatile part (clock, file listing,
+       plan status) at the <em>end</em> and never change the order, almost all tokens are read from
+       cache → one turn costs a fraction (often 1/10).</p>
+    <h3>2) Compaction instead of endless growth</h3>
+    <p>Instead of hitting an emergency at 90% context, compress early (e.g. at 70/80/85%): old tool
+       results are replaced by short reference pointers, and a summary takes over. Important:
+       <em>don't</em> compress every turn (it destroys caching) — compress at natural phases.</p>
+    <h3>3) Progressive disclosure</h3>
+    <p>Only <em>name + description</em> of all tools/skills in the prompt (~30–50 tokens each), load
+       the full content only when needed. A 200-token index + on-demand retrieval beats a
+       5000-token pre-loaded block.</p>
+
+    <h2>Why it helps me (as a code user)</h2>
+    <ul>
+      <li><strong>Cost:</strong> In long agent runs, context management is the biggest saving lever.</li>
+      <li><strong>Quality:</strong> Too much context degrades answers (the model “loses the plot”) —
+          less, but targeted, is better.</li>
+      <li><strong>Small models:</strong> With a limited window every token counts — discipline is a must.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="07-prompting-patterns.html">07 · Prompting Patterns</a> — what steers in the prompt</li>
+      <li><a href="17-cost-latency.html">17 · Cost &amp; Latency</a> — why context costs</li>
+      <li><a href="35-agent-loop-harness.html">35 · Agent Loop &amp; Harness</a> — where context grows</li>
+      <li><a href="34-testing-evaluation.html">34 · Testing &amp; Evaluation</a> — measuring improvements</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open questions / gaps</span>
+      How do I pick the optimal compaction threshold for my model? How do I build the stable
+      prefix cleanly in my own code? — Becomes a GitHub issue.
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

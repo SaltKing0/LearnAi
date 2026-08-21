@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>36 · Kontext-Engineering — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept · Stufe 3–4</p>
+    <h1>36 · Kontext-Engineering</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Stell dir einen Rucksack vor: Du kannst nicht alles auf einmal mitnehmen. Beim Packen
+      entscheidest du, was wichtig ist, und packst das Unwichtige weg, damit Platz für das
+      Wichtige bleibt. Genau das ist Kontext-Engineering für LLMs.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>Der Kontext (alles, was du dem Modell mitgibst) ist eine <strong>endliche und teure</strong>
+       Ressource. Jedes Token im Prompt wird bei jedem Schritt neu verarbeitet — mehr Kontext
+       heißt mehr Kosten und (oft) schlechtere Antworten, weil das Modell „verwirrt“ wird.
+       Kontext-Engineering heißt: die <em>kleinste Menge hoch-wertiger Tokens</em> wählen, die das
+       gewünschte Verhalten maximiert.</p>
+    <p>Besonders bei <strong>Agenten</strong> explodiert das Problem: Jeder Loop-Schritt sendet die
+       ganze Historie erneut → der Kontext wächst quadratisch über die Zeit (das O(n²)-Problem).
+       Deshalb ist Kontext-Pflege der größte Kosten-Hebel eines Harness.</p>
+
+    <h2>Was passiert technisch</h2>
+    <h3>1) Prompt-Caching (Cache-Shape)</h3>
+    <p>Anthropic/OpenAI cachen einen <em>byte-stabilen Präfix</em> (System-Prompt + Tool-Schemata +
+       bisheriges Gespräch). Wenn du den stabilen Teil zuerst und den volatilen Teil (Uhrzeit,
+       Datei-Listing, Plan-Status) ans <em>Ende</em> packst und die Reihenfolge nie änderst, werden
+       fast alle Tokens als Cache gelesen → ein Turn kostet einen Bruchteil (oft 1/10).</p>
+    <h3>2) Kompaktion statt endlosem Wachstum</h3>
+    <p>Statt bei 90% Kontext in einen Notfall zu geraten, komprimiert man früh (z.B. bei
+       70/80/85%): alte Tool-Ergebnisse werden durch kurze Referenzzeiger ersetzt, und eine
+       Zusammenfassung übernimmt. Wichtig: <em>nicht</em> bei jedem Turn komprimieren (zerstört
+       Caching), sondern bei natürlichen Phasen.</p>
+    <h3>3) Progressive Disclosure</h3>
+    <p>Nur <em>Name + Beschreibung</em> aller Tools/Skills im Prompt (~30–50 Tokens pro Eintrag),
+       den vollen Inhalt erst laden, wenn gebraucht. Ein 200-Token-Index + Abruf bei Bedarf
+       schlägt einen 5000-Token-Vorab-Block.</p>
+
+    <h2>Warum es mir (als Code-Nutzer) weiterhilft</h2>
+    <ul>
+      <li><strong>Kosten:</strong> Bei langen Agent-Runs ist Kontext-Pflege der größte Spar-Hebel.</li>
+      <li><strong>Qualität:</strong> Zu viel Kontext verschlechtert Antworten (das Modell „verliert
+          den Faden“) — weniger, aber gezielter ist besser.</li>
+      <li><strong>Kleine Modelle:</strong> Mit begrenztem Fenster zählt jedes Token — hier ist
+          Disziplin Pflicht.</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="07-prompting-patterns.html">07 · Prompting-Patterns</a> — was im Prompt steuert</li>
+      <li><a href="17-kosten-latenz.html">17 · Kosten &amp; Latenz</a> — warum Kontext kostet</li>
+      <li><a href="35-agent-loop-harness.html">35 · Agent-Loop &amp; Harness</a> — wo der Kontext wächst</li>
+      <li><a href="34-testing-evaluation.html">34 · Testing &amp; Evaluation</a> — Verbesserungen messen</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      Wie bestimme ich die optimale Kompaktions-Schwelle für mein Modell? Wie baue ich den
+      stabilen Präfix in meinem eigenen Code sauber auf? — Wird ein GitHub-Issue.
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Playground · Agent-Loop — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Playground · interaktiv</p>
+    <h1>Agent-Loop</h1>
+    <p>Sieh zu, wie der Loop läuft: Das <strong>Modell</strong> denkt, ruft ein
+       <strong>Werkzeug</strong> auf, das <strong>Ergebnis</strong> fließt zurück in den Kontext,
+       dann denkt es weiter — bis es fertig ist. Pausiere/starte, wähle das Werkzeug, beobachte
+       den Schritt-Zähler und die wachsende Kontext-Zeile.</p>
+
+    <div id="p5canvas"></div>
+
+    <div style="margin-top:12px">
+      <button id="btnPlay">⏸ Pause</button>
+      <button id="btnStep">Ein Schritt</button>
+      <label for="toolSelect">Werkzeug: </label>
+      <select id="toolSelect">
+        <option value="read_file">read_file</option>
+        <option value="bash">bash</option>
+        <option value="web_search">web_search</option>
+      </select>
+      <button id="btnReset">↺ Reset</button>
+      <span id="status" style="margin-left:12px"></span>
+    </div>
+
+    <div class="callout kid">
+      <span class="label">Worauf du achten solltest</span>
+      Jeder Schritt ist ein <strong>neuer API-Call</strong>, und die Kontext-Zeile wird länger.
+      Genau deshalb werden Agenten mit vielen Werkzeug-Aufrufen teuer — der Loop multipliziert
+      die Kosten.
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <script>
+  const nodeModel = { x: 0.22, y: 0.45, r: 42, label: "Modell" };
+  const nodeTool  = { x: 0.55, y: 0.20, r: 40, label: "Werkzeug" };
+  const nodeCtx   = { x: 0.55, y: 0.70, r: 40, label: "Kontext" };
+
+  const tools = {
+    read_file:  { icon: "📄", result: "Inhalt von datei.py gelesen (42 Zeilen)" },
+    bash:       { icon: "⚙️", result: "$ npm test → 12 Tests grün" },
+    web_search: { icon: "🔎", result: "3 Suchergebnisse zurück" },
+  };
+
+  let playing = true;
+  let stepCount = 0;
+  let toolKey = "read_file";
+  let contextLines = ["Du: Prüfe den Code und sag mir, ob ein Bug drin ist."];
+  let token = { active: false };
+  let phase = 0, phaseTimer = 0, lastIdx = 0;
+
+  function setup() {
+    const c = createCanvas(640, 380); c.parent("p5canvas");
+    textFont("system-ui, sans-serif"); textAlign(CENTER, CENTER);
+    btn("btnPlay", () => { playing = !playing; document.getElementById("btnPlay").textContent = playing ? "⏸ Pause" : "▶ Start"; });
+    btn("btnStep", stepOnce); btn("btnReset", reset);
+    document.getElementById("toolSelect").addEventListener("change", (e) => { toolKey = e.target.value; });
+    frameRate(30);
+  }
+  function btn(id, fn) { document.getElementById(id).addEventListener("click", fn); }
+  function reset() { stepCount = 0; contextLines = ["Du: Prüfe den Code und sag mir, ob ein Bug drin ist."]; phase = 0; phaseTimer = 0; updateStatus(); }
+  function stepOnce() { stepOnceInternal(); }
+  function stepOnceInternal() {
+    stepCount++;
+    contextLines.push(`Werkzeug ${toolKey} → ${tools[toolKey].result}`);
+    contextLines.push("Modell: Ich habe das Ergebnis, ich denke weiter…");
+    if (contextLines.length > 6) contextLines = contextLines.slice(-6);
+    updateStatus();
+  }
+  function updateStatus() {
+    document.getElementById("status").textContent =
+      `Schritte: ${stepCount} · Kontext-Zeilen: ${contextLines.length} · (jeder Schritt = ein API-Call)`;
+  }
+  function draw() {
+    background(250, 250, 252);
+    stroke(150, 150, 160); strokeWeight(2);
+    arrowLine(nodeModel.x*width, nodeModel.y*height, nodeTool.x*width, nodeTool.y*height);
+    arrowLine(nodeTool.x*width, nodeTool.y*height, nodeCtx.x*width, nodeCtx.y*height);
+    arrowLine(nodeCtx.x*width, nodeCtx.y*height, nodeModel.x*width, nodeModel.y*height);
+    drawNode(nodeModel, "#3b82f6"); drawNode(nodeTool, "#f59e0b"); drawNode(nodeCtx, "#10b981");
+    if (playing && !token.active) {
+      phaseTimer += deltaTime/1000;
+      const cycle = [0,1,0,2]; const idx = floor(phaseTimer/1.2) % cycle.length;
+      phase = cycle[idx];
+      if (idx === 1 && lastIdx !== 1) stepOnceInternal();
+      lastIdx = idx;
+    }
+    if (phase === 1) drawMovingToken(nodeModel, nodeTool, "#f59e0b");
+    else if (phase === 2) drawMovingToken(nodeTool, nodeCtx, "#10b981");
+    let y = height - 108;
+    for (const line of contextLines.slice(-4)) { fill(80); noStroke(); textSize(11); textAlign(LEFT,TOP); text(line, 12, y); y += 14; }
+  }
+  function drawMovingToken(from, to, col) { const f = constrain(0,0,1); const x=lerp(from.x*width,to.x*width,f); const y=lerp(from.y*height,to.y*height,f); fill(col); noStroke(); circle(x,y,10); }
+  function drawNode(n, col) { fill(col); noStroke(); circle(n.x*width, n.y*height, n.r*2); fill(255); textSize(13); text(n.label, n.x*width, n.y*height); if (n===nodeTool){ fill(255); textSize(22); text(tools[toolKey].icon, n.x*width, n.y*height+22); } }
+  function arrowLine(x1,y1,x2,y2){ line(x1,y1,x2,y2); const ang=atan2(y2-y1,x2-x1); const s=8; push(); translate(x2,y2); rotate(ang); fill(150,150,160); noStroke(); triangle(0,0,-s,-s/2,-s,s/2); pop(); }
+  window.setup = setup; window.draw = draw;
+  </script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

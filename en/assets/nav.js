@@ -43,6 +43,8 @@ const SITE = {
         { file: "concepts/08-rag.html",                 title: "08 · RAG",                  desc: "Retrieval Augmented Generation + Vector databases: own data without training." },
         { file: "concepts/09-agents-tool-use.html",     title: "09 · Agents / Tool-Use",    desc: "The Loop: model calls tools and thinks further — integrate code/API/search." },
         { file: "concepts/10-fine-tuning.html",         title: "10 · Fine-Tuning",          desc: "LoRA/PEFT: 'practice' the model on special topics without rebuilding the base model." },
+        { file: "concepts/35-agent-loop-harness.html",  title: "35 · Agent Loop & Harness", desc: "The while loop model→tool→result→model — harness vs. model, context cost." },
+        { file: "concepts/36-context-engineering.html", title: "36 · Context Engineering",  desc: "Context is finite + costly: caching, compaction, progressive disclosure, O(n²)." },
         { file: "concepts/29-function-calling-deep-dive.html", title: "29 · Function Calling", desc: "Define tools, Multi-Calls, Error Handling, Streaming with Function Calls." },
         { file: "concepts/30-embedding-search-vector-search.html", title: "30 · Embedding Search", desc: "Vector Search, Cosine Similarity, Chunking — the foundation behind RAG." },
       ],
@@ -105,6 +107,7 @@ const SITE = {
     { file: "playground/embedding-vis.html", title: "Embeddings", desc: "2D Projection: How similar are words?" },
     { file: "playground/cost-calculator.html", title: "Cost Calculator", desc: "Token × Price = ? Calculate your API costs." },
     { file: "playground/rag-demo.html", title: "RAG Demo", desc: "Simulate Retrieval Augmented Generation." },
+    { file: "playground/agent-loop.html", title: "Agent Loop", desc: "The model→tool→result→model loop as an animation." },
   ],
 };
 

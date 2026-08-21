@@ -50,6 +50,8 @@ const SITE = {
         { file: "concepts/08-rag.html",                 title: "08 · RAG",                  desc: "Retrieval Augmented Generation + Vektordatenbanken: eigene Daten ohne Training." },
         { file: "concepts/09-agents-tool-use.html",     title: "09 · Agents / Tool-Use",    desc: "Der Loop: Modell ruft Werkzeuge auf und denkt weiter — Code/API/Suche einbinden." },
         { file: "concepts/10-fine-tuning.html",         title: "10 · Fine-Tuning",          desc: "LoRA/PEFT: das Modell auf Spezialthemen „üben“, ohne das Basis-Modell umzubauen." },
+        { file: "concepts/35-agent-loop-harness.html",  title: "35 · Agent-Loop & Harness", desc: "Die while-Schleife Modell→Tool→Ergebnis→Modell — Harness vs. Modell, Kontext-Kosten." },
+        { file: "concepts/36-kontext-engineering.html", title: "36 · Kontext-Engineering",  desc: "Kontext ist endlich + teuer: Caching, Kompaktion, Progressive Disclosure, O(n²)." },
         // weitere Stufe-C-Seiten hier einfügen
       ],
     },
@@ -113,6 +115,7 @@ const SITE = {
     { file: "playground/embedding-vis.html", title: "Embeddings", desc: "2D-Projektion: Wie ähnlich sind Wörter?" },
     { file: "playground/cost-calculator.html", title: "Kostenrechner", desc: "Token × Preis = ? Berechne deine API-Kosten." },
     { file: "playground/rag-demo.html", title: "RAG-Demo", desc: "Retrieval Augmented Generation simulieren." },
+    { file: "playground/agent-loop.html", title: "Agent-Loop", desc: "Der Modell→Tool→Ergebnis→Modell-Loop als Animation." },
   ],
 };
 

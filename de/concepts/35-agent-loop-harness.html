@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>35 · Agent-Loop & Harness — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept · Stufe 3–4</p>
+    <h1>35 · Agent-Loop &amp; Harness</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Ein Agent ist wie ein Koch, der immer wieder zum Kühlschrank geht: Er überlegt, holt
+      eine Zutat (ein Werkzeug-Ergebnis), überlegt neu, holt die nächste — bis das Gericht
+      fertig ist. Das „immer wieder hingehen“ ist der <em>Agent-Loop</em>; die Küche, die
+      ihm das ermöglicht, ist der <em>Harness</em>.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>Ein normales Chat-Modell antwortet einmal. Ein <em>Agent</em> tut das nicht — er läuft in
+       einer Schleife: <strong>denken → Werkzeug aufrufen → Ergebnis anschauen → wieder denken</strong>.
+       So kann er Dateien lesen, Code ausführen, im Web suchen und danach weitermachen. Der
+       entscheidende Punkt: Es ist <em>derselbe</em> Loop, der sich wiederholt — nichts Magisches.</p>
+    <p>Der <strong>Harness</strong> ist das Rahmen-Programm um das Modell herum: Er baut den Prompt,
+       ruft die API, führt Werkzeuge aus, verwaltet den Kontext und entscheidet, wann Schluss ist.
+       Das Modell selbst ist nur „einen Schritt denken“. Gut zu wissen: Ein guter Agent braucht
+       <em>beides</em> — ein gutes Modell UND einen guten Harness.</p>
+
+    <h2>Was passiert technisch</h2>
+    <pre class="code">while (modell will weitermachen) {
+  1. senden:  Kontext + System-Prompt + verfügbare Werkzeuge
+  2. inferenz: Modell antwortet (Text ODER ein Werkzeug-Aufruf)
+  3. wenn Werkzeug-Aufruf:
+       - führe das Werkzeug aus (z.B. read_file, bash, web_search)
+       - hänge das Ergebnis an den Kontext an
+       - springe zurück zu 1
+  4. sonst:    fertig → gib die Antwort aus
+}</pre>
+
+    <p>Zwei Dinge, die Profis beachten:</p>
+    <ul>
+      <li><strong>Kontext wächst mit jedem Schritt.</strong> Jeder Loop-Schritt ist ein neuer
+          API-Call, der die ganze bisherige Historie erneut sendet. Lange Agent-Runs werden
+          dadurch teuer und langsam — das ist das O(n²)-Problem (siehe Konzept 36).</li>
+      <li><strong>Der Harness muss abbrechen können.</strong> Ein hängender Agent (Rate-Limit,
+          Endlos-Schleife, falsches Werkzeug) braucht einen sauberen Interrupt: Abbruch-Signal,
+          Teil-Output behalten, keine doppelten Tool-Ausführungen.</li>
+    </ul>
+
+    <h2>Warum es mir (als Code-Nutzer) weiterhilft</h2>
+    <ul>
+      <li>Du verstehst, wo <em>du</em> steuerst: System-Prompt, Werkzeug-Liste, Kontext-Limit,
+          Interrupt — all das gehört zum Harness, nicht zum Modell.</li>
+      <li>Du begreifst, warum „Modell gut“ allein nicht reicht — der Loop und die Kontext-Pflege
+          entscheiden mit.</li>
+      <li>Du kannst Kosten abschätzen: Jeder Tool-Schritt = ein neuer Call = neue Tokens.</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="09-agents-tool-use.html">09 · Agents / Tool-Use</a> — die Grundidee des Loops</li>
+      <li><a href="29-function-calling-deep-dive.html">29 · Function-Calling Deep-Dive</a> — wie der Harness Werkzeuge aufruft</li>
+      <li><a href="36-kontext-engineering.html">36 · Kontext-Engineering</a> — das O(n²)-Problem lösen</li>
+      <li><a href="17-kosten-latenz.html">17 · Kosten &amp; Latenz</a> — warum die Schleife teuer ist</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      Wie misst man, ob ein Harness wirklich besser ist als ein anderer? (Stichwort:
+      deterministische Verifier statt LLM-as-Judge — siehe Konzept 34.) — Wird ein GitHub-Issue.
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>
