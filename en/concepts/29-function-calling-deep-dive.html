@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>29 · Function Calling (Deep Dive) — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 29 · Stage C · Practice</p>
+    <h1>29 · Function Calling (Deep Dive)</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Imagine you're in a restaurant. You say to the waiter "I'd like the menu". The waiter brings it to you. Function Calling is like that waiter — the model says "I need this now" and the tool delivers it.
+    </div>
+
+    <h2>The Loop in Detail</h2>
+    <ol>
+      <li>User asks: "What's the weather in Berlin?"</li>
+      <li>Model recognizes: "I need weather data" → outputs function call</li>
+      <li>Your code executes the tool: <code>get_weather("Berlin")</code></li>
+      <li>Result is returned to the model</li>
+      <li>Model formulates answer: "In Berlin it's 18°C and sunny"</li>
+    </ol>
+
+    <h2>Tool Definition (OpenAI Format)</h2>
+    <pre><code>{
+  "name": "get_weather",
+  "description": "Get current weather for a city",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "city": {
+        "type": "string",
+        "description": "The city name"
+      }
+    },
+    "required": ["city"]
+  }
+}</code></pre>
+
+    <h2>Multi-Tool Calls</h2>
+    <p>Model can call multiple tools simultaneously:</p>
+    <pre><code>// Model returns two calls:
+[
+  { "name": "get_weather", "args": { "city": "Berlin" } },
+  { "name": "get_weather", "args": { "city": "Munich" } }
+]</code></pre>
+
+    <h2>Error Handling</h2>
+    <p>What if the tool fails?</p>
+    <ul>
+      <li><strong>Retry</strong> → Model tries with different parameters</li>
+      <li><strong>Fallback</strong> → Suggest alternative tools</li>
+      <li><strong>Ask user</strong> → "I couldn't find that, did you mean...?"</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="09-agents-tool-use.html">09 · Agents / Tool-Use</a> → The agent loop</li>
+      <li><a href="12-llm-apis-practically.html">12 · LLM APIs Practically</a> → API calls</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • How to test function calling?<br/>
+      • What about 100+ tools (choice overload)?<br/>
+      • How to prevent "tool abuse"?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>
+

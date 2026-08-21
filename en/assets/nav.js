@@ -31,6 +31,7 @@ const SITE = {
         { file: "concepts/04-transformer-overview.html", title: "04 · Transformer Overview", desc: "How Attention + FFN stack into dozens of layers — the factory behind GPT/LLaMA." },
         { file: "concepts/05-training-intuitively.html",      title: "05 · Training Intuitively",        desc: "Loss, Backprop as idea, learning rate, epochs — how the model 'learns'." },
         { file: "concepts/06-inference-vs-training.html",  title: "06 · Inference vs. Training",   desc: "School vs. deployment: where what runs, and why training is so much more expensive." },
+        { file: "concepts/28-alignment-rlhf-dpo.html",     title: "28 · Alignment (RLHF & DPO)",   desc: "How models become helpful: RLHF, DPO, Constitutional AI." },
       ],
     },
     {
@@ -41,6 +42,8 @@ const SITE = {
         { file: "concepts/08-rag.html",                 title: "08 · RAG",                  desc: "Retrieval Augmented Generation + Vector databases: own data without training." },
         { file: "concepts/09-agents-tool-use.html",     title: "09 · Agents / Tool-Use",    desc: "The Loop: model calls tools and thinks further — integrate code/API/search." },
         { file: "concepts/10-fine-tuning.html",         title: "10 · Fine-Tuning",          desc: "LoRA/PEFT: 'practice' the model on special topics without rebuilding the base model." },
+        { file: "concepts/29-function-calling-deep-dive.html", title: "29 · Function Calling", desc: "Define tools, Multi-Calls, Error Handling, Streaming with Function Calls." },
+        { file: "concepts/30-embedding-search-vector-search.html", title: "30 · Embedding Search", desc: "Vector Search, Cosine Similarity, Chunking — the foundation behind RAG." },
       ],
     },
     {
@@ -51,6 +54,7 @@ const SITE = {
         { file: "concepts/12-llm-apis-practically.html", title: "12 · LLM APIs Practically", desc: "System Prompt, Streaming, Tool-Calls via API — inference without GPU." },
         { file: "concepts/13-notebook-workflow.html", title: "13 · Notebook Workflow", desc: "Colab/Jupyter: experimental AI workspace with cloud GPU." },
         { file: "concepts/14-open-vs-closed.html", title: "14 · Open vs. Closed",    desc: "Open-source models vs. proprietary APIs — cost, control, privacy." },
+        { file: "concepts/27-local-models.html", title: "27 · Local Models",    desc: "Ollama, LM Studio, vLLM — run models locally." },
       ],
     },
     {
@@ -72,10 +76,11 @@ const SITE = {
     },
     {
       id: "X",
-      label: "Cross-thinking",
+      label: "Cross-thinking & Security",
       items: [
         { file: "concepts/20-what-cant-ai-do.html",       title: "20 · What Can't AI Do?",        desc: "Structural limits: no consciousness, no experience, no real logic." },
         { file: "concepts/21-difference-vs-understanding.html",   title: "21 · Difference vs. Understanding",  desc: "Word network vs. experience network — why 'guessing' isn't 'understanding'." },
+        { file: "concepts/26-security-prompt-injection.html", title: "26 · Security & Prompt Injection", desc: "Prompt Injection, Jailbreaking, Sandboxing — when models are attacked." },
       ],
     },
     {
@@ -211,4 +216,3 @@ document.addEventListener("DOMContentLoaded", () => {
   buildBottomNav();
   wireDropdowns();
 });
-

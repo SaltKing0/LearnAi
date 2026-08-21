@@ -38,7 +38,7 @@ const SITE = {
         { file: "concepts/04-transformer-ueberblick.html", title: "04 · Transformer-Überblick", desc: "Wie Attention + FFN zu Dutzenden Schichten gestapelt werden — die Fabrik hinter GPT/LLaMA." },
         { file: "concepts/05-training-intuitiv.html",      title: "05 · Training intuitiv",        desc: "Loss, Backprop als Idee, Lernrate, Epochen — wie das Modell „lernt“." },
         { file: "concepts/06-inference-vs-training.html",  title: "06 · Inference vs. Training",   desc: "Schule vs. Einsatz: wo läuft was, und warum ist Training so viel teurer." },
-        // weitere Stufe-B-Seiten hier einfügen
+        { file: "concepts/28-alignment-rlhf-dpo.html",     title: "28 · Alignment (RLHF & DPO)",   desc: "Wie Modelle hilfreich werden: RLHF, DPO, Constitutional AI." },
       ],
     },
     {
@@ -60,7 +60,7 @@ const SITE = {
         { file: "concepts/12-llm-apis-praktisch.html", title: "12 · LLM-APIs praktisch", desc: "System-Prompt, Streaming, Tool-Calls über die API — Inference ohne GPU." },
         { file: "concepts/13-notebook-workflow.html", title: "13 · Notebook-Workflow", desc: "Colab/Jupyter: experimenteller KI-Arbeitsplatz mit Cloud-GPU." },
         { file: "concepts/14-open-vs-closed.html", title: "14 · Open vs. Closed",    desc: "Open-Source-Modelle vs. proprietäre APIs — Kosten, Kontrolle, Privatsphäre." },
-        // weitere Stufe-D-Seiten hier einfügen
+        { file: "concepts/27-lokale-modelle.html", title: "27 · Lokale Modelle",    desc: "Ollama, LM Studio, vLLM — Modelle lokal laufen lassen." },
       ],
     },
     {
