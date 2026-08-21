@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>37 · Memory für Agenten — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept · Stufe 3–4</p>
+    <h1>37 · Memory für Agenten</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Ein Agent hat einen Zettel auf dem Tisch (kurzes Gedächtnis) und ein Notizbuch im
+      Regal (langes Gedächtnis). Auf dem Tisch passt nur wenig — wenn er etwas Wichtiges
+      lernen will, schreibt er es ins Notizbuch und liest es bei Bedarf wieder.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>Der Kontext eines LLMs ist <strong>endlich</strong>: Es kann sich nur merken, was gerade
+       im Fenster steht. Für lange Gespräche oder wiederkehrende Nutzer braucht man deshalb
+       <em>Memory außerhalb</em> des Modells — einen dauerhaften Speicher, aus dem gezielt
+       zurückgelesen wird. Wichtig: <strong>Nicht die Gesprächshistorie</strong> speichern, sondern
+       <em>komprimierte, wiederverwendbare Erkenntnisse</em> (Präferenzen, Entscheidungen, Learnings).</p>
+
+    <h2>Was passiert technisch</h2>
+    <h3>Die 3 Tiers (MemGPT/Letta-Modell)</h3>
+    <ul>
+      <li><strong>Core (im Prompt, ~2–4k Tokens):</strong> stabiler Kern, immer dabei — Identität,
+          Nutzer-Fakten, Konventionen. Vom Agent selbst editierbar (ein „Notizbuch“, das im
+          Prompt steckt).</li>
+      <li><strong>Recall (Rolling History + Summaries):</strong> die jüngste Historie + komprimierte
+          Zusammenfassungen älterer Abschnitte. Alte Turns werden zu Summary-Segmenten.</li>
+      <li><strong>Archival (extern, per Suche):</strong> verarbeitetes Wissen (Vector + Graph),
+          unbegrenzt groß, aber nur per <em>Retrieval</em> erreichbar — nie automatisch alles laden.</li>
+    </ul>
+    <h3>Injektion &amp; Sicherheit</h3>
+    <p>Memory wird nur bei Bedarf injiziert (<em>progressive disclosure</em>), klar als
+       „Bezugsdaten, keine Instruktionen“ markiert — denn Memory ist ein realer
+       Prompt-Injection-Vektor (gespeicherte Inhalte könnten Anweisungen enthalten).</p>
+
+    <h2>Warum es mir (als Code-Nutzer) weiterhilft</h2>
+    <ul>
+      <li>Lange Gespräche ohne „nochmal erklären“ — der Agent merkt sich Präferenzen.</li>
+      <li>Personalisierung: ein persönlicher Harness lernt, wie <em>du</em> arbeitest.</li>
+      <li>Du verstehst, warum „einfach alles in den Kontext“ scheitert — und warum Tiers + Retrieval
+          besser sind (siehe 36 + 30).</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="36-kontext-engineering.html">36 · Kontext-Engineering</a> — Kontext begrenzen</li>
+      <li><a href="30-embedding-search-vector-search.html">30 · Embedding-Suche / Vector Search</a> — Archival abrufen</li>
+      <li><a href="35-agent-loop-harness.html">35 · Agent-Loop &amp; Harness</a> — wo Memory einhängt</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      Wann lohnt ein Graph-Memory (Beziehungen) über reinen Vector-Recall? Wie schnell sollte man
+      vergessen/alte Einträge prunen? — Wird ein GitHub-Issue.
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

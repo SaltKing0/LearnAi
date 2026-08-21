@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>39 · Multi-Agent &amp; Subagents — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept · Stufe 3–4</p>
+    <h1>39 · Multi-Agent &amp; Subagents</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Manchmal hilft es, wenn mehrere Köche parallel arbeiten — aber zu viele Köche verderben
+      den Brei. Multi-Agent ist nur dann gut, wenn die Aufgaben wirklich unabhängig sind und
+      sich sauber zusammenführen lassen.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>Ein <em>Subagent</em> ist ein eigener Agent mit eigenem Kontextfenster, eigenem
+       System-Prompt und eigenen Werkzeugen. Er bekommt eine klar abgegrenzte Teilaufgabe,
+       arbeitet isoliert und gibt nur eine <em>komprimierte Zusammenfassung</em> an den Haupt-Agenten
+       zurück. Das hält den Haupt-Kontext sauber.</p>
+    <p><strong>Aber:</strong> Multi-Agent lohnt sich seltener, als man denkt. Wenn eine Aufgabe eine
+       gemeinsame Entscheidung braucht, sequenziell ist oder geteilten Zustand hat, ist ein
+       einzelner Loop besser („Don't build multi-agents“ — Cognition).</p>
+
+    <h2>Was passiert technisch</h2>
+    <h3>Wann es lohnt (alle müssen gelten)</h3>
+    <ul>
+      <li><strong>Parallelität:</strong> ≥2–3 echte unabhängige Arbeitsströme (z.B. mehrere
+          Recherche-Themen).</li>
+      <li><strong>Isolierbarkeit:</strong> jede Teilaufgabe als <em>self-contained</em> beschreibbar
+          (Ziel, Output-Format, Werkzeuge, klare Grenze).</li>
+      <li><strong>Kontrollierbares Mergen:</strong> der Haupt-Agent (Parent) als klarer
+          Integrationspunkt, der Ergebnisse zusammenführt.</li>
+    </ul>
+    <h3>Muster</h3>
+    <ul>
+      <li><strong>Supervisor / Orchestrator-Workers:</strong> Leit-Agent plant, delegiert, synthetisiert.</li>
+      <li><strong>Planner-Executor:</strong> schwerer Planner erstellt Meilensteine, leichter
+          Executor führt aus.</li>
+      <li><strong>Context-Isolation:</strong> Subagent gibt nur ~1000–2000 Tokens zurück, Details
+          in eine Sidecar-Datei (die der Parent nie lädt).</li>
+      <li><strong>Limits:</strong> Depth-Limit (Subagents spawnen keine eigenen) + Concurrency-Limit
+          verhindern exponentiellen Token-Verbrauch.</li>
+    </ul>
+
+    <h2>Warum es mir (als Code-Nutzer) weiterhilft</h2>
+    <ul>
+      <li>Breite Recherche/Exploration ohne den Haupt-Kontext zu verstopfen.</li>
+      <li>Du erkennst, wann Multi-Agent <em>schadet</em> (geteilter Zustand, Merge-Konflikte,
+          Fehler-Domino) — und sprichst es an.</li>
+      <li>Du verstehst die Kosten: jeder Subagent = eigene Tokens + Wiederholungen.</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="35-agent-loop-harness.html">35 · Agent-Loop &amp; Harness</a> — die Basis</li>
+      <li><a href="09-agents-tool-use.html">09 · Agents / Tool-Use</a> — der einzelne Agent</li>
+      <li><a href="36-kontext-engineering.html">36 · Kontext-Engineering</a> — Kontext-Isolation</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      Wie löst man Merge-Konflikte bei parallelen Subagenten, die dieselben Dateien ändern?
+      (Stichwort: Git-Worktrees + sequenzielles Mergen.) — Wird ein GitHub-Issue.
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

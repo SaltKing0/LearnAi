@@ -52,6 +52,8 @@ const SITE = {
         { file: "concepts/10-fine-tuning.html",         title: "10 · Fine-Tuning",          desc: "LoRA/PEFT: das Modell auf Spezialthemen „üben“, ohne das Basis-Modell umzubauen." },
         { file: "concepts/35-agent-loop-harness.html",  title: "35 · Agent-Loop & Harness", desc: "Die while-Schleife Modell→Tool→Ergebnis→Modell — Harness vs. Modell, Kontext-Kosten." },
         { file: "concepts/36-kontext-engineering.html", title: "36 · Kontext-Engineering",  desc: "Kontext ist endlich + teuer: Caching, Kompaktion, Progressive Disclosure, O(n²)." },
+        { file: "concepts/37-memory-agenten.html", title: "37 · Memory für Agenten", desc: "Tiers: Core/Recall/Archival — Gedächtnis außerhalb des Modells, gezieltes Retrieval." },
+        { file: "concepts/39-multi-agent-subagents.html", title: "39 · Multi-Agent & Subagents", desc: "Wann mehrere Agenten lohnen (und wann nicht): Isolation, Limits, Mergen." },
         // weitere Stufe-C-Seiten hier einfügen
       ],
     },
@@ -74,6 +76,7 @@ const SITE = {
         { file: "concepts/15-evaluierung-metriken.html",     title: "15 · Evaluierung & Metriken", desc: "Accuracy, Perplexity intuitiv — warum du Modelle/Prompts messbar vergleichen willst." },
         { file: "concepts/16-halluzinationen-bias-limits.html", title: "16 · Halluzinationen, Bias, Limits", desc: "Warum Modelle erfinden, spiegeln und harte Grenzen haben (und Gegenmittel)." },
         { file: "concepts/17-kosten-latenz.html",            title: "17 · Kosten & Latenz",         desc: "Pro Token bezahlt, quadratische Attention — wo Geld und Zeit bleiben." },
+        { file: "concepts/38-modell-routing-cascades.html",  title: "38 · Modell-Routing & Cascades", desc: "Erst billig, bei Bedarf eskalieren: Kosten sparen ohne Qualität zu verlieren." },
         // weitere Stufe-E-Seiten hier einfügen
       ],
     },
@@ -86,6 +89,7 @@ const SITE = {
         { file: "concepts/31-quantisierung-kompression.html", title: "31 · Quantisierung & Kompression", desc: "Q2 bis FP16: Modelle komprimieren für weniger Hardware." },
         { file: "concepts/33-serving-deployment.html", title: "33 · Serving",       desc: "vLLM, TGI, TensorRT-LLM — skalierbare Inference." },
         { file: "concepts/34-testing-evaluation.html", title: "34 · Testing & Evaluation", desc: "Unit Tests, Eval-Datasets, LLM-as-Judge, CI/CD für LLMs." },
+        { file: "concepts/40-sandboxing-haertung.html", title: "40 · Sandboxing & Härtung", desc: "Riskante Code-Ausführung isolieren: Risk-Tiers, Sandbox, Netzwerk-Allowlist." },
       ],
     },
     {

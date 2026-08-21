@@ -45,6 +45,8 @@ const SITE = {
         { file: "concepts/10-fine-tuning.html",         title: "10 · Fine-Tuning",          desc: "LoRA/PEFT: 'practice' the model on special topics without rebuilding the base model." },
         { file: "concepts/35-agent-loop-harness.html",  title: "35 · Agent Loop & Harness", desc: "The while loop model→tool→result→model — harness vs. model, context cost." },
         { file: "concepts/36-context-engineering.html", title: "36 · Context Engineering",  desc: "Context is finite + costly: caching, compaction, progressive disclosure, O(n²)." },
+        { file: "concepts/37-memory-agents.html", title: "37 · Memory for Agents", desc: "Tiers: Core/Recall/Archival — memory outside the model, targeted retrieval." },
+        { file: "concepts/39-multi-agent-subagents.html", title: "39 · Multi-Agent & Subagents", desc: "When several agents pay off (and when not): isolation, limits, merging." },
         { file: "concepts/29-function-calling-deep-dive.html", title: "29 · Function Calling", desc: "Define tools, Multi-Calls, Error Handling, Streaming with Function Calls." },
         { file: "concepts/30-embedding-search-vector-search.html", title: "30 · Embedding Search", desc: "Vector Search, Cosine Similarity, Chunking — the foundation behind RAG." },
       ],
@@ -68,6 +70,7 @@ const SITE = {
         { file: "concepts/15-evaluation-metrics.html",     title: "15 · Evaluation & Metrics", desc: "Accuracy, Perplexity intuitively — why you want to compare models/prompts measurably." },
         { file: "concepts/16-hallucinations-bias-limits.html", title: "16 · Hallucinations, Bias, Limits", desc: "Why models invent, mirror, and have hard limits (and countermeasures)." },
         { file: "concepts/17-cost-latency.html",            title: "17 · Cost & Latency",         desc: "Paid per token, quadratic attention — where money and time go." },
+        { file: "concepts/38-model-routing-cascades.html",  title: "38 · Model Routing & Cascades", desc: "Start cheap, escalate when needed: save cost without losing quality." },
       ],
     },
     {
@@ -79,6 +82,7 @@ const SITE = {
         { file: "concepts/31-quantization-compression.html", title: "31 · Quantization & Compression", desc: "Q2 to FP16: Compress models for less hardware." },
         { file: "concepts/33-serving-deployment.html", title: "33 · Serving",       desc: "vLLM, TGI, TensorRT-LLM — scalable inference." },
         { file: "concepts/34-testing-evaluation.html", title: "34 · Testing & Evaluation", desc: "Unit Tests, Eval Datasets, LLM-as-Judge, CI/CD for LLMs." },
+        { file: "concepts/40-sandboxing-hardening.html", title: "40 · Sandboxing & Hardening", desc: "Isolate risky code execution: risk tiers, sandbox, network allowlist." },
       ],
     },
     {

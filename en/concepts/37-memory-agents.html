@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>37 · Memory for Agents — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept · Level 3–4</p>
+    <h1>37 · Memory for Agents</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      An agent has a note on the table (short-term memory) and a notebook on the shelf
+      (long-term memory). Only a little fits on the table — when it wants to learn something
+      important it writes it in the notebook and reads it back when needed.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>An LLM's context is <strong>finite</strong>: it can only remember what's currently in the
+       window. For long conversations or recurring users you therefore need <em>memory outside</em>
+       the model — durable storage read back on demand. Important: <strong>don't store the
+       conversation history</strong>, store <em>compressed, reusable insights</em> (preferences,
+       decisions, learnings).</p>
+
+    <h2>What happens technically</h2>
+    <h3>The 3 tiers (MemGPT/Letta model)</h3>
+    <ul>
+      <li><strong>Core (in the prompt, ~2–4k tokens):</strong> stable kernel, always present —
+          identity, user facts, conventions. Editable by the agent itself (a “notebook” that lives
+          in the prompt).</li>
+      <li><strong>Recall (rolling history + summaries):</strong> the recent history plus compressed
+          summaries of older sections. Old turns become summary segments.</li>
+      <li><strong>Archival (external, via search):</strong> processed knowledge (vector + graph),
+          unlimited in size, but only reachable via <em>retrieval</em> — never auto-load everything.</li>
+    </ul>
+    <h3>Injection &amp; security</h3>
+    <p>Memory is only injected on demand (<em>progressive disclosure</em>), clearly marked as
+       “reference data, not instructions” — because memory is a real prompt-injection vector
+       (stored content could contain instructions).</p>
+
+    <h2>Why it helps me (as a code user)</h2>
+    <ul>
+      <li>Long conversations without “explain again” — the agent remembers preferences.</li>
+      <li>Personalization: a personal harness learns how <em>you</em> work.</li>
+      <li>You see why “just put everything in context” fails — and why tiers + retrieval are
+          better (see 36 + 30).</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="36-context-engineering.html">36 · Context Engineering</a> — bounding context</li>
+      <li><a href="30-embedding-search-vector-search.html">30 · Embedding Search / Vector Search</a> — querying archival</li>
+      <li><a href="35-agent-loop-harness.html">35 · Agent Loop &amp; Harness</a> — where memory hooks in</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open questions / gaps</span>
+      When is graph memory (relationships) worth it over plain vector recall? How fast should
+      you forget/prune old entries? — Becomes a GitHub issue.
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>
