@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>34 · Testing &amp; Evaluation — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 34 · Stage F · MLOps</p>
+    <h1>34 · Testing &amp; Evaluation</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Imagine you have a robot that solves math problems. How do you find out if it's good? You give it 100 problems and see how many it gets right. But what if it memorized instead of understanding? Testing AI is exactly this exam — just that the problems are much more complicated.
+    </div>
+
+    <h2>Why Testing LLMs is hard</h2>
+    <ul>
+      <li><strong>Non-deterministic</strong> → same question, different answers</li>
+      <li><strong>No clear "correct"</strong> → "Tell a joke" has no gold standard</li>
+      <li><strong>Hallucinations</strong> → wrong answers often sound more correct than right ones</li>
+      <li><strong>Context-dependent</strong> → an answer can be right here, wrong there</li>
+    </ul>
+
+    <h2>Types of Tests</h2>
+    <ul>
+      <li><strong>Unit Tests</strong> → Test specific behaviors (sentiment, format, no leaks)</li>
+      <li><strong>Evaluation Datasets</strong> → MMLU, GSM8K, HumanEval, HellaSwag</li>
+      <li><strong>LLM-as-Judge</strong> → Strong LLM evaluates weaker one's responses</li>
+      <li><strong>Integration Tests</strong> → End-to-end user flows, regression, performance</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="15-evaluation-metrics.html">15 · Evaluation &amp; Metrics</a> → Understanding metrics</li>
+      <li><a href="33-serving-deployment.html">33 · Serving</a> → Monitoring in production</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • How to test "creativity" or "humor"?<br/>
+      • When is a test "good enough" for production?<br/>
+      • How to avoid test-overfitting (model learns test tasks)?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>
+

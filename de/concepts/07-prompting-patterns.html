@@ -10,13 +10,13 @@
   <header id="topnav"></header>
 
   <div class="wrap">
-    <p class="meta">Konzept 07 · Stufe C</p>
+    <p class="meta">Konzept 07 · Stufe C · Erweitert</p>
     <h1>07 · Prompting-Patterns</h1>
 
     <div class="callout kid">
       <span class="label">Erklär es einem 12-Jährigen</span>
-      Ein Prompt ist, wie du dem Modell zuredest. „Zeig mir ein Beispiel“ (few-shot)
-      hilft ihm, das Muster zu verstehen. „Denk laut Schritt für Schritt“ (chain-of-
+      Ein Prompt ist, wie du dem Modell zuredest. „Zeig mir ein Beispiel" (few-shot)
+      hilft ihm, das Muster zu verstehen. „Denk laut Schritt für Schritt" (chain-of-
       thought) hilft ihm bei Knobelaufgaben, nicht gleich falsch zu raten. Beides
       kostet kein Training — nur geschickte Worte.
     </div>
@@ -28,17 +28,28 @@
        versuch es mit einem besseren Prompt. Oft reicht das.</p>
 
     <h2>Die wichtigsten Patterns</h2>
+    
+    <h3>Grundlegende Patterns</h3>
     <ul>
       <li><strong>Zero-shot</strong> — einfach die Aufgabe stellen. Basishaltung.</li>
-      <li><strong>Few-shot</strong> — 2–5 Beispiele (Input→gewünschtes Output) im Prompt
-        geben das <em>Format</em> und den <em>Ton</em> vor. Sehr stark bei Struktur.</li>
-      <li><strong>Chain-of-Thought (CoT)</strong> — „Denk schrittweise“ / Beispiele mit
-        Zwischenschritten. Das Modell „schreibt laut mit“, was es tut → bessere Logik/
-        Mathe. Kostet mehr Tokens.</li>
-      <li><strong>System-Prompt vs. User-Prompt</strong> — System setzt Rolle/Regeln
-        („Du bist …“, „Antworte immer als JSON“), User ist die eigentliche Anfrage.</li>
-      <li><strong>Structured Output</strong> — „Gib mir JSON mit Feldern x,y“ → direkt
-        parsebar in Code.</li>
+      <li><strong>Few-shot</strong> — 2–5 Beispiele (Input→gewünschtes Output) im Prompt geben das <em>Format</em> und den <em>Ton</em> vor. Sehr stark bei Struktur.</li>
+      <li><strong>Chain-of-Thought (CoT)</strong> — „Denk schrittweise" / Beispiele mit Zwischenschritten. Das Modell „schreibt laut mit", was es tut → bessere Logik/Mathe. Kostet mehr Tokens.</li>
+    </ul>
+
+    <h3>Fortgeschrittene Patterns</h3>
+    <ul>
+      <li><strong>ReAct (Reasoning + Acting)</strong> — Modell alterniert zwischen Denken und Handeln. „Ich muss X wissen → rufe Tool Y → basierend auf Ergebnis → nächster Schritt". Basis für Agenten.</li>
+      <li><strong>Self-Consistency</strong> — gleiche Frage mehrmals stellen, häufigste Antwort nehmen. Reduziert Zufallsfehler.</li>
+      <li><strong>Tree of Thought</strong> — mehrere Denkpfade gleichzeitig explorieren, besten wählen. Wie Brainstorming für LLMs.</li>
+      <li><strong>Prompt Chaining</strong> → komplexe Aufgabe in mehrere Prompts unterteilen, Output von Prompt A wird Input von Prompt B.</li>
+    </ul>
+
+    <h3>Struktur & Kontrolle</h3>
+    <ul>
+      <li><strong>System-Prompt vs. User-Prompt</strong> — System setzt Rolle/Regeln („Du bist …", „Antworte immer als JSON"), User ist die eigentliche Anfrage.</li>
+      <li><strong>Role Prompting</strong> — „Du bist ein Senior Developer mit 10 Jahren Erfahrung" → verändert Antwortqualität.</li>
+      <li><strong>Negative Prompts</strong> — „Antworte nicht mit...", „Vermeide..." → exkludiert unerwünschte Antworten.</li>
+      <li><strong>Structured Output</strong> — „Gib mir JSON mit Feldern x,y" → direkt parsebar in Code.</li>
     </ul>
 
     <div class="mermaid">
@@ -50,8 +61,9 @@ flowchart TD
     Q2 -->|Nein| Q3{Logik / Mathe /<br/>Mehrstufig?}
     Q3 -->|Ja| COT["Chain-of-Thought:<br/>'Denk schrittweise'"]
     Q3 -->|Nein| ZERO[Zero-shot:<br/>schlichte Aufgabe]
-    </div>
+    end
     <p class="diagram-cap">Faustregel zur Pattern-Wahl — günstigster Hebel zuerst.</p>
+    </div>
 
     <h2>Demo: Zero-shot vs. Few-shot vs. CoT (illustriert)</h2>
     <div class="demo-box">
@@ -61,10 +73,19 @@ flowchart TD
         <button class="pmode" data-m="few">Few-shot</button>
         <button class="pmode" data-m="cot">Chain-of-Thought</button>
       </div>
-      <p class="meta">Aufgabe: „Die Tomaten sind rot. Ist der Satz positiv oder negativ?“</p>
+      <p class="meta">Aufgabe: „Die Tomaten sind rot. Ist der Satz positiv oder negativ?"</p>
       <pre id="promptOut" style="white-space:pre-wrap"></pre>
       <p class="meta" id="noteOut"></p>
     </div>
+
+    <h2>Prompt-Engineering vs. Prompt-Tuning</h2>
+    <table>
+      <tr><th></th><th>Prompt Engineering</th><th>Prompt Tuning</th></tr>
+      <tr><td>Was</td><td>Text-Prompts optimieren</td><td>Numerische Vektoren lernen</td></tr>
+      <tr><td>Aufwand</td><td>Manuell, schnell</td><td>Training nötig</td></tr>
+      <tr><td>Flexibel</td><td>Hoher</td><td>Weniger</td></tr>
+      <tr><td>Use-Case</td><td>APIs, schnelle Iteration</td><td>Spezialisierte Modelle</td></tr>
+    </table>
 
     <h2>Warum das für dich als Code-Nutzer zentral ist</h2>
     <ul>
@@ -77,8 +98,9 @@ flowchart TD
     <h2>Verwandt</h2>
     <ul>
       <li><a href="01-sprachmodell-als-funktion.html">01 · Sprachmodell als Funktion</a> — der Prompt ist die Eingabe in P(next|prompt).</li>
-      <li><a href="08-rag.html">08 · RAG</a> — Retrieval ist letztlich „besserer Prompt durch Kontext“.</li>
+      <li><a href="08-rag.html">08 · RAG</a> — Retrieval ist letztlich „besserer Prompt durch Kontext".</li>
       <li><a href="10-fine-tuning.html">10 · Fine-Tuning</a> — die teure Alternative, wenn Prompts nicht reichen.</li>
+      <li><a href="26-sicherheit-prompt-injection.html">26 · Sicherheit & Prompt Injection</a> — Prompts können manipuliert werden.</li>
     </ul>
 
     <div class="callout warn">
@@ -122,3 +144,4 @@ flowchart TD
   <script src="../assets/mermaid-init.js"></script>
 </body>
 </html>
+

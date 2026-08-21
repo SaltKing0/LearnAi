@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>33 · Serving &amp; Production Deployment — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 33 · Stage F · MLOps</p>
+    <h1>33 · Serving &amp; Production Deployment</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Imagine you have a chef (the model) who bakes fantastic pizza. But he bakes in your kitchen (your laptop) and only for you. Serving is like opening a restaurant: The chef works in the kitchen, but 100 people can order at the same time, and all get their pizza in 5 minutes. Serving makes the model scalable.
+    </div>
+
+    <h2>Why Serving is different from Inference</h2>
+    <p>Single inference (one prompt → one answer) is simple. But what if 1000 users send a request simultaneously? What if a request consists of 10,000 tokens? What if the model needs to be reloaded without downtime?</p>
+
+    <h2>Serving Tools Overview</h2>
+    <table>
+      <tr><th>Tool</th><th>Language</th><th>Focus</th></tr>
+      <tr><td>vLLM</td><td>Python</td><td>PagedAttention, Continuous Batching, fastest inference</td></tr>
+      <tr><td>TensorRT-LLM</td><td>C++/Python</td><td>NVIDIA-optimized, best performance on A100/H100</td></tr>
+      <tr><td>TGI</td><td>Rust</td><td>HuggingFace's official server, production-ready</td></tr>
+      <tr><td>SGLang</td><td>Python</td><td>RadixAttention, Multi-Modal, complex routing</td></tr>
+      <tr><td>llama.cpp</td><td>C++</td><td>CPU/GPU hybrid, minimal, local</td></tr>
+    </table>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="18-deployment.html">18 · Deployment</a> → General deployment strategies</li>
+      <li><a href="31-quantization-compression.html">31 · Quantization</a> → Compress model for less hardware</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • How to scale vertically (bigger GPU) vs. horizontally (more GPUs)?<br/>
+      • When does Kubernetes vs. simple Docker make sense?<br/>
+      • How to test serving load (load testing)?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>
+

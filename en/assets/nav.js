@@ -55,6 +55,7 @@ const SITE = {
         { file: "concepts/13-notebook-workflow.html", title: "13 · Notebook Workflow", desc: "Colab/Jupyter: experimental AI workspace with cloud GPU." },
         { file: "concepts/14-open-vs-closed.html", title: "14 · Open vs. Closed",    desc: "Open-source models vs. proprietary APIs — cost, control, privacy." },
         { file: "concepts/27-local-models.html", title: "27 · Local Models",    desc: "Ollama, LM Studio, vLLM — run models locally." },
+        { file: "concepts/32-multi-modal-models.html", title: "32 · Multi-Modal Models", desc: "Text, images, audio, video — models that understand multiple modalities." },
       ],
     },
     {
@@ -72,6 +73,9 @@ const SITE = {
       items: [
         { file: "concepts/18-deployment.html", title: "18 · Deployment",          desc: "API/Edge/On-Prem hosting + Quantization (shrink model for weaker hardware)." },
         { file: "concepts/19-papers-news.html", title: "19 · Papers & News",       desc: "arXiv, Blogs, how to read papers efficiently without the math." },
+        { file: "concepts/31-quantization-compression.html", title: "31 · Quantization & Compression", desc: "Q2 to FP16: Compress models for less hardware." },
+        { file: "concepts/33-serving-deployment.html", title: "33 · Serving",       desc: "vLLM, TGI, TensorRT-LLM — scalable inference." },
+        { file: "concepts/34-testing-evaluation.html", title: "34 · Testing & Evaluation", desc: "Unit Tests, Eval Datasets, LLM-as-Judge, CI/CD for LLMs." },
       ],
     },
     {
