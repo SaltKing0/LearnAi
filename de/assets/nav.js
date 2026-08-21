@@ -54,6 +54,8 @@ const SITE = {
         { file: "concepts/36-kontext-engineering.html", title: "36 · Kontext-Engineering",  desc: "Kontext ist endlich + teuer: Caching, Kompaktion, Progressive Disclosure, O(n²)." },
         { file: "concepts/37-memory-agenten.html", title: "37 · Memory für Agenten", desc: "Tiers: Core/Recall/Archival — Gedächtnis außerhalb des Modells, gezieltes Retrieval." },
         { file: "concepts/39-multi-agent-subagents.html", title: "39 · Multi-Agent & Subagents", desc: "Wann mehrere Agenten lohnen (und wann nicht): Isolation, Limits, Mergen." },
+        { file: "concepts/29-function-calling-deep-dive.html", title: "29 · Function Calling (Deep Dive)", desc: "Tools definieren, Multi-Calls, Fehlerbehandlung, Streaming mit Function Calls." },
+        { file: "concepts/30-embedding-suche-vector-search.html", title: "30 · Embedding-Suche & Vector Search", desc: "Vector Search, Cosine Similarity, Chunking — die Basis hinter RAG." },
         // weitere Stufe-C-Seiten hier einfügen
       ],
     },
@@ -76,6 +78,7 @@ const SITE = {
         { file: "concepts/15-evaluierung-metriken.html",     title: "15 · Evaluierung & Metriken", desc: "Accuracy, Perplexity intuitiv — warum du Modelle/Prompts messbar vergleichen willst." },
         { file: "concepts/16-halluzinationen-bias-limits.html", title: "16 · Halluzinationen, Bias, Limits", desc: "Warum Modelle erfinden, spiegeln und harte Grenzen haben (und Gegenmittel)." },
         { file: "concepts/17-kosten-latenz.html",            title: "17 · Kosten & Latenz",         desc: "Pro Token bezahlt, quadratische Attention — wo Geld und Zeit bleiben." },
+        { file: "concepts/26-sicherheit-prompt-injection.html", title: "26 · Sicherheit & Prompt Injection", desc: "Prompt Injection, Jailbreaking, Sandboxing — wenn Modelle angegriffen werden." },
         { file: "concepts/38-modell-routing-cascades.html",  title: "38 · Modell-Routing & Cascades", desc: "Erst billig, bei Bedarf eskalieren: Kosten sparen ohne Qualität zu verlieren." },
         // weitere Stufe-E-Seiten hier einfügen
       ],
