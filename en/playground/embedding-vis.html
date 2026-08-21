@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Playground · Embedding Visualization — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Playground</p>
+    <h1>Embedding Visualization (2D Projection)</h1>
+
+    <p>Enter multiple words (comma-separated). This shows how "similar" they are — based on a simplified embedding simulation.</p>
+
+    <div class="demo-box">
+      <textarea id="inp" rows="3">dog, cat, car, bicycle, apple, banana</textarea>
+      <div class="controls">
+        <button id="run" style="background:#58a6ff;color:#0e1116;border:none;border-radius:8px;padding:8px 16px;font-family:monospace;cursor:pointer;">Visualize →</button>
+      </div>
+      <div id="canvas"></div>
+    </div>
+
+    <p class="meta">Observe: Animals cluster together, vehicles cluster together, fruits cluster together. Real embeddings work similarly, just with 768+ dimensions instead of 2D.</p>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="../concepts/02-tokens-and-embeddings.html">02 · Tokens &amp; Embeddings</a></li>
+      <li><a href="../concepts/30-embedding-search-vector-search.html">30 · Embedding Search</a></li>
+    </ul>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="../assets/nav.js"></script>
+  <script>
+    const CATEGORIES = {
+      animal: ["dog", "cat", "horse", "bird", "fish", "mouse", "elephant", "lion", "bear", "wolf"],
+      vehicle: ["car", "bicycle", "bus", "train", "airplane", "boat", "motorcycle", "tram"],
+      fruit: ["apple", "banana", "orange", "pear", "grape", "strawberry", "cherry"],
+      color: ["red", "blue", "green", "yellow", "black", "white", "purple"],
+      programming: ["python", "javascript", "rust", "go", "java", "code", "algorithm"]
+    };
+
+    function getCategory(word) {
+      const w = word.toLowerCase().trim();
+      for (const [cat, words] of Object.entries(CATEGORIES)) {
+        if (words.includes(w)) return cat;
+      }
+      return null;
+    }
+
+    function getPos(word) {
+      const cat = getCategory(word);
+      const centers = { animal: [0.2, 0.3], vehicle: [0.8, 0.3], fruit: [0.5, 0.8], color: [0.2, 0.7], programming: [0.8, 0.7] };
+      const center = cat ? centers[cat] : [0.5, 0.5];
+      return [center[0] + (Math.random() - 0.5) * 0.15, center[1] + (Math.random() - 0.5) * 0.15];
+    }
+
+    let sketch;
+
+    function render() {
+      const text = document.getElementById("inp").value;
+      const words = text.split(/[,;\s]+/).filter(w => w.length > 0);
+      
+      if (sketch) sketch.remove();
+      
+      sketch = (p) => {
+        p.setup = () => {
+          const c = p.createCanvas(640, 400);
+          c.parent("canvas");
+          p.textAlign(p.CENTER, p.CENTER);
+        };
+        p.draw = () => {
+          p.background(22, 27, 34);
+          const colors = { animal: [88, 166, 255], vehicle: [255, 166, 87], fruit: [126, 231, 135], color: [255, 100, 200], programming: [200, 150, 255] };
+          
+          words.forEach((w, i) => {
+            const pos = getPos(w);
+            const x = pos[0] * 600 + 20;
+            const y = pos[1] * 360 + 20;
+            const cat = getCategory(w);
+            const col = cat ? colors[cat] : [150, 150, 150];
+            
+            p.fill(col[0], col[1], col[2]);
+            p.noStroke();
+            p.ellipse(x, y, 12, 12);
+            p.fill(230);
+            p.textSize(11);
+            p.text(w, x, y + 18);
+          });
+        };
+      };
+      new p5(sketch);
+    }
+
+    document.getElementById("run").addEventListener("click", render);
+    document.getElementById("inp").addEventListener("input", render);
+    render();
+  </script>
+</body>
+</html>
+

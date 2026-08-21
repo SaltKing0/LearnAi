@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Playground · RAG-Demo — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Playground</p>
+    <h1>RAG-Demo (Retrieval Augmented Generation)</h1>
+
+    <p>Füge Text-Schnipsel hinzu, dann stelle eine Frage. Das System findet die relevantesten Schnipsel (simuliert).</p>
+
+    <div class="demo-box">
+      <label>Dokumente (einer pro Zeile):</label>
+      <textarea id="docs" rows="4">Python ist eine Programmiersprache.
+JavaScript läuft im Browser.
+Rust ist schnell und sicher.
+HTML ist keine Programmiersprache.</textarea>
+      <br/><br/>
+      <label>Frage:</label>
+      <input id="question" type="text" value="Welche Sprache läuft im Browser?" style="width:100%" />
+      <br/><br/>
+      <button id="run" style="background:#58a6ff;color:#0e1116;border:none;border-radius:8px;padding:8px 16px;font-family:monospace;cursor:pointer;">Suchen →</button>
+      <div id="result" style="margin-top:1rem"></div>
+    </div>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="../concepts/08-rag.html">08 · RAG</a></li>
+      <li><a href="../concepts/30-embedding-suche-vector-search.html">30 · Embedding-Suche</a></li>
+    </ul>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+  <script>
+    function search() {
+      const docs = document.getElementById("docs").value.split("\n").filter(d => d.trim());
+      const q = document.getElementById("question").value.toLowerCase();
+      const qWords = q.split(/\s+/);
+      
+      const scored = docs.map(doc => {
+        const d = doc.toLowerCase();
+        let score = 0;
+        qWords.forEach(w => { if (d.includes(w)) score++; });
+        return { doc, score };
+      }).sort((a, b) => b.score - a.score);
+      
+      const top = scored.filter(s => s.score > 0).slice(0, 3);
+      document.getElementById("result").innerHTML = top.length ? 
+        "<strong>Top Ergebnisse:</strong><br>" + top.map(s => `• ${s.doc} <span class="meta">(Score: ${s.score})</span>`).join("<br>") :
+        "<span class='meta'>Keine relevanten Dokumente gefunden.</span>";
+    }
+
+    document.getElementById("run").addEventListener("click", search);
+    document.getElementById("question").addEventListener("keypress", e => { if (e.key === "Enter") search(); });
+    search();
+  </script>
+</body>
+</html>
+

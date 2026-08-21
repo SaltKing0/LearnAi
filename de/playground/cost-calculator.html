@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Playground · Kostenrechner — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Playground</p>
+    <h1>Kostenrechner (Token × Preis)</h1>
+
+    <p>Berechne wie viel deine API-Calls kosten. Basierend auf aktuellen Preisen (August 2026).</p>
+
+    <div class="demo-box">
+      <label>Modell:</label>
+      <select id="model">
+        <option value="gpt-4o-mini">GPT-4o-mini ($0.15/$0.60 per 1M)</option>
+        <option value="gpt-4o">GPT-4o ($2.50/$10.00 per 1M)</option>
+        <option value="claude-3-5-sonnet">Claude 3.5 Sonnet ($3/$15 per 1M)</option>
+        <option value="claude-3-opus">Claude 3 Opus ($15/$75 per 1M)</option>
+        <option value="gemini-3-flash">Gemini 3 Flash ($0.10/$0.40 per 1M)</option>
+      </select>
+      <br/><br/>
+      <label>Input-Tokens:</label>
+      <input id="inputTokens" type="number" value="1000" min="0" />
+      <br/><br/>
+      <label>Output-Tokens:</label>
+      <output id="outputTokens">500</output>
+      <br/><br/>
+      <label>Anzahl Requests/Tag:</label>
+      <input id="requests" type="number" value="100" min="1" />
+      <br/><br/>
+      <div class="callout warn">
+        <span class="label">Kosten</span>
+        <div id="cost">$0.00 pro Request | $0.00 pro Tag | $0.00 pro Monat</div>
+      </div>
+    </div>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="../concepts/17-kosten-latenz.html">17 · Kosten &amp; Latenz</a></li>
+    </ul>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+  <script>
+    const PRICES = {
+      "gpt-4o-mini": [0.15, 0.60],
+      "gpt-4o": [2.50, 10.00],
+      "claude-3-5-sonnet": [3, 15],
+      "claude-3-opus": [15, 75],
+      "gemini-3-flash": [0.10, 0.40]
+    };
+
+    function calc() {
+      const model = document.getElementById("model").value;
+      const input = parseInt(document.getElementById("inputTokens").value) || 0;
+      const output = parseInt(document.getElementById("outputTokens").value) || 0;
+      const req = parseInt(document.getElementById("requests").value) || 1;
+      const [pIn, pOut] = PRICES[model];
+      const costPerReq = (input / 1000000 * pIn) + (output / 1000000 * pOut);
+      const costPerDay = costPerReq * req;
+      const costPerMonth = costPerDay * 30;
+      document.getElementById("cost").textContent = 
+        `$${costPerReq.toFixed(4)} pro Request | $${costPerDay.toFixed(2)} pro Tag | $${costPerMonth.toFixed(2)} pro Monat`;
+    }
+
+    document.querySelectorAll("input, select").forEach(el => el.addEventListener("input", calc));
+    calc();
+  </script>
+</body>
+</html>
+

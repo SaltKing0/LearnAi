@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Playground · RAG Demo — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Playground</p>
+    <h1>RAG Demo (Retrieval Augmented Generation)</h1>
+
+    <p>Add text snippets, then ask a question. The system finds the most relevant snippets (simulated).</p>
+
+    <div class="demo-box">
+      <label>Documents (one per line):</label>
+      <textarea id="docs" rows="4">Python is a programming language.
+JavaScript runs in the browser.
+Rust is fast and safe.
+HTML is not a programming language.</textarea>
+      <br/><br/>
+      <label>Question:</label>
+      <input id="question" type="text" value="Which language runs in the browser?" style="width:100%" />
+      <br/><br/>
+      <button id="run" style="background:#58a6ff;color:#0e1116;border:none;border-radius:8px;padding:8px 16px;font-family:monospace;cursor:pointer;">Search →</button>
+      <div id="result" style="margin-top:1rem"></div>
+    </div>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="../concepts/08-rag.html">08 · RAG</a></li>
+      <li><a href="../concepts/30-embedding-search-vector-search.html">30 · Embedding Search</a></li>
+    </ul>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+  <script>
+    function search() {
+      const docs = document.getElementById("docs").value.split("\n").filter(d => d.trim());
+      const q = document.getElementById("question").value.toLowerCase();
+      const qWords = q.split(/\s+/);
+      
+      const scored = docs.map(doc => {
+        const d = doc.toLowerCase();
+        let score = 0;
+        qWords.forEach(w => { if (d.includes(w)) score++; });
+        return { doc, score };
+      }).sort((a, b) => b.score - a.score);
+      
+      const top = scored.filter(s => s.score > 0).slice(0, 3);
+      document.getElementById("result").innerHTML = top.length ? 
+        "<strong>Top Results:</strong><br>" + top.map(s => `• ${s.doc} <span class="meta">(Score: ${s.score})</span>`).join("<br>") :
+        "<span class='meta'>No relevant documents found.</span>";
+    }
+
+    document.getElementById("run").addEventListener("click", search);
+    document.getElementById("question").addEventListener("keypress", e => { if (e.key === "Enter") search(); });
+    search();
+  </script>
+</body>
+</html>
+

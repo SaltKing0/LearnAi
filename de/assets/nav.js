@@ -19,6 +19,7 @@ const SITE = {
       id: "A",
       label: "Stufe A · Mentale Modelle",
       items: [
+        { file: "concepts/00-einstieg.html", title: "00 · Einstieg", desc: "Was ist KI überhaupt? Für absolute Anfänger." },
         { file: "concepts/01-sprachmodell-als-funktion.html", title: "01 · Sprachmodell als Funktion", desc: "Die eine Gleichung: P(nächstes Wort | bisheriger Text)." },
         { file: "concepts/02-tokens-und-embeddings.html",     title: "02 · Tokens & Embeddings",         desc: "Wie Text in Zahlen wird — und warum Bedeutung = Position im Raum ist." },
         { file: "concepts/03-attention-ueberblick.html",      title: "03 · Attention",                  desc: "Der Mechanismus, der LLMs ausmacht: wie ein Wort „hinblickt“." },
@@ -109,6 +110,9 @@ const SITE = {
   playground: [
     { file: "playground/tokenizer-demo.html", title: "Tokenizer",  desc: "Tippe Text und sieh, wie er in Tokens zerlegt wird." },
     { file: "playground/attention-demo.html", title: "Attention",  desc: "Self-Attention als Heatmap — und wie Temperatur den Fokus schärft." },
+    { file: "playground/embedding-vis.html", title: "Embeddings", desc: "2D-Projektion: Wie ähnlich sind Wörter?" },
+    { file: "playground/cost-calculator.html", title: "Kostenrechner", desc: "Token × Preis = ? Berechne deine API-Kosten." },
+    { file: "playground/rag-demo.html", title: "RAG-Demo", desc: "Retrieval Augmented Generation simulieren." },
   ],
 };
 
@@ -221,6 +225,43 @@ function wireDropdowns() {
     }
   });
 }
+
+
+/* ---- Progress Tracking (localStorage) ---- */
+function markRead(file) {
+  const read = JSON.parse(localStorage.getItem("learnai-read") || "[]");
+  if (!read.includes(file)) {
+    read.push(file);
+    localStorage.setItem("learnai-read", JSON.stringify(read));
+    updateProgressUI();
+  }
+}
+
+function isRead(file) {
+  const read = JSON.parse(localStorage.getItem("learnai-read") || "[]");
+  return read.includes(file);
+}
+
+function updateProgressUI() {
+  const read = JSON.parse(localStorage.getItem("learnai-read") || "[]");
+  const all = allPages();
+  const percent = Math.round((read.length / all.length) * 100);
+  const bar = document.getElementById("progress-bar");
+  if (bar) {
+    bar.style.width = percent + "%";
+    bar.textContent = percent + "%";
+  }
+  const count = document.getElementById("progress-count");
+  if (count) {
+    count.textContent = read.length + " von " + all.length + " Seiten gelesen";
+  }
+}
+
+// Mark current page as read when loaded
+document.addEventListener("DOMContentLoaded", () => {
+  const cur = currentPage();
+  if (cur) markRead(cur.file);
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   buildTopNav();

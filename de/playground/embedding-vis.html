@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Playground · Embedding-Visualisierung — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Playground</p>
+    <h1>Embedding-Visualisierung (2D-Projektion)</h1>
+
+    <p>Gib mehrere Wörter ein (komma-getrennt). Das zeigt wie "ähnlich" sie sich sind — basierend auf einer vereinfachten Embedding-Simulation.</p>
+
+    <div class="demo-box">
+      <textarea id="inp" rows="3">Hund, Katze, Auto, Fahrrad, Apfel, Banane</textarea>
+      <div class="controls">
+        <button id="run" style="background:#58a6ff;color:#0e1116;border:none;border-radius:8px;padding:8px 16px;font-family:monospace;cursor:pointer;">Visualisieren →</button>
+      </div>
+      <div id="canvas"></div>
+    </div>
+
+    <p class="meta">Beobachte: Tiere clustern zusammen, Fahrzeuge clustern zusammen, Früchte clustern zusammen. Echte Embeddings funktionieren ähnlich, nur mit 768+ Dimensionen statt 2D.</p>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="../concepts/02-tokens-und-embeddings.html">02 · Tokens &amp; Embeddings</a></li>
+      <li><a href="../concepts/30-embedding-suche-vector-search.html">30 · Embedding-Suche</a></li>
+    </ul>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="../assets/nav.js"></script>
+  <script>
+    // Simple 2D embedding simulation based on word categories
+    const CATEGORIES = {
+      tier: ["hund", "katze", "pferd", "vogel", "fisch", "maus", "elefant", "löwe", "bär", "wolf"],
+      fahrzeug: ["auto", "fahrrad", "bus", "zug", "flugzeug", "boot", "motorrad", "tram"],
+      frucht: ["apfel", "banane", "orange", "birne", "traube", "erdbeere", "kirsche"],
+      farbe: ["rot", "blau", "grün", "gelb", "schwarz", "weiß", "lila"],
+      programmierung: ["python", "javascript", "rust", "go", "java", "code", "algorithmus"]
+    };
+
+    function getCategory(word) {
+      const w = word.toLowerCase().trim();
+      for (const [cat, words] of Object.entries(CATEGORIES)) {
+        if (words.includes(w)) return cat;
+      }
+      return null;
+    }
+
+    function getPos(word) {
+      const cat = getCategory(word);
+      const centers = { tier: [0.2, 0.3], fahrzeug: [0.8, 0.3], frucht: [0.5, 0.8], farbe: [0.2, 0.7], programmierung: [0.8, 0.7] };
+      const center = cat ? centers[cat] : [0.5, 0.5];
+      return [center[0] + (Math.random() - 0.5) * 0.15, center[1] + (Math.random() - 0.5) * 0.15];
+    }
+
+    let sketch;
+
+    function render() {
+      const text = document.getElementById("inp").value;
+      const words = text.split(/[,;\s]+/).filter(w => w.length > 0);
+      
+      if (sketch) sketch.remove();
+      
+      sketch = (p) => {
+        p.setup = () => {
+          const c = p.createCanvas(640, 400);
+          c.parent("canvas");
+          p.textAlign(p.CENTER, p.CENTER);
+        };
+        p.draw = () => {
+          p.background(22, 27, 34);
+          const colors = { tier: [88, 166, 255], fahrzeug: [255, 166, 87], frucht: [126, 231, 135], farbe: [255, 100, 200], programmierung: [200, 150, 255] };
+          
+          words.forEach((w, i) => {
+            const pos = getPos(w);
+            const x = pos[0] * 600 + 20;
+            const y = pos[1] * 360 + 20;
+            const cat = getCategory(w);
+            const col = cat ? colors[cat] : [150, 150, 150];
+            
+            p.fill(col[0], col[1], col[2]);
+            p.noStroke();
+            p.ellipse(x, y, 12, 12);
+            p.fill(230);
+            p.textSize(11);
+            p.text(w, x, y + 18);
+          });
+        };
+      };
+      new p5(sketch);
+    }
+
+    document.getElementById("run").addEventListener("click", render);
+    document.getElementById("inp").addEventListener("input", render);
+    render();
+  </script>
+</body>
+</html>
+

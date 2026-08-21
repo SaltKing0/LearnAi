@@ -19,6 +19,7 @@ const SITE = {
       id: "A",
       label: "Stage A · Mental Models",
       items: [
+        { file: "concepts/00-getting-started.html", title: "00 · Getting Started", desc: "What is AI anyway? For absolute beginners." },
         { file: "concepts/01-language-model-as-function.html", title: "01 · Language Model as Function", desc: "The one equation: P(next word | previous text)." },
         { file: "concepts/02-tokens-and-embeddings.html",     title: "02 · Tokens & Embeddings",         desc: "How text becomes numbers — and why meaning = position in space." },
         { file: "concepts/03-attention-overview.html",      title: "03 · Attention",                  desc: "The mechanism that makes LLMs: how a word 'looks at' others." },
@@ -101,6 +102,9 @@ const SITE = {
   playground: [
     { file: "playground/tokenizer-demo.html", title: "Tokenizer",  desc: "Type text and see how it's split into tokens." },
     { file: "playground/attention-demo.html", title: "Attention",  desc: "Self-Attention as heatmap — and how temperature sharpens focus." },
+    { file: "playground/embedding-vis.html", title: "Embeddings", desc: "2D Projection: How similar are words?" },
+    { file: "playground/cost-calculator.html", title: "Cost Calculator", desc: "Token × Price = ? Calculate your API costs." },
+    { file: "playground/rag-demo.html", title: "RAG Demo", desc: "Simulate Retrieval Augmented Generation." },
   ],
 };
 
@@ -213,6 +217,43 @@ function wireDropdowns() {
     }
   });
 }
+
+
+/* ---- Progress Tracking (localStorage) ---- */
+function markRead(file) {
+  const read = JSON.parse(localStorage.getItem("learnai-read") || "[]");
+  if (!read.includes(file)) {
+    read.push(file);
+    localStorage.setItem("learnai-read", JSON.stringify(read));
+    updateProgressUI();
+  }
+}
+
+function isRead(file) {
+  const read = JSON.parse(localStorage.getItem("learnai-read") || "[]");
+  return read.includes(file);
+}
+
+function updateProgressUI() {
+  const read = JSON.parse(localStorage.getItem("learnai-read") || "[]");
+  const all = allPages();
+  const percent = Math.round((read.length / all.length) * 100);
+  const bar = document.getElementById("progress-bar");
+  if (bar) {
+    bar.style.width = percent + "%";
+    bar.textContent = percent + "%";
+  }
+  const count = document.getElementById("progress-count");
+  if (count) {
+    count.textContent = read.length + " von " + all.length + " Seiten gelesen";
+  }
+}
+
+// Mark current page as read when loaded
+document.addEventListener("DOMContentLoaded", () => {
+  const cur = currentPage();
+  if (cur) markRead(cur.file);
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   buildTopNav();
