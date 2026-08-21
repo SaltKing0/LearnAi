@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI-Lernkurs · Hub</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <h1>AI-Lernkurs</h1>
+    <p class="meta">Ein wachsendes, interaktives Wiki — gebaut, um KI wirklich zu <em>verstehen</em>,
+       nicht nur zu benutzen. Jedes Konzept = eine Seite + eine interaktive Demo.</p>
+
+    <div class="callout kid">
+      <span class="label">Die eine Regel</span>
+      Zu jedem Konzept gibt es einen Satz <strong>„Erklär es einem 12-Jährigen“</strong>.
+      Wenn du den nicht schreiben kannst, hast du es noch nicht verstanden.
+    </div>
+
+    <div id="stageCards"></div>
+    <div id="playgroundCards"></div>
+
+    <h2>Wie dieses Repo wächst</h2>
+    <p>Jede neue Sache, die du lernst, wird zu <strong>einer</strong> Konzept-Seite
+       (Kopie von <code>concepts/_template.html</code>) + einem Eintrag in
+       <code>assets/nav.js</code> (in der passenden Stufe). Fertig. Kein Framework,
+       kein Build-Step — es läuft direkt auf
+       <a href="https://pages.github.com/">GitHub Pages</a>.</p>
+    <p>Details &amp; Roadmap: <code>README.md</code> und <code>ROADMAP.md</code> im Repo-Root.</p>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="assets/nav.js"></script>
+</body>
+</html>

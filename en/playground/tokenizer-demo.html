@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Playground · Tokenizer — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Playground</p>
+    <h1>Tokenizer Demo (simplified)</h1>
+
+    <div class="callout warn">
+      <span class="label">Important</span>
+      This is a <strong>simplified illustration</strong>, not a real BPE/WordPiece tokenizer (like GPT-2/4). Real tokenizers split differently and count differently.
+      Goal here: make the <em>principle</em> "text → pieces → IDs" tangible.
+    </div>
+
+    <div class="demo-box">
+      <textarea id="inp" rows="4">The little dog runs quickly through the forest.</textarea>
+      <div class="controls">
+        <button id="run" style="background:#58a6ff;color:#0e1116;border:none;border-radius:8px;padding:8px 16px;font-family:monospace;cursor:pointer;">Split →</button>
+        <span id="count" style="margin-left:14px;"></span>
+      </div>
+      <div id="tokens" class="tokens"></div>
+    </div>
+
+    <p class="meta">Observe: Long words are split into multiple pieces (like real subword tokenizers). Spaces and special characters often become their own tokens.</p>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="../concepts/02-tokens-and-embeddings.html">02 · Tokens &amp; Embeddings</a></li>
+    </ul>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+  <script>
+    // Very simple heuristic: words, then long words in ~4-char chunks (subword illusion).
+    function tokenize(text) {
+      const out = [];
+      const raw = text.split(/(\s+|[.,!?;:"'()\[\]{}])/).filter((s) => s.length > 0);
+      for (const piece of raw) {
+        if (/^\s+$/.test(piece)) { out.push("␣"); continue; }
+        if (piece.length <= 4 || !/[a-zA-Z]/.test(piece)) {
+          out.push(piece);
+        } else {
+          for (let i = 0; i < piece.length; i += 4) {
+            out.push(piece.slice(i, i + 4));
+          }
+        }
+      }
+      return out;
+    }
+
+    function render() {
+      const text = document.getElementById("inp").value;
+      const toks = tokenize(text);
+      document.getElementById("count").textContent = toks.length + " tokens";
+      document.getElementById("tokens").innerHTML = toks.map((t) =>
+        `<span class="tok">${t.replace("␣", "␣")}</span>`
+      ).join("");
+    }
+
+    document.getElementById("run").addEventListener("click", render);
+    document.getElementById("inp").addEventListener("input", render);
+    render();
+  </script>
+</body>
+</html>
+

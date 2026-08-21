@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>01 · Language Model as Function — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 01 · Stage A</p>
+    <h1>01 · Language Model as Function</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      A language model is like someone who gets a sentence half-read and always guesses just the *next word* — but very, very well. It does this word by word until the sentence is finished. That's all it is. Everything else is technique to make this one prediction good.
+    </div>
+
+    <h2>The one equation</h2>
+    <p>Everything an LLM does is this prediction, over and over:</p>
+    <pre><code>P( next_token | all_previous_tokens )</code></pre>
+    <p>The model outputs a probability for every possible next word. We pick one (the most likely, or randomly by temperature) and append it. Then again from the top. <strong>This is the entire "generation loop".</strong></p>
+
+    <h2>The loop, visualized</h2>
+    <div class="demo-box">
+      <div id="loopSketch"></div>
+      <p class="meta">Animation: the model writes word by word. Each step feeds what was written back in.</p>
+    </div>
+
+    <h2>What you actually call as an API user</h2>
+    <p>When you call <code>openai.chat.completions.create(...)</code> or the equivalent from another provider, exactly this loop happens internally — just that the provider runs it server-side and returns the finished result (or token stream) to you. Parameters you know:</p>
+    <ul>
+      <li><code>temperature</code> → how "random" the next word is chosen (see Attention demo for the principle).</li>
+      <li><code>max_tokens</code> → when the loop stops.</li>
+      <li><code>top_p</code> / <code>top_k</code> → restricts the candidate pool before selection.</li>
+      <li><code>stop</code> → explicit stop word for the loop.</li>
+    </ul>
+
+    <h2>Why this matters</h2>
+    <p>Because the model <strong>doesn't "know" anything and doesn't "plan"</strong> — it just guesses the next word. Hallucination loops, repetition loops, "it's thinking" (actually: more loop iterations) — all follow from this one mechanism. Once you internalize it, LLM behavior explains itself.</p>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="02-tokens-and-embeddings.html">02 · Tokens &amp; Embeddings</a> — what exactly a "token" is that the model predicts.</li>
+      <li><a href="03-attention-overview.html">03 · Attention</a> — how the model "sees" which previous words are relevant.</li>
+      <li><a href="../playground/tokenizer-demo.html">Playground · Tokenizer</a></li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • How exactly is the one chosen word selected from the probability distribution (sampling vs. greedy)? <br/>
+      • What is a "logit" and how does it relate to probability?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+  <script>
+    // Small animation of the generation loop (autoregressive).
+    const SENTENCE = ["The", "dog", "bites", "the", "man", "."];
+    let step = 0;
+    const sketch = (p) => {
+      p.setup = () => {
+        const c = p.createCanvas(640, 140);
+        c.parent("loopSketch");
+        p.frameRate(2); // slow so you think
+        p.textAlign(p.CENTER, p.CENTER);
+        p.textSize(20);
+      };
+      p.draw = () => {
+        p.background(22, 27, 34);
+        const y = 70;
+        const w = 640 / (SENTENCE.length + 1);
+        for (let i = 0; i < SENTENCE.length; i++) {
+          const x = w * (i + 0.5);
+          const done = i < step;
+          const isNext = i === step;
+          p.fill(done ? 88 : 28, done ? 166 : 35, done ? 255 : 48);
+          if (isNext) { p.stroke(126, 231, 135); p.strokeWeight(2); }
+          else { p.noStroke(); }
+          p.rectMode(p.CENTER);
+          p.rect(x, y, w - 8, 44, 8);
+          p.noStroke();
+          p.fill(done ? 14 : 230);
+          p.text(SENTENCE[i], x, y);
+        }
+        // "Model guesses →" arrow
+        if (step < SENTENCE.length) {
+          p.fill(255, 166, 87);
+          p.textAlign(p.LEFT, p.CENTER);
+          p.textSize(14);
+          p.text("Model guesses next word →", 12, 20);
+        }
+        step = (step + 1) % (SENTENCE.length + 1);
+      };
+    };
+    new p5(sketch);
+  </script>
+</body>
+</html>
+

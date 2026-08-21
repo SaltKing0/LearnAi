@@ -3,36 +3,68 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AI-Lernkurs · Hub</title>
-  <link rel="stylesheet" href="assets/style.css" />
+  <title>AI Learning Course — Bilingual</title>
+  <link rel="stylesheet" href="de/assets/style.css" />
+  <style>
+    .lang-switch {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin: 2rem 0 1rem;
+    }
+    .lang-switch a {
+      padding: 0.5rem 1.5rem;
+      border-radius: 2rem;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .lang-switch a.active {
+      background: #00d9ff;
+      color: #0a0a0a;
+    }
+    .lang-switch a:not(.active) {
+      border: 1px solid #333;
+      color: #888;
+    }
+    .lang-switch a:not(.active):hover {
+      border-color: #00d9ff;
+      color: #00d9ff;
+    }
+    .intro {
+      text-align: center;
+      margin: 2rem 0;
+    }
+    .intro h1 {
+      margin-bottom: 0.5rem;
+    }
+  </style>
 </head>
 <body>
   <header id="topnav"></header>
 
   <div class="wrap">
-    <h1>AI-Lernkurs</h1>
-    <p class="meta">Ein wachsendes, interaktives Wiki — gebaut, um KI wirklich zu <em>verstehen</em>,
-       nicht nur zu benutzen. Jedes Konzept = eine Seite + eine interaktive Demo.</p>
-
-    <div class="callout kid">
-      <span class="label">Die eine Regel</span>
-      Zu jedem Konzept gibt es einen Satz <strong>„Erklär es einem 12-Jährigen“</strong>.
-      Wenn du den nicht schreiben kannst, hast du es noch nicht verstanden.
+    <div class="intro">
+      <h1>AI Learning Course</h1>
+      <p class="meta">Ein wachsendes, interaktives Wiki für KI — gebaut, um die Mechanik wirklich zu verstehen, nicht nur APIs zu bedienen.</p>
     </div>
 
-    <div id="stageCards"></div>
-    <div id="playgroundCards"></div>
+    <div class="lang-switch">
+      <a href="de/index.html" class="active">🇩🇪 Deutsch</a>
+      <a href="en/index.html">🇺🇸 English</a>
+    </div>
 
-    <h2>Wie dieses Repo wächst</h2>
-    <p>Jede neue Sache, die du lernst, wird zu <strong>einer</strong> Konzept-Seite
-       (Kopie von <code>concepts/_template.html</code>) + einem Eintrag in
-       <code>assets/nav.js</code> (in der passenden Stufe). Fertig. Kein Framework,
-       kein Build-Step — es läuft direkt auf
-       <a href="https://pages.github.com/">GitHub Pages</a>.</p>
-    <p>Details &amp; Roadmap: <code>README.md</code> und <code>ROADMAP.md</code> im Repo-Root.</p>
+    <p style="text-align:center; color:#888; margin-bottom:2rem;">
+      Choose your language / Wähle deine Sprache
+    </p>
+
+    <p style="text-align:center; margin-top:3rem;">
+      <a href="https://github.com/SaltKing0/LearnAi" style="color:#00d9ff;">GitHub →</a>
+    </p>
   </div>
 
   <footer id="bottomnav"></footer>
-  <script src="assets/nav.js"></script>
+  <script src="de/assets/nav.js"></script>
 </body>
 </html>
+

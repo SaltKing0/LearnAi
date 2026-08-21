@@ -1,0 +1,253 @@
+/* ============================================================
+   AI-Lernkurs – gemeinsames Stylesheet
+   Dark theme, terminal-freundlich, visuell ruhig.
+   ============================================================ */
+
+:root {
+  --bg:        #0e1116;
+  --bg-2:      #161b22;
+  --bg-3:      #1c2330;
+  --fg:        #e6edf3;
+  --fg-dim:    #9aa7b4;
+  --accent:    #58a6ff;
+  --accent-2:  #7ee787;
+  --warn:      #ffa657;
+  --border:    #2a3340;
+  --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--sans);
+  line-height: 1.6;
+  font-size: 17px;
+}
+
+/* ---- Top-Nav (von nav.js injiziert) ---- */
+#topnav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(14,17,22,0.92);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 20px;
+  font-family: var(--mono);
+  font-size: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  align-items: center;
+}
+#topnav a {
+  color: var(--fg-dim);
+  text-decoration: none;
+  padding: 3px 8px;
+  border-radius: 6px;
+  transition: background .15s, color .15s;
+}
+#topnav a:hover { background: var(--bg-3); color: var(--fg); }
+#topnav a.active { color: var(--accent); }
+#topnav .brand { color: var(--accent-2); font-weight: 700; margin-right: 8px; }
+
+/* ---- Dropdowns ---- */
+.dd { position: relative; display: inline-block; }
+.dd-btn {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--fg-dim);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.dd-btn:hover { background: var(--bg-3); color: var(--fg); border-color: var(--accent); }
+.dd-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 280px;
+  max-height: 70vh;
+  overflow-y: auto;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+  padding: 8px;
+  z-index: 100;
+}
+.dd.open .dd-panel { display: block; }
+.dd-group + .dd-group { margin-top: 6px; border-top: 1px solid var(--border); padding-top: 6px; }
+.dd-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--fg-dim);
+  padding: 4px 8px 6px;
+}
+.dd-item {
+  display: block;
+  color: var(--fg);
+  text-decoration: none;
+  padding: 7px 10px;
+  border-radius: 7px;
+  font-size: 14px;
+}
+.dd-item:hover { background: var(--bg-3); color: var(--fg); }
+.dd-item.active { color: var(--accent); background: var(--bg-3); }
+
+/* ---- Layout ---- */
+.wrap {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+h1 { font-size: 2.1rem; line-height: 1.2; margin: 0 0 8px; }
+h2 { font-size: 1.5rem; margin: 40px 0 12px; border-left: 3px solid var(--accent); padding-left: 12px; }
+h3 { font-size: 1.15rem; margin: 28px 0 8px; color: var(--accent); }
+p  { margin: 12px 0; }
+a  { color: var(--accent); }
+code, pre { font-family: var(--mono); }
+code {
+  background: var(--bg-2);
+  padding: 2px 6px;
+  border-radius: 5px;
+  font-size: 0.92em;
+  color: var(--accent-2);
+}
+pre {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  overflow-x: auto;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+pre code { background: none; padding: 0; color: var(--fg); }
+
+/* ---- Callouts ---- */
+.callout {
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  background: var(--bg-2);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 20px 0;
+}
+.callout.kid { border-left-color: var(--accent-2); }
+.callout.warn { border-left-color: var(--warn); }
+.callout .label {
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--fg-dim);
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* ---- Karten-Grid (Hub) ---- */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+.card {
+  display: block;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  text-decoration: none;
+  color: var(--fg);
+  transition: transform .12s, border-color .12s;
+}
+.card:hover { transform: translateY(-3px); border-color: var(--accent); }
+.card .num { font-family: var(--mono); color: var(--accent-2); font-size: 13px; }
+.card h3 { margin: 6px 0 8px; color: var(--fg); }
+.card p { margin: 0; color: var(--fg-dim); font-size: 0.92rem; }
+
+/* ---- Bottom-Nav ---- */
+#bottomnav {
+  max-width: 880px;
+  margin: 48px auto 0;
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 14px;
+}
+#bottomnav a { color: var(--accent); text-decoration: none; }
+#bottomnav a:hover { text-decoration: underline; }
+#bottomnav .spacer { flex: 1; }
+
+/* ---- Demo-Elemente ---- */
+.demo-box {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  margin: 20px 0;
+}
+.demo-box canvas { display: block; border-radius: 8px; }
+.controls { margin-top: 12px; font-family: var(--mono); font-size: 14px; color: var(--fg-dim); }
+.controls input[type=range] { vertical-align: middle; }
+.tokens { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.tok {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-family: var(--mono);
+  position: relative;
+}
+.tok .idx { position: absolute; top: -8px; right: -6px; font-size: 11px; color: var(--accent-2); background: var(--bg); border-radius: 6px; padding: 0 4px; }
+textarea {
+  width: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  font-family: var(--mono);
+  font-size: 15px;
+  resize: vertical;
+}
+
+.meta { color: var(--fg-dim); font-family: var(--mono); font-size: 13px; }
+
+/* ---- Mermaid-Diagramme (Dark-Theme, passend zum Rest) ---- */
+.mermaid {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  margin: 22px 0;
+  text-align: center;
+  overflow-x: auto;
+}
+.mermaid svg { max-width: 100%; height: auto; display: inline-block; }
+.mermaid + .diagram-cap,
+.diagram-cap {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--fg-dim);
+  text-align: center;
+  margin: -10px 0 22px;
+}
+/* Kleinste Anpassung: Mermaid-SVG-Text soll unsere Schrift nutzen */
+.mermaid text, .mermaid .nodeLabel, .mermaid .edgeLabel {
+  font-family: var(--mono) !important;
+}
