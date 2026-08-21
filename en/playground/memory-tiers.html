@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Playground · Memory Tiers — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Playground · interactive</p>
+    <h1>Memory Tiers</h1>
+    <p>An agent's three memory levels: <strong>Core</strong> (in the prompt, small, always present),
+       <strong>Recall</strong> (recent history + summaries), <strong>Archival</strong> (external knowledge,
+       only reachable via search). Add facts and watch what lands in the prompt, what moves into
+       the summary, and what gets banished to external storage.</p>
+
+    <div id="p5canvas"></div>
+
+    <div style="margin-top:12px">
+      <button id="btnFact">+ New fact</button>
+      <button id="btnTurn">Next turn</button>
+      <button id="btnRetrieve">🔍 Retrieve (Archival)</button>
+      <button id="btnReset">↺ Reset</button>
+      <span id="status" style="margin-left:12px"></span>
+    </div>
+
+    <div class="callout kid">
+      <span class="label">What to watch for</span>
+      The core is small and can't hold everything — important recurring facts (preferences) stay
+      there; one-off details move to Recall/Archival. “Put everything in context” never fits.
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <script>
+  const core = [];
+  const recall = [];
+  const archival = [];
+  const factPool = [
+    "User prefers short answers",
+    "Project is called Stealth",
+    "User uses free models",
+    "Yesterday: fixed bug in PR #42",
+    "Analyzed token costs last week",
+    "PDF reader installed",
+    "Meeting notes: roadmap planned",
+    "Server IP: 51.38.112.88",
+  ];
+  let factIdx = 0;
+  let turns = 0;
+
+  function setup(){
+    const c = createCanvas(680, 380); c.parent("p5canvas");
+    textFont("system-ui, sans-serif");
+    btn("btnFact", addFact); btn("btnTurn", nextTurn); btn("btnRetrieve", retrieve); btn("btnReset", resetAll);
+    frameRate(30);
+  }
+  function btn(id,fn){ document.getElementById(id).addEventListener("click", fn); }
+  function resetAll(){ core.length=0; recall.length=0; archival.length=0; factIdx=0; turns=0; }
+  function addFact(){
+    if (factIdx >= factPool.length) factIdx = 0;
+    const f = factPool[factIdx++];
+    if (core.length < 3 && (f.includes("prefers")||f.includes("called")||f.includes("free models"))) core.push(f);
+    else if (recall.length < 4) recall.push(f);
+    else { const old = recall.shift(); archival.push("(Summary) " + old); recall.push(f); }
+  }
+  function nextTurn(){ turns++; if (recall.length > 2) { const old = recall.shift(); archival.push("(Summary) " + old); } }
+  function retrieve(){ if (archival.length) document.getElementById("status").textContent = "Archival → " + archival[archival.length-1]; }
+
+  function draw(){
+    background(250,250,252);
+    drawBox(30, 40, 190, 300, "#10b981", "CORE · in prompt", core, "always present, small");
+    drawBox(250, 40, 200, 300, "#3b82f6", "RECALL · history", recall, "recent + summaries");
+    drawBox(480, 40, 180, 300, "#f59e0b", "ARCHIVAL · external", archival, "retrieve by search");
+    fill(60); textSize(13); textAlign(LEFT, TOP);
+    text(`Turns: ${turns}  ·  Click “+ New fact” and watch facts move.`, 30, 350);
+    const s = document.getElementById("status");
+    if (s && s.textContent && s.textContent.startsWith("Archival")) { fill(240,150,50); text("🔍 " + s.textContent.replace("Archival → ",""), 30, 30); }
+  }
+  function drawBox(x,y,w,h,col,title,items,note){
+    fill(col); noStroke(); rect(x,y,w,28,4);
+    fill(255); textSize(12); textAlign(CENTER,CENTER); text(title, x+w/2, y+14);
+    noFill(); stroke(col); strokeWeight(2); rect(x,y+28,w,h-28,0,0,6,6);
+    let iy = y+38;
+    for (let i=0;i<items.length;i++){ if (iy>y+h-14) break; fill(60); textSize(10); textAlign(LEFT,TOP); text((i+1)+". "+items[i], x+6, iy); iy+=14; }
+    fill(140); textSize(10); text(note, x+6, y+h-16);
+  }
+  window.setup = setup; window.draw = draw;
+  </script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

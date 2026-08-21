@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Playground · Context Window — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Playground · interactive</p>
+    <h1>Context Window</h1>
+    <p>Watch how context grows with each loop step (O(n²)): the <strong>stable prefix</strong>
+       (system prompt + prior conversation) is cached and cheap; the <strong>volatile tail</strong>
+       (time, file listing) changes. Once the <strong>compaction threshold</strong> is reached, old
+       tool results are replaced by a summary — otherwise costs explode.</p>
+
+    <div id="p5canvas"></div>
+
+    <div style="margin-top:12px">
+      <button id="btnTurn">▶ Next turn</button>
+      <button id="btnAuto">⏱ Auto</button>
+      <button id="btnReset">↺ Reset</button>
+      <label style="margin-left:10px">Compaction threshold:
+        <input type="range" id="thresh" min="50" max="95" value="80"> <span id="threshVal">80%</span>
+      </label>
+      <span id="status" style="margin-left:12px"></span>
+    </div>
+
+    <div class="callout kid">
+      <span class="label">What to watch for</span>
+      Without compaction the context fills up and every turn gets pricier. With early compaction
+      usage stays flat — that's why context engineering is the biggest cost lever.
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <script>
+  let turns = 0;
+  let compacted = false;
+  let auto = false;
+  let tokensPerTurn = 6;
+  let baseTokens = 14;
+  let threshold = 0.80;
+  let timeline = [];
+
+  function setup(){
+    const c = createCanvas(680, 380); c.parent("p5canvas");
+    textFont("system-ui, sans-serif"); textAlign(LEFT, CENTER);
+    btn("btnTurn", ()=>{ runTurn(); redraw(); });
+    btn("btnAuto", ()=>{ auto=!auto; document.getElementById("btnAuto").textContent = auto ? "⏸ Stop" : "⏱ Auto"; });
+    btn("btnReset", ()=>{ turns=0; compacted=false; timeline=[]; redraw(); });
+    document.getElementById("thresh").addEventListener("input", e=>{ threshold=e.target.value/100; document.getElementById("threshVal").textContent=e.target.value+"%"; });
+    frameRate(2);
+  }
+  function btn(id,fn){ document.getElementById(id).addEventListener("click", fn); }
+  function runTurn(){
+    turns++;
+    const used = usedTokens();
+    if (!compacted && used >= threshold*(baseTokens + 100)) compacted = true;
+    timeline.push({ t: turns, pre: baseTokens, tail: compacted ? 6 : tokensPerTurn*(turns), compacted });
+  }
+  function usedTokens(){ return baseTokens + (compacted ? 6 : tokensPerTurn*turns); }
+  function draw(){
+    background(250,250,252);
+    const W = width-60, H = 46, x0 = 30, y0 = 120;
+    const max = baseTokens + 100;
+    const used = usedTokens();
+    const usedW = (used/max)*W;
+    const thX = x0 + threshold*W;
+    stroke(200,60,60); strokeWeight(2); setLineDash([6,4]);
+    line(thX, y0-18, thX, y0+H+18);
+    setLineDash([]); noStroke();
+    fill(200,60,60); textSize(12); text("Compaction threshold", thX-70, y0-26);
+    noFill(); stroke(120); strokeWeight(2); rect(x0, y0, W, H);
+    fill(16,185,129); noStroke(); rect(x0, y0, baseTokens/max*W, H);
+    fill(255); textSize(12); text("stable (cached)", x0+8, y0+H/2);
+    if (used > baseTokens) { fill(59,130,246); rect(x0+baseTokens/max*W, y0, (used-baseTokens)/max*W, H); }
+    if (usedW < W) { fill(30); rect(x0+usedW-1, y0-4, 3, H+8); }
+    fill(30); textSize(13); text(`${Math.round(used/max*100)}% used`, x0+W+8, y0+H/2);
+    stroke(90); strokeWeight(2); noFill();
+    beginShape();
+    timeline.forEach((p,i)=>{ const tx = x0 + (i/(Math.max(1,timeline.length-1)))*W*0.9; const ty = y0+70 + (p.pre+p.tail)/max*120; vertex(tx, ty); });
+    endShape();
+    fill(60); textSize(13);
+    const costHint = compacted
+      ? `compacted: tail ≈ 6 tokens/turn (cost flat)`
+      : `no compaction: tail = ${tokensPerTurn}·${turns} = ${tokensPerTurn*turns} tokens/turn (growing!)`;
+    text(`Turns: ${turns}  ·  ${costHint}`, 30, 250);
+    if (auto) { runTurn(); }
+  }
+  function setLineDash(a){ drawingContext.setLineDash(a); }
+  window.setup = setup; window.draw = draw;
+  </script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

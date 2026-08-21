@@ -123,6 +123,9 @@ const SITE = {
     { file: "playground/cost-calculator.html", title: "Kostenrechner", desc: "Token × Preis = ? Berechne deine API-Kosten." },
     { file: "playground/rag-demo.html", title: "RAG-Demo", desc: "Retrieval Augmented Generation simulieren." },
     { file: "playground/agent-loop.html", title: "Agent-Loop", desc: "Der Modell→Tool→Ergebnis→Modell-Loop als Animation." },
+    { file: "playground/context-window.html", title: "Context-Window", desc: "Wie Kontext wächst, gecacht wird und Kompaktion greift (O(n²))." },
+    { file: "playground/memory-tiers.html", title: "Memory-Tiers", desc: "Core/Recall/Archival — was landet im Prompt, was wandert ins Externe." },
+    { file: "playground/routing-cascade.html", title: "Routing & Cascade", desc: "Erst billig, bei Bedarf eskalieren — Kosten sparen interaktiv." },
   ],
 };
 

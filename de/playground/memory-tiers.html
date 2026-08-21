@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Playground · Memory-Tiers — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Playground · interaktiv</p>
+    <h1>Memory-Tiers</h1>
+    <p>Die 3 Gedächtnis-Ebenen eines Agenten: <strong>Core</strong> (im Prompt, klein, immer da),
+       <strong>Recall</strong> (jüngste Historie + Summaries), <strong>Archival</strong> (externes Wissen,
+       nur per Suche erreichbar). Füge Fakten hinzu und sieh, was im Prompt landet, was in die
+       Zusammenfassung wandert und was in den externen Speicher verbannt wird.</p>
+
+    <div id="p5canvas"></div>
+
+    <div style="margin-top:12px">
+      <button id="btnFact">+ Neue Fakt</button>
+      <button id="btnTurn">Nächster Turn</button>
+      <button id="btnRetrieve">🔍 Abrufen (Archival)</button>
+      <button id="btnReset">↺ Reset</button>
+      <span id="status" style="margin-left:12px"></span>
+    </div>
+
+    <div class="callout kid">
+      <span class="label">Worauf du achten solltest</span>
+      Der Core ist klein und wird nicht alles — wichtige wiederkehrende Fakten (Präferenzen)
+      bleiben dort; einmalige Details wandern in Recall/Archival. „Alles in den Kontext“ passt nie.
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <script>
+  // Memory-Tiers: Core (Prompt), Recall (Historie+Summaries), Archival (extern)
+  const core = [];      // max 3
+  const recall = [];    // max 4 (danach → summary/archival)
+  const archival = [];
+  const factPool = [
+    "Nutzer bevorzugt kurze Antworten",   // core-würdig (Präferenz)
+    "Projekt heißt Stealth",              // core-würdig
+    "Nutzer nutzt Free-Modelle",          // core-würdig
+    "Gestern: Bug in PR #42 gefixt",      // recall
+    "Token-Kosten letzte Woche analysiert",// recall
+    "PDF-Leser installiert",              // recall
+    "Meeting-Doku: Roadmap geplant",      // archival
+    "Server-IP: 51.38.112.88",            // archival
+  ];
+  let factIdx = 0;
+  let turns = 0;
+
+  function setup(){
+    const c = createCanvas(680, 380); c.parent("p5canvas");
+    textFont("system-ui, sans-serif");
+    btn("btnFact", addFact); btn("btnTurn", nextTurn); btn("btnRetrieve", retrieve); btn("btnReset", resetAll);
+    frameRate(30);
+  }
+  function btn(id,fn){ document.getElementById(id).addEventListener("click", fn); }
+  function resetAll(){ core.length=0; recall.length=0; archival.length=0; factIdx=0; turns=0; }
+  function addFact(){
+    if (factIdx >= factPool.length) factIdx = 0;
+    const f = factPool[factIdx++];
+    // core-würdig = Präferenz/Projekt/Fakt über Nutzer; sonst → recall
+    if (core.length < 3 && (f.includes("bevorzugt")||f.includes("heißt")||f.includes("Free-Modelle"))) {
+      core.push(f);
+    } else if (recall.length < 4) {
+      recall.push(f);
+    } else {
+      // Recall voll → älteste in Summary/Achival
+      const old = recall.shift();
+      archival.push("(Summary) " + old);
+      recall.push(f);
+    }
+  }
+  function nextTurn(){
+    turns++;
+    // ältere Recall-Einträge verdichten → Archival
+    if (recall.length > 2) { const old = recall.shift(); archival.push("(Summary) " + old); }
+  }
+  function retrieve(){ if (archival.length) document.getElementById("status").textContent = "Archival → " + archival[archival.length-1]; }
+
+  function draw(){
+    background(250,250,252);
+    drawBox(30, 40, 190, 300, "#10b981", "CORE · im Prompt", core, "immer dabei, klein");
+    drawBox(250, 40, 200, 300, "#3b82f6", "RECALL · Historie", recall, "jüngste + Summaries");
+    drawBox(480, 40, 180, 300, "#f59e0b", "ARCHIVAL · extern", archival, "per Suche abrufen");
+
+    fill(60); textSize(13); textAlign(LEFT, TOP);
+    text(`Turns: ${turns}  ·  Klicke „+ Neue Fakt“ und beobachte, wie Fakten wandern.`, 30, 350);
+    const s = document.getElementById("status");
+    if (s && s.textContent && s.textContent.startsWith("Archival")) { fill(240,150,50); text("🔍 " + s.textContent.replace("Archival → ",""), 30, 30); }
+  }
+  function drawBox(x,y,w,h,col,title,items,note){
+    fill(col); noStroke(); rect(x,y,w,28,4);
+    fill(255); textSize(12); textAlign(CENTER,CENTER); text(title, x+w/2, y+14);
+    noFill(); stroke(col); strokeWeight(2); rect(x,y+28,w,h-28,0,0,6,6);
+    fill(70); textSize(10); textAlign(LEFT,TOP);
+    let iy = y+38;
+    for (let i=0;i<items.length;i++){ if (iy>y+h-14) break; fill(60); textSize(10); text((i+1)+". "+items[i], x+6, iy); iy+=14; }
+    fill(140); textSize(10); text(note, x+6, y+h-16);
+  }
+  window.setup = setup; window.draw = draw;
+  </script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

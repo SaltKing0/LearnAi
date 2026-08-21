@@ -112,6 +112,9 @@ const SITE = {
     { file: "playground/cost-calculator.html", title: "Cost Calculator", desc: "Token × Price = ? Calculate your API costs." },
     { file: "playground/rag-demo.html", title: "RAG Demo", desc: "Simulate Retrieval Augmented Generation." },
     { file: "playground/agent-loop.html", title: "Agent Loop", desc: "The model→tool→result→model loop as an animation." },
+    { file: "playground/context-window.html", title: "Context Window", desc: "How context grows, gets cached, and compaction kicks in (O(n²))." },
+    { file: "playground/memory-tiers.html", title: "Memory Tiers", desc: "Core/Recall/Archival — what lands in the prompt, what moves external." },
+    { file: "playground/routing-cascade.html", title: "Routing & Cascade", desc: "Start cheap, escalate when needed — save cost interactively." },
   ],
 };
 

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Playground · Routing &amp; Cascade — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Playground · interaktiv</p>
+    <h1>Routing &amp; Cascade</h1>
+    <p>Ein <strong>Router</strong> wählt das passende Modell. Stelle die Aufgabenschwierigkeit ein:
+       Einfache Tasks laufen mit dem <strong>billigen Modell</strong>; bei schweren Tasks oder
+       niedriger Konfidenz <strong>eskaliert</strong> der Cascade aufs stärkere Modell. Beobachte die
+       gesparten Kosten gegenüber „immer das teure Modell“.</p>
+
+    <div id="p5canvas"></div>
+
+    <div style="margin-top:12px">
+      <label>Schwierigkeit:
+        <input type="range" id="diff" min="1" max="10" value="4"> <span id="diffVal">4</span>
+      </label>
+      <button id="btnTask">▶ Aufgabe ausführen</button>
+      <button id="btnReset">↺ Reset</button>
+      <span id="status" style="margin-left:12px"></span>
+    </div>
+
+    <div class="callout kid">
+      <span class="label">Worauf du achten solltest</span>
+      Der Cascade versucht zuerst billig — nur wenn nötig eskalieren. Bei vielen einfachen Tasks
+      sparst du massiv, ohne bei schweren die Qualität zu opfern. (Cost-Einheiten sind fiktiv.)
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <script>
+  const cheapCost = 1, bigCost = 10;
+  let totalCost = 0, alwaysBigCost = 0;
+  let tasks = 0, escalations = 0;
+  let msg = "";
+  let lastModel = "";
+
+  function setup(){
+    const c = createCanvas(680, 360); c.parent("p5canvas");
+    textFont("system-ui, sans-serif"); textAlign(LEFT, CENTER);
+    btn("btnTask", runTask); btn("btnReset", ()=>{ totalCost=0; alwaysBigCost=0; tasks=0; escalations=0; msg=""; });
+    document.getElementById("diff").addEventListener("input", e=>{ document.getElementById("diffVal").textContent = e.target.value; });
+    frameRate(30);
+  }
+  function btn(id,fn){ document.getElementById(id).addEventListener("click", fn); }
+  function runTask(){
+    const d = parseInt(document.getElementById("diff").value, 10);
+    // Router: schwere Tasks (>=7) direkt groß; sonst billig, mit Konfidenz-Check
+    let usedBig = false;
+    if (d >= 7) { usedBig = true; escalations++; }
+    else {
+      const conf = random(0.55, 0.95);
+      if (conf < 0.60) { usedBig = true; escalations++; } // Unsicherheit → eskalieren
+    }
+    lastModel = usedBig ? "groß (eskaliert)" : "billig";
+    totalCost += usedBig ? bigCost : cheapCost;
+    alwaysBigCost += bigCost;
+    tasks++;
+    msg = `Aufgabe (Schw.= ${d}) → ${lastModel}`;
+  }
+  function draw(){
+    background(250,250,252);
+    // Zwei Modell-Kästen
+    fill(245,158,11); noStroke(); rect(40,60,200,80,8); fill(255); textAlign(CENTER,CENTER); textSize(15); text("Billiges Modell\nKosten/1", 140,100);
+    fill(59,130,246); rect(440,60,200,80,8); fill(255); text("Starkes Modell\nKosten/10", 540,100);
+    // Pfeil / Eskalationspfad
+    stroke(30); strokeWeight(2); line(240,100,430,100); fill(30); noStroke(); textAlign(CENTER,CENTER); text("eskaliert bei Schw.≥7 / Konfidenz<60%", 335,90);
+
+    // Kosten-Balken
+    fill(30); textSize(14); textAlign(LEFT,CENTER); text("Kosten (fiktiv)", 40, 220);
+    const W = width-80, maxCost = Math.max(1, alwaysBigCost, totalCost);
+    // Cascade (grün)
+    fill(16,185,129); noStroke(); rect(40,240, (totalCost/maxCost)*W, 22, 4); fill(255); text("Cascade: "+totalCost, 44, 251);
+    // Immer-groß (grau)
+    fill(150); rect(40,275, (alwaysBigCost/maxCost)*W, 22, 4); fill(30); text("Immer groß: "+alwaysBigCost, 44, 286);
+
+    fill(60); textSize(13); text(`Aufgaben: ${tasks} · Eskalationen: ${escalations} · ${msg}`, 40, 320);
+    if (tasks>0) { const save = Math.round((1-totalCost/alwaysBigCost)*100); text(`Gespart: ~${Math.max(0,save)}%`, 40, 338); }
+  }
+  window.setup = setup; window.draw = draw;
+  </script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>
