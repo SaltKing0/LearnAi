@@ -1,57 +1,84 @@
-# AI Learning Course
+# 🇺🇸 AI Learning Course
 
 An evolving, **interactive** learning wiki for AI — built to truly understand the mechanics behind LLMs, not just to use APIs.
 
-Format: Vanilla HTML/CSS/JS + [p5.js](https://p5js.org/) (via CDN, **no** build step). Runs directly on GitHub Pages.
+> **The one rule:** For every concept, one sentence *"Explain it to a 12-year-old."* If you can't write it, you haven't understood it yet.
 
-## Philosophy
+---
 
-- **Active creation > passive consumption.** Each concept is built as an interactive page — this forces real understanding (Feynman technique).
-- **Network instead of list.** Concepts link across (Zettelkasten). The more nodes, the faster each new one ("exponential" learning through connection).
-- **The one rule:** For every concept, one sentence *"Explain it to a 12-year-old."* If you can't write it, you haven't understood it yet.
+## 🎯 Goal of this Repo
 
-## Structure
+This isn't a course in the traditional sense. It's a **collection of interactive explanations** that force you to create actively instead of consuming passively. Each concept is built as its own page — with animations, demos, and cross-references.
 
-```
-ai-learning-course/
-  index.html              # Hub / navigation map
-  concepts/               # ONE file per concept (copy from _template.html)
-    01-language-model-as-function.html
-    02-tokens-and-embeddings.html
-    03-attention-overview.html
-    _template.html        # Template for new pages
-  playground/             # Interactive JS/p5.js demos
-    tokenizer-demo.html
-    attention-demo.html
-  assets/
-    style.css             # Shared stylesheet
-    nav.js                # Builds Top-Nav + Prev/Next (CENTRAL maintain!)
-  README.md
-  ROADMAP.md
-```
+**For whom?** For developers who want to understand AI, not just use it.
 
-## Adding a new concept page
+---
 
-1. Copy `concepts/_template.html` → `concepts/XX-title.html`.
-2. Fill in content (title, 12-year-old sentence, intuition, technical, related, gaps).
-3. `assets/nav.js` → Add entry in `SITE.concepts` at the right position.
-   Done — the page appears automatically everywhere in the Nav.
-
-## Local view
-
-Just open `index.html` in browser. Or a mini-server:
+## 🚀 Quickstart
 
 ```bash
+# Clone repo
+git clone https://github.com/SaltKing0/LearnAi.git
+cd LearnAi
+
+# Start local server (optional)
 python3 -m http.server 8000
 # then open http://localhost:8000
 ```
 
-## Publish on GitHub Pages
+Or just open `index.html` in your browser.
 
-1. Create repo on GitHub, push this directory.
-2. *Settings → Pages → Source: Branch `main`, Folder `/ (root)*.
-3. After ~1 min: `https://<user>.github.io/<repo>/`.
+---
 
-## Learning Path / Roadmap
+## 📂 Structure
 
-See `ROADMAP.md`.
+```
+LearnAi/
+  index.html              # Language switcher
+  de/                     # 🇩🇪 Deutsche Version
+    (same structure)
+  en/                     # 🇺🇸 English version
+    index.html            # Hub / navigation map
+    concepts/             # ONE file per concept
+      01-language-model-as-function.html
+      02-tokens-and-embeddings.html
+      ...
+      _template.html      # Template for new pages
+    playground/           # Interactive demos
+      tokenizer-demo.html
+      attention-demo.html
+    assets/
+      style.css           # Shared stylesheet
+      nav.js              # Navigation (CENTRAL!)
+    README.md
+    ROADMAP.md
+```
+
+---
+
+## 🛠️ Adding a new concept page
+
+1. Copy `concepts/_template.html` → `concepts/XX-title.html`
+2. Fill in content (title, 12-year-old sentence, intuition, technical, related, gaps)
+3. `assets/nav.js` → Add entry at the right stage
+
+Done — the page appears automatically in the Nav.
+
+---
+
+## 🤝 Contributing
+
+Contributions welcome! Whether translations, new concepts, or bugfixes — just open an issue or PR.
+
+**Translations:** The English version isn't complete yet. If you want to help, copy a concept page and translate it.
+
+---
+
+## 📜 License
+
+MIT — do whatever you want with it.
+
+---
+
+**🇩🇪 Deutsche Version:** [de/README.md](../de/README.md)
+

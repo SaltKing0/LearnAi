@@ -1,62 +1,84 @@
-# AI-Lernkurs
+# 🇩🇪 AI-Lernkurs
 
-Ein wachsendes, **interaktives** Lern-Wiki für KI — gebaut, um die Mechanik
-hinter LLMs wirklich zu verstehen, nicht nur APIs zu bedienen.
+Ein wachsendes, **interaktives** Lern-Wiki für KI — gebaut, um die Mechanik hinter LLMs wirklich zu verstehen, nicht nur APIs zu bedienen.
 
-Format: Vanilla HTML/CSS/JS + [p5.js](https://p5js.org/) (via CDN, **kein**
-Build-Step). Läuft direkt auf GitHub Pages.
+> **Die eine Regel:** Zu jedem Konzept gibt es einen Satz *„Erklär es einem 12-Jährigen"*. Wer ihn nicht schreiben kann, hat's noch nicht verstandent.
 
-## Philosophie
+---
 
-- **Aktiv erstellen > passiv konsumieren.** Jedes Konzept wird selbst als
-  interaktive Seite gebaut — das Zwingt zum echten Verständnis (Feynman-Technik).
-- **Netz statt Liste.** Konzepte verlinken quer (Zettelkasten). Je mehr Knoten,
-  desto schneller jeder neue („exponentielles“ Lernen durch Vernetzung).
-- **Die eine Regel:** Zu jedem Konzept ein Satz *„Erklär es einem 12-Jährigen“*.
-  Wer ihn nicht schreiben kann, hat's noch nicht verstanden.
+## 🎯 Ziel dieses Repos
 
-## Struktur
+Dieses Repo ist kein Kurs im klassischen Sinne. Es ist eine **Sammlung interaktiver Erklärungen**, die dich zwingen, aktiv zu erstellen statt passiv zu konsumieren. Jedes Konzept wird als eigene Seite gebaut — mit Animationen, Demos und Querverweisen.
 
-```
-ai-lernkurs/
-  index.html              # Hub / Navigationskarte
-  concepts/               # EINE Datei pro Konzept (Kopie von _template.html)
-    01-sprachmodell-als-funktion.html
-    02-tokens-und-embeddings.html
-    03-attention-ueberblick.html
-    _template.html        # Vorlage für neue Seiten
-  playground/             # Interaktive JS/p5.js-Demos
-    tokenizer-demo.html
-    attention-demo.html
-  assets/
-    style.css             # gemeinsames Stylesheet
-    nav.js                # baut Top-Nav + Prev/Next (ZENTRAL pflegen!)
-  README.md
-  ROADMAP.md
-```
+**Für wen?** Für Entwickler die KI nicht nur benutzen, sondern verstehen wollen.
 
-## Neue Konzept-Seite hinzufügen
+---
 
-1. `concepts/_template.html` kopieren → `concepts/XX-titel.html`.
-2. Inhalt füllen (Titel, 12-Jährigen-Satz, Intuition, Technik, Verwandt, Lücken).
-3. `assets/nav.js` → Eintrag in `SITE.concepts` an der richtigen Stelle einfügen.
-   Fertig — die Seite taucht überall automatisch in der Nav auf.
-
-## Lokal ansehen
-
-Einfach `index.html` im Browser öffnen. Oder ein Mini-Server:
+## 🚀 Schnellstart
 
 ```bash
+# Repo klonen
+git clone https://github.com/SaltKing0/LearnAi.git
+cd LearnAi
+
+# Lokalen Server starten (optional)
 python3 -m http.server 8000
 # dann http://localhost:8000 öffnen
 ```
 
-## Auf GitHub Pages veröffentlichen
+Oder einfach `index.html` im Browser öffnen.
 
-1. Repo auf GitHub erstellen, dieses Verzeichnis pushen.
-2. *Settings → Pages → Source: Branch `main`, Ordner `/ (root)*.
-3. Nach ~1 Min: `https://<user>.github.io/<repo>/`.
+---
 
-## Lernpfad / Roadmap
+## 📂 Struktur
 
-Siehe `ROADMAP.md`.
+```
+LearnAi/
+  index.html              # Sprachwahl / Language switcher
+  de/                     # 🇩🇪 Deutsche Version
+    index.html            # Hub / Navigationskarte
+    concepts/             # EINE Datei pro Konzept
+      01-sprachmodell-als-funktion.html
+      02-tokens-und-embeddings.html
+      ...
+      _template.html      # Vorlage für neue Seiten
+    playground/           # Interaktive Demos
+      tokenizer-demo.html
+      attention-demo.html
+    assets/
+      style.css           # Gemeinsames Stylesheet
+      nav.js              # Navigation (ZENTRAL pflegen!)
+    README.md
+    ROADMAP.md
+  en/                     # 🇺🇸 English version
+    (same structure)
+```
+
+---
+
+## 🛠️ Neue Konzept-Seite hinzufügen
+
+1. `concepts/_template.html` kopieren → `concepts/XX-titel.html`
+2. Inhalt füllen (Titel, 12-Jährigen-Satz, Intuition, Technik, Verwandt, Lücken)
+3. `assets/nav.js` → Eintrag in der passenden Stufe einfügen
+
+Fertig — die Seite taucht automatisch in der Nav auf.
+
+---
+
+## 🤝 Mitmachen
+
+Beiträge willkommen! Ob Übersetzungen, neue Konzepte, oder Bugfixes — einfach ein Issue oder PR öffnen.
+
+**Übersetzungen:** Die englische Version ist noch nicht vollständig. Wenn du helfen willst, kopiere eine deutsche Konzept-Seite und übersetze sie.
+
+---
+
+## 📜 Lizenz
+
+MIT — mach damit was du willst.
+
+---
+
+**🇺🇸 Englische Version:** [en/README.md](../en/README.md)
+
