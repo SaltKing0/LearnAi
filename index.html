@@ -20,27 +20,39 @@
       transition: all 0.2s;
     }
     .lang-switch a.active {
-      background: #00d9ff;
-      color: #0a0a0a;
+      background: var(--accent);
+      color: var(--bg);
     }
     .lang-switch a:not(.active) {
-      border: 1px solid #333;
-      color: #888;
+      border: 1px solid var(--border);
+      color: var(--text-alt);
     }
     .lang-switch a:not(.active):hover {
-      border-color: #00d9ff;
-      color: #00d9ff;
+      border-color: var(--accent);
+      color: var(--accent);
     }
     .intro {
       text-align: center;
-      margin: 2rem 0;
+      margin: 3rem 0 2rem;
     }
-    .intro h1 {
-      margin-bottom: 0.5rem;
+    .intro h1 { margin-bottom: 0.5rem; }
+    .lang-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+      max-width: 640px;
+      margin: 2rem auto;
+    }
+    .stats {
+      text-align: center;
+      color: var(--text-alt);
+      font-size: 0.9rem;
+      margin-top: 2rem;
     }
   </style>
 </head>
 <body>
+  <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()">☀️ Light</button>
   <header id="topnav"></header>
 
   <div class="wrap">
@@ -49,22 +61,42 @@
       <p class="meta">Ein wachsendes, interaktives Wiki für KI — gebaut, um die Mechanik wirklich zu verstehen, nicht nur APIs zu bedienen.</p>
     </div>
 
-    <div class="lang-switch">
-      <a href="de/index.html" class="active">🇩🇪 Deutsch</a>
-      <a href="en/index.html">🇺🇸 English</a>
+    <div class="lang-cards">
+      <a class="card" href="de/index.html">
+        <span class="num">🇩🇪</span>
+        <h3>Deutsch</h3>
+        <p>Zum deutschen Lernpfad — Konzepte, Playground und Fortschritts-Tracking.</p>
+      </a>
+      <a class="card" href="en/index.html">
+        <span class="num">🇺🇸</span>
+        <h3>English</h3>
+        <p>To the English learning path — concepts, playground and progress tracking.</p>
+      </a>
     </div>
 
-    <p style="text-align:center; color:#888; margin-bottom:2rem;">
-      Choose your language / Wähle deine Sprache
-    </p>
+    <p class="stats" id="site-stats"></p>
 
-    <p style="text-align:center; margin-top:3rem;">
-      <a href="https://github.com/SaltKing0/LearnAi" style="color:#00d9ff;">GitHub →</a>
+    <p style="text-align:center; margin-top:2rem;">
+      <a href="https://github.com/SaltKing0/LearnAi">GitHub →</a>
     </p>
   </div>
 
   <footer id="bottomnav"></footer>
   <script src="de/assets/nav.js"></script>
+  <script>
+    // Landing page: show live stats from the shared SITE structure.
+    // basePrefix() returns "" here because the URL ends with "/", so links resolve correctly.
+    document.addEventListener("DOMContentLoaded", () => {
+      buildTopNav();
+      const total = allPages().length;
+      const el = document.getElementById("site-stats");
+      if (el) {
+        el.textContent = total + " Konzepte & interaktive Demos · Dark/Light Mode · Suche · Fortschritts-Tracking";
+      }
+      // hide prev/next footer artifacts on landing
+      const bn = document.getElementById("bottomnav");
+      if (bn) bn.innerHTML = "";
+    });
+  </script>
 </body>
 </html>
-

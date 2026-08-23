@@ -26,12 +26,7 @@ const SITE = {
         // weitere Stufe-A-Seiten hier einfügen
       ],
     },
-    // weitere Stufen (B, C, …) hier anlegen, z.B.:
-    // {
-    //   id: "B",
-    //   label: "Stufe B · Ökosystem & Werkzeuge",
-    //   items: [ { file: "concepts/04-...html", title: "04 · …", desc: "…" } ],
-    // },
+
     {
       id: "B",
       label: "Stufe B · Architektur & Training",
@@ -144,6 +139,8 @@ function currentPage() {
 
 // Unterseiten liegen eine Ebene tiefer -> "../" voranstellen
 function basePrefix() {
+  // Root-Landingpage (lädt de/assets/nav.js, liegt aber eine Ebene über de/)
+  if (!location.pathname.includes("/de/") && !location.pathname.includes("/en/")) return "de/";
   const here = location.pathname.split("/").pop();
   return here === "index.html" || location.pathname.endsWith("/") ? "" : "../";
 }
