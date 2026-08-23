@@ -1,4 +1,274 @@
 /* ============================================================
+   AI-Lernkurs – Base Stylesheet
+   (Layout, Nav, Cards, Callouts, Code, Footer)
+   + Theme Variables (Dark/Light Mode)
+   ============================================================ */
+
+/* ---- Reset & Basis ---- */
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
+}
+
+img, video { max-width: 100%; height: auto; }
+
+/* ---- Layout-Container ---- */
+.wrap {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+h1 { font-size: 2rem; margin: 0.5rem 0 1rem; }
+h2 { margin-top: 2rem; }
+h3 { margin: 0.75rem 0 0.25rem; }
+
+.meta {
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+}
+
+/* ---- Callouts ---- */
+.callout {
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin: 1.25rem 0;
+}
+
+.callout .label {
+  display: block;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  margin-bottom: 0.35rem;
+}
+
+/* ---- Code ---- */
+pre {
+  overflow-x: auto;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+code {
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.88em;
+}
+
+pre code { background: transparent; padding: 0; }
+
+/* ---- Top-Navigation ---- */
+#topnav {
+  position: sticky;
+  top: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.65rem 1.25rem;
+}
+
+#topnav .brand {
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+#topnav > a {
+  text-decoration: none;
+  color: var(--text);
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+}
+
+#topnav > a:hover { background: var(--bg); }
+
+/* Dropdowns */
+.dd { position: relative; }
+
+.dd-btn {
+  background: none;
+  border: none;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+}
+
+.dd-btn:hover { background: var(--bg); }
+
+.dd-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  min-width: 280px;
+  max-height: 70vh;
+  overflow-y: auto;
+  border-radius: 10px;
+  padding: 0.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.dd.open .dd-panel { display: block; }
+
+.dd-group { margin-bottom: 0.5rem; }
+
+.dd-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-alt);
+  padding: 0.4rem 0.6rem 0.2rem;
+}
+
+.dd-item {
+  display: block;
+  text-decoration: none;
+  color: var(--text);
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.dd-item:hover { background: var(--bg); }
+.dd-item.active { color: var(--accent); font-weight: 600; }
+
+/* ---- Karten-Grid (Hub) ---- */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.card {
+  display: block;
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  text-decoration: none;
+  transition: transform 0.15s, border-color 0.15s;
+}
+
+.card:hover { transform: translateY(-2px); }
+
+.card .num {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.05rem 0.55rem;
+  margin-bottom: 0.4rem;
+}
+
+.card h3 { margin: 0 0 0.3rem; font-size: 1rem; color: var(--text); }
+.card p { margin: 0; font-size: 0.85rem; color: var(--text-alt); }
+
+/* ---- Demo-Boxen (Playground) ---- */
+.demo-box {
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin: 1.25rem 0;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin: 0.75rem 0;
+}
+
+.controls label { font-size: 0.9rem; color: var(--text-alt); }
+
+button, select, input[type="range"] { font: inherit; }
+
+input[type="range"] { accent-color: var(--accent); }
+
+.diagram-cap, .cap {
+  font-size: 0.8rem;
+  color: var(--text-alt);
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+/* ---- Prev/Next-Footer ---- */
+#bottomnav {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 3rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+#bottomnav .spacer { flex: 1; }
+
+#bottomnav a {
+  text-decoration: none;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+#bottomnav a:hover { border-color: var(--accent); }
+
+/* ---- Suche (Hub) ---- */
+#search-box input[type="search"],
+#search-box input[type="text"] {
+  width: 100%;
+  max-width: 480px;
+  padding: 0.55rem 0.9rem;
+  font: inherit;
+  color: var(--text);
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+#search-box input:focus { outline: none; border-color: var(--accent); }
+
+.search-results {
+  margin-top: 0.75rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.search-results a {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 0.92rem;
+}
+
+.search-results a:hover { border-color: var(--accent); }
+
+.search-results .hit-desc {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--text-alt);
+}
+
+/* ============================================================
    Theme Variables (Dark/Light Mode)
    ============================================================ */
 :root {
@@ -125,5 +395,3 @@ th {
 #progress-bar {
   background: var(--accent) !important;
 }
-
-

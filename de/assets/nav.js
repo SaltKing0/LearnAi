@@ -240,6 +240,45 @@ function wireDropdowns() {
 }
 
 
+/* ---- Theme Toggle (Dark/Light, localStorage) ---- */
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  const btn = document.getElementById("theme-toggle");
+  if (btn) btn.textContent = theme === "light" ? "🌙 Dark" : "☀️ Light";
+}
+
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+  localStorage.setItem("learnai-theme", cur);
+  applyTheme(cur);
+}
+
+// Gespeichertes Theme sofort anwenden (verhindert Flash beim Laden)
+applyTheme(localStorage.getItem("learnai-theme") || "dark");
+
+/* ---- Suche (Hub): alle Seiten nach Titel/Beschreibung durchsuchen ---- */
+function initSearch() {
+  const host = document.getElementById("search-box");
+  if (!host) return;
+  host.innerHTML = `<input type="search" placeholder="Suchen…" aria-label="Suchen" />
+    <div class="search-results"></div>`;
+  const input = host.querySelector("input");
+  const out = host.querySelector(".search-results");
+  input.addEventListener("input", () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) { out.innerHTML = ""; return; }
+    const hits = allPages()
+      .filter((it) => (it.title + " " + (it.desc || "")).toLowerCase().includes(q))
+      .slice(0, 12);
+    out.innerHTML = hits.length
+      ? hits.map((it) => {
+          const bp = basePrefix();
+          return `<a href="${bp}${it.file}">${it.title}<span class="hit-desc">${it.desc || ""}</span></a>`;
+        }).join("")
+      : `<a>Keine Treffer</a>`;
+  });
+}
+
 /* ---- Progress Tracking (localStorage) ---- */
 function markRead(file) {
   const read = JSON.parse(localStorage.getItem("learnai-read") || "[]");
