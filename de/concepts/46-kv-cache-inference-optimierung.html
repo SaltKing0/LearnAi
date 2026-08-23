@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>46 · KV-Cache &amp; Inference-Optimierung — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 46 · Stufe D · Performance</p>
+    <h1>46 · KV-Cache &amp; Inference-Optimierung</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Stell dir vor du liest einen langen Brief laut vor, Wort für Wort. Ohne Cache: bei jedem neuen Wort liest du den ganzen Brief von vorn nochmal, damit alles zusammen passt. Mit Cache: du merkst dir, was du schon gelesen hast (Notizen machen) und musst nur das neue Wort einfügen. Der KV-Cache sind diese Notizen des Modells — deshalb wird Generieren nicht immer langsamer, je länger die Antwort wird.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>Attention braucht für jedes neue Token Zugriff auf alle bisherigen Tokens. Naiv heißt das: beim n-ten Token rechnet man Attention über n Keys/Values → kumulativ O(n²) Arbeit pro Sequenz. Der Trick: die K- und V-Vektoren früherer Layer/Tokens ändern sich nachträglich nie. Also speichere sie einmal und rechne nur für das neue Token neu. Das ist der <strong>KV-Cache</strong>.</p>
+
+    <h2>Was passiert technisch</h2>
+    <ul>
+      <li><strong>Prefill</strong> → der ganze Prompt geht in einem Rutsch durchs Netzwerk (parallelisierbar, GPU-freundlich). Bestimmt die <em>Time to First Token (TTFT)</em>.</li>
+      <li><strong>Decode</strong> → danach kommt Token für Token raus; jeder Schritt ist ein Vorwärts-Pass mit nur einem Token plus Cache-Lesezugriff. Bestimmt die <em>Time per Output Token (TPOT)</em>. Decode ist meist memory-bound: der Cache muss gelesen werden, nicht gerechnet.</li>
+    </ul>
+
+    <h3>Speicherbedarf-Faustformel</h3>
+    <pre>bytes ≈ 2 (K+V) × n_layers × n_kv_heads × head_dim × seq_len × batch × bytes_pro_zahl</pre>
+    <p>Beispiel: Llama-3-8B (32 Layer, 8 KV-Heads à 128 dim, FP16): 2 × 32 × 8 × 128 × 4096 Tokens × 2 Bytes ≈ <strong>512 MB pro Sequence</strong>. Bei großen Contexts frisst der Cache mehr VRAM als die Gewichte — daher PagedAttention in vLLM, GQA/MQA, Quantisierung auch vom Cache.</p>
+
+    <h3>Batching &amp; Throughput vs. Latenz</h3>
+    <div class="mermaid">
+flowchart LR
+    R1[Request A<br/>Prefill fertig] --> B[Continuous Batch]
+    R2[Request B<br/>wartet auf Prefill] --> B
+    R3[Request C<br/>decode läuft] --> B
+    B --> D{Decode-Schritt}
+    D -- A fertig --> E[Slot frei<br/>neues Request rein]
+    D --> C2[Cached KV<br/>bleibt im Speicher]
+    </div>
+
+    <table>
+      <tr><th>Konzept</th><th>Wirkung</th><th>Kosten</th></tr>
+      <tr><td>Static Batching</td><td>mehr Requests gleichzeitig</td><td>langsamerste Request bremst den Batch</td></tr>
+      <tr><td>Continuous Batching</td><td>fertige Requests fliegen raus, neue rein sofort</td><td>komplexeres Scheduling</td></tr>
+      <tr><td>PagedAttention</td><td>Cache in Blöcken statt kontinuierlich → kaum Fragmentierung</td><td>leichter Overhead</td></tr>
+      <tr><td>GQA / MQA</td><td>weniger KV-Heads → kleinerer Cache</td><td>minimaler Qualitätsverlust</td></tr>
+      <tr><td>Prompt-Caching (API)</td><td>Prefill eines geteilten Prompts wird wiederverwendet</td><td>nur bei identischen Präfixen; oft billiger + schneller</td></tr>
+    </table>
+
+    <p><strong>Prompt-Caching</strong> ist verwandt: Provider speichern den KV-Cache eines langen, wiederkehrenden Präfixes (System-Prompt, Dokument) serverseitig. Folgeaufrufe zahlen nur für den neuen Teil — weniger TTFT und niedrigere Kosten (z.B. Anthropic/OpenAI Prompt-Caching). Funktioniert nur ab dem ersten abweichenden Token.</p>
+
+    <p><strong>Throughput vs. Latenz:</strong> großes Batchen maximiert Tokens/Sekunde pro GPU, verlängert aber die Wartezeit einzelner Requests (Queueing). Serving-Stacks tunen diesen Trade-off explizit.</p>
+
+    <h2>Warum es mir weiterhilft</h2>
+    <ul>
+      <li>Ich verstehe, warum lange Prompts TTFT dominieren und lange Antworten TPOT — und wo Optimierung jeweils ansetzt.</li>
+      <li>"Context-Fenster voll = teuer" hat eine konkrete Ursache: quadratisches Pre-fill und linear wachsender Cache.</li>
+      <li>Prompt-Caching gezielt nutzen: stabile System-Prompts + variable Inhalte ans Ende → spart real Geld und Zeit.</li>
+      <li>Bei lokalem Serving weiß ich, warum vLLM/Ollama sich bei Parallellast stark unterscheiden (Continuous Batching).</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="06-inference-vs-training.html">06 · Inference vs. Training</a> → warum Decode anders rechnet als Training</li>
+      <li><a href="17-kosten-latenz.html">17 · Kosten &amp; Latenz</a> → TTFT/TPOT dort praktisch beobachten</li>
+      <li><a href="18-deployment.html">18 · Deployment</a> → Infrastruktur drumherum</li>
+      <li><a href="31-quantisierung-kompression.html">31 · Quantisierung</a> → auch den Cache komprimieren</li>
+      <li><a href="33-serving-deployment.html">33 · Serving &amp; Production Deployment</a> → wo all das im Stack landet</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Wie genau funktionieren Sliding-Window-/StreamingLLM-Ansätze, wenn der Cache älter als das Fenster ist — was bleibt erhalten?<br/>
+      • Wie viel bringt Cross-Request-Cache-Sharing (gemeinsames Präfix mehrerer User) real in Produktion?<br/>
+      • Ab welcher Sequenzlänge lohnt Cache-Quantisierung (z.B. KV in INT8) wirklich, ab wann bricht Qualität?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <!-- Mermaid für Fluss-/Architekturdiagramme (CDN, kein Build-Step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>
