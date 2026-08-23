@@ -110,7 +110,18 @@ const SITE = {
         // weitere Projekte hier einfügen
       ],
     },
+    {
+      id: "H",
+      label: "Stufe H · Moderne Architektur & Daten",
+      items: [
+        { file: "concepts/41-mcp-model-context-protocol.html", title: "41 · MCP (Model Context Protocol)", desc: "USB-C für KI-Tools: Server, Client, Tools/Resources/Prompts — einmal bauen, überall nutzen." },
+        { file: "concepts/42-diffusion-bildgenerierung.html", title: "42 · Diffusion & Bildgenerierung", desc: "Rauschen wegnehmen statt Text raten: Latent Diffusion, U-Net/DiT, CFG, Seeds, LoRA-Stile." },
+        { file: "concepts/43-rag-vs-finetuning-vs-prompting.html", title: "43 · RAG vs. Fine-Tuning vs. Prompting", desc: "Der Entscheidungsbaum: billig anfangen, gezielt eskalieren — mit Vergleichstabelle." },
+        { file: "concepts/44-datenqualitaet-datensaetze.html", title: "44 · Datenqualität & Datensätze", desc: "Garbage in, garbage out: Kuratierungskreislauf, Qualitätskriterien, Referenz-Datasets." },
+      ],
+    },
   ],
+
   playground: [
     { file: "playground/tokenizer-demo.html", title: "Tokenizer",  desc: "Tippe Text und sieh, wie er in Tokens zerlegt wird." },
     { file: "playground/attention-demo.html", title: "Attention",  desc: "Self-Attention als Heatmap — und wie Temperatur den Fokus schärft." },
@@ -318,4 +329,5 @@ document.addEventListener("DOMContentLoaded", () => {
   buildBottomNav();
   wireDropdowns();
   initSearch();
-});
+});      
+

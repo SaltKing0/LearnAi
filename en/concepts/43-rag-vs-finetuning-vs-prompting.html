@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>43 · RAG vs. Fine-Tuning vs. Prompting — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 43 · Stage C · Decision guide</p>
+    <h1>43 · RAG vs. Fine-Tuning vs. Prompting</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Three ways to help someone smart: <strong>prompting</strong> = explain
+      everything needed inside the question (cheapest). <strong>RAG</strong> = put
+      the right documents on their desk (for up-to-date knowledge).
+      <strong>fine-tuning</strong> = train them for a long time until they know it
+      cold (for fixed behavior). Rule of thumb: start cheap and only escalate when
+      the cheap tier demonstrably isn't enough.
+    </div>
+
+    <h2>The decision tree</h2>
+    <div class="mermaid">
+flowchart TD
+    P{Does a good prompt<br/>+ examples suffice?} -->|Yes| PROMPT[Prompting<br/>07]
+    P -->|No - knowledge missing or stale| W{What's missing?}
+    W -->|Facts / documents / freshness| RAG[RAG<br/>08 + 30]
+    W -->|Behavior / style / format| F{High volume &<br/>stable enough to train?}
+    F -->|Yes, with 100s of examples| FT[Fine-tuning / LoRA<br/>10 + 25]
+    F -->|No| HYB[Hybrid: RAG + prompt design,<br/>FT later]
+    </div>
+    <p class="diagram-cap">The order is no accident: cost &amp; risk rise from top to bottom.</p>
+
+    <h2>The direct comparison</h2>
+    <table>
+      <tr><th></th><th>Prompting (07)</th><th>RAG (08)</th><th>Fine-Tuning (10)</th></tr>
+      <tr><td>Solves</td><td>Formulating the task, giving context</td><td>Fill knowledge gap at runtime</td><td>Change behavior permanently</td></tr>
+      <tr><td>Cost</td><td>almost 0</td><td>index + retrieval per query</td><td>training + running your own model</td></tr>
+      <tr><td>Latency</td><td>baseline</td><td>+retrieval search</td><td>baseline (or smaller model possible)</td></tr>
+      <tr><td>Data freshness</td><td>manual in prompt</td><td><strong>strong</strong> (rebuild index)</td><td>poor — retraining needed</td></tr>
+      <tr><td>When</td><td>always first</td><td>own/live data as source</td><td>fixed format/style at high volume</td></tr>
+      <tr><td>Typical failure</td><td>context too long/expensive</td><td>bad chunking/ranking</td><td>too little data, forgetting</td></tr>
+    </table>
+
+    <h2>Why this is central for you as a code user</h2>
+    <ul>
+      <li><strong>The most expensive trap</strong>: fine-tuning too early when a
+        better prompt or RAG would have sufficed. Measure first (Concept 15),
+        escalate second.</li>
+      <li><strong>Not either/or</strong>: production systems often combine a
+        fine-tune (behavior) + RAG (knowledge) + prompt (task).</li>
+      <li><strong>Evaluate the tiers separately</strong>: retrieval quality (30) and
+        answer quality are different metrics.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="07-prompting-patterns.html">07 · Prompting Patterns</a> — tier 1.</li>
+      <li><a href="08-rag.html">08 · RAG</a> + <a href="30-embedding-suche-vector-search.html">30 · Embedding Search</a> — tier 2.</li>
+      <li><a href="10-fine-tuning.html">10 · Fine-Tuning</a> + <a href="25-projekt-lora-trainieren.html">25 · LoRA project</a> — tier 3.</li>
+      <li><a href="15-evaluierung-metriken.html">15 · Evaluation &amp; Metrics</a> — decide with data, not gut feeling.</li>
+      <li><a href="17-kosten-latenz.html">17 · Cost &amp; Latency</a> — the price gap is huge.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • How many examples are realistic for a LoRA fine-tune (quality vs. quantity)?<br/>
+      • Long-context models: do they make RAG obsolete? (Cost says: no)<br/>
+      • When is model distillation worth it over fine-tuning?<br/>
+      • How do you measure "format adherence" automatically?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

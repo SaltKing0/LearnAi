@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>41 · MCP (Model Context Protocol) — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 41 · Stage C</p>
+    <h1>41 · MCP (Model Context Protocol)</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Until now, every model↔tool connection needed its own custom cable: 10 tools
+      = 10 different plugs. MCP is like USB-C for AI — one standard plug. If you
+      offer a tool once as an MCP server, any MCP-capable model/client can use it.
+      And vice versa: one client automatically understands all MCP servers.
+    </div>
+
+    <h2>What is MCP?</h2>
+    <p>An open standard (from Anthropic, late 2024) for connecting AI applications
+       to external context: tools, data, prompts. Before MCP, every app built its
+       own function-calling integrations (Concept 29) — MCP unifies that into a
+       client-server protocol.</p>
+
+    <div class="mermaid">
+flowchart LR
+    A[Host · e.g. Claude Desktop, IDE] -->|MCP client| S1[Server: Files]
+    A -->|MCP client| S2[Server: GitHub]
+    A -->|MCP client| S3[Server: DB]
+    S1 --- T1[Tools · Resources · Prompts]
+    S2 --- T2[Tools · Resources · Prompts]
+    S3 --- T3[Tools · Resources · Prompts]
+    </div>
+    <p class="diagram-cap">One host can connect several MCP servers in parallel — each server exposes tools, resources, and prompt templates.</p>
+
+    <h2>The three server primitives</h2>
+    <ul>
+      <li><strong>Tools</strong> — functions the model may call ("read file",
+        "create PR"). This is MCP's equivalent of function calling.</li>
+      <li><strong>Resources</strong> — data the client can read/attach (files, DB
+        rows). Context, not actions.</li>
+      <li><strong>Prompts</strong> — ready-made prompt templates the server offers
+        (e.g. "review this PR").</li>
+    </ul>
+
+    <h2>Why this is central for you as a code user</h2>
+    <ul>
+      <li><strong>Build once, use everywhere</strong>: your MCP server works in
+        Claude Desktop, IDEs, agent frameworks — no per-app reimplementation.</li>
+      <li><strong>Less glue code</strong>: instead of 20 hand-written function
+        definitions you consume ready-made servers (GitHub, Slack, Postgres …).</li>
+      <li><strong>But:</strong> MCP doesn't solve the security questions — prompt
+        injection via tool results (Concept 26) and sandboxing (Concept 40) remain
+        your responsibility.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="09-agents-tool-use.html">09 · Agents / Tool-Use</a> — the loop that MCP feeds.</li>
+      <li><a href="29-function-calling-deep-dive.html">29 · Function Calling (Deep Dive)</a> — the mechanism under the hood.</li>
+      <li><a href="26-sicherheit-prompt-injection.html">26 · Security &amp; Prompt Injection</a> — tool results are external input.</li>
+      <li><a href="40-sandboxing-hardening.html">40 · Sandboxing &amp; Hardening</a> — isolate servers.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • How do you authenticate MCP servers cleanly (OAuth, remote servers)?<br/>
+      • How do you find the right tools when 20 servers offer 10 tools each (tool overload)?<br/>
+      • MCP vs. classic function-calling APIs — when is the simple thing enough?<br/>
+      • How do you test an MCP server (MCP Inspector)?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

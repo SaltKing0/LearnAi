@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>42 · Diffusion & Bildgenerierung — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 42 · Stufe D</p>
+    <h1>42 · Diffusion &amp; Bildgenerierung</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Nimm ein Foto und füge immer mehr Konfetti (Rauschen) hinzu, bis nichts mehr
+      zu erkennen ist. Ein Diffusions-Modell lernt den umgekehrten Trick: es sieht
+      nur Konfetti und entfernt Schritt für Schritt genau so viel, bis am Ende ein
+      Bild steht. „Male mir einen Astronauten-Kater“ heißt: starte mit Zufalls-
+      Konfetti und entferne davon alles, was NICHT nach Astronauten-Kater aussieht.
+    </div>
+
+    <h2>Das Grundprinzip: Rauschen wegnehmen</h2>
+    <ul>
+      <li><strong>Forward (Training)</strong>: ein echtes Bild wird in vielen kleinen
+        Schritten mit Gauß-Rauschen überlagert. Das Modell lernt, in jedem Schritt
+        das gerade hinzugefügte Rauschen vorherzusagen.</li>
+      <li><strong>Reverse (Generierung)</strong>: Start bei reinem Rauschen; das
+        Modell entfernt Schritt für Schritt sein vorhergesagtes Rauschen → Bild
+        entsteht aus dem Nichts.</li>
+      <li><strong>Guidance</strong>: der Text-Prompt steuert, <em>welches</em>
+        Rauschen entfernt wird (via Cross-Attention auf Text-Embeddings, meist
+        CLIP-artiger Text-Encoder).</li>
+    </ul>
+
+    <div class="mermaid">
+flowchart LR
+    T[Text-Prompt] --> E[Text-Encoder<br/>z.B. CLIP/T5]
+    N[(Reines Rauschen)] --> D[U-Net / DiT<br/>„Rauschen vorhersagen“]
+    E -->|Guidance| D
+    D --> X1[weniger verrauscht]
+    X1 -->|Schritt 2…n| D
+    X1 -.->|nach ~20–50 Schritten| B[Finales Bild]
+    </div>
+    <p class="diagram-cap">Iterative Denoising: derselbe Netz-Block läuft 20–50× und kratzt pro Schritt etwas Rauschen weg.</p>
+
+    <h2>Wichtige Begriffe</h2>
+    <table>
+      <tr><th>Begriff</th><th>Bedeutung</th></tr>
+      <tr><td>Latent Diffusion / SD</td><td>Denoising nicht im Pixelraum, sondern in einem komprimierten Latent-Raum (VAE) — massiv günstiger. Basis von Stable Diffusion.</td></tr>
+      <tr><td>U-Net / DiT</td><td>Die Netz-Architektur, die das Rauschen vorhersagt. DiT (Diffusion Transformer) ist der moderne Standard.</td></tr>
+      <tr><td>Scheduler / Steps</td><td>Wie groß die Denoising-Schritte sind. Mehr Steps = detailierter, aber langsamer.</td></tr>
+      <tr><td>CFG-Scale</td><td>Wie stark der Prompt befolgt wird. Hoch = prompt-treu, aber „ausgebrannt“; niedrig = kreativ/abdriftend.</td></tr>
+      <tr><td>Seed</td><td>Start-Rauschen. Gleicher Seed + gleicher Prompt = gleiches Bild (reproduzierbar).</td></tr>
+      <tr><td>LoRA / Fine-Tune</td><td>Stil oder Person nachträglich beibringen (Konzept 10) — auch im Bildbereich Standard.</td></tr>
+    </table>
+
+    <h2>Warum das für dich als Code-Nutzer zentral ist</h2>
+    <ul>
+      <li><strong>Kostenbild verstehen</strong>: Bildgenerierung ist iterativ —
+        Steps × Modellgröße bestimmen Preis/Latenz (vgl. Konzept 17).</li>
+      <li><strong>Lokal machbar</strong>: SD-Modelle laufen (quantisiert) auf
+        Consumer-GPUs — anders als LLM-Frontier-Modelle (Konzept 27).</li>
+      <li><strong>Gleiche Bausteine wie bei LLMs</strong>: Text-Encoding, Latenz,
+        Sampling, Fine-Tuning/LoRA — dein LLM-Wissen transferiert.</li>
+      <li><strong>Multi-Modal-Rückweg</strong>: Modelle wie Gemini/Nano-Banana
+        generieren UND verstehen Bilder — siehe Konzept 32.</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="02-tokens-und-embeddings.html">02 · Tokens &amp; Embeddings</a> — Embeddings steuern hier das Bild.</li>
+      <li><a href="05-training-intuitiv.html">05 · Training intuitiv</a> — derselbe Loss/Loop-Gedanke, anderes Ziel.</li>
+      <li><a href="10-fine-tuning.html">10 · Fine-Tuning (LoRA)</a> — Stile nachrüsten.</li>
+      <li><a href="32-multi-modal-modelle.html">32 · Multi-Modal Modelle</a> — Text→Bild im größeren Kontext.</li>
+      <li><a href="31-quantisierung-kompression.html">31 · Quantisierung</a> — lokale Bildmodelle beschleunigen.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Warum sind Fluen/Hände schwer? (Struktur ohne semantische Verankerung)<br/>
+      • Was ist Flow Matching / Consistency Models (Few-Step-Generation)?<br/>
+      • Wie funktioniert Inpainting/Outpainting technisch?<br/>
+      • Urheberrecht/Trainingdaten — was wurde wofür trainiert?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

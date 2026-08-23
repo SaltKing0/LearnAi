@@ -104,7 +104,18 @@ const SITE = {
         { file: "concepts/25-projekt-lora-trainieren.html", title: "25 · Train LoRA", desc: "Train a small adapter on your own dataset (PEFT)." },
       ],
     },
+    {
+      id: "H",
+      label: "Stage H · Modern Architecture & Data",
+      items: [
+        { file: "concepts/41-mcp-model-context-protocol.html", title: "41 · MCP (Model Context Protocol)", desc: "USB-C for AI tools: servers, clients, tools/resources/prompts — build once, use everywhere." },
+        { file: "concepts/42-diffusion-bildgenerierung.html", title: "42 · Diffusion & Image Generation", desc: "Removing noise instead of guessing text: latent diffusion, U-Net/DiT, CFG, seeds, LoRA styles." },
+        { file: "concepts/43-rag-vs-finetuning-vs-prompting.html", title: "43 · RAG vs. Fine-Tuning vs. Prompting", desc: "The decision tree: start cheap, escalate deliberately — with a comparison table." },
+        { file: "concepts/44-datenqualitaet-datensaetze.html", title: "44 · Data Quality & Datasets", desc: "Garbage in, garbage out: the curation cycle, quality criteria, reference datasets." },
+      ],
+    },
   ],
+
   playground: [
     { file: "playground/tokenizer-demo.html", title: "Tokenizer",  desc: "Type text and see how it's split into tokens." },
     { file: "playground/attention-demo.html", title: "Attention",  desc: "Self-Attention as heatmap — and how temperature sharpens focus." },
@@ -310,4 +321,5 @@ document.addEventListener("DOMContentLoaded", () => {
   buildBottomNav();
   wireDropdowns();
   initSearch();
-});
+});      
+

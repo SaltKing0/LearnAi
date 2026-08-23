@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>44 · Datenqualität & Datensätze — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 44 · Stufe B/F</p>
+    <h1>44 · Datenqualität &amp; Datensätze</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Wenn du aus einem Kochbuch kochen lernst und das Buch ist halb falsch, wirst
+      du nie richtig gut kochen — egal wie lange du übst. Modelle sind genauso:
+      sie werden genau so gut (oder schlecht) wie die Daten, aus denen sie lernen.
+      1000 saubere Beispiele schlagen 100.000 müllige.
+    </div>
+
+    <h2>Warum Daten der eigentliche Engpass sind</h2>
+    <ul>
+      <li><strong>„Garbage in, garbage out“</strong>: Bias, Fehler und Ausreißer im
+        Datensatz landen direkt im Modellverhalten (Konzept 16).</li>
+      <li><strong>Skalierungsgesetze</strong> sagen: mehr + bessere Daten → besseres
+        Modell. Aber hochwertiges Internet-Text ist endlich; Qualität schlägt Menge.</li>
+      <li><strong>Für Fine-Tuning erst recht</strong>: bei 100–10k Beispielen dominiert
+        die Qualität jedes einzelnen Beispiels das Ergebnis.</li>
+    </ul>
+
+    <h2>Was „gute Daten“ bedeutet</h2>
+    <table>
+      <tr><th>Kriterium</th><th>Frage</th></tr>
+      <tr><td>Repräsentativität</td><td>Deckt der Satz die echte Nutzung ab (Sprachen, Fälle, Randfälle)?</td></tr>
+      <tr><td>Korrektheit</td><td>Sind Label/Antworten verlässlich? Wer hat sie erzeugt — Mensch oder Modell?</td></tr>
+      <tr><td>Vielfalt ohne Redundanz</td><td>Verschiedene Formulierungen ja, Dubletten nein (Overfitting-Gefahr).</td></tr>
+      <tr><td>Balance</td><td>Keine Klasse/Thema dominiert nur, weil sie zufällig öfter vorkommt.</td></tr>
+      <tr><td>Dedupe &amp; PII</td><td>Dubletten raus, personenbezogene Daten entfernt/anonymisiert.</td></tr>
+      <tr><td>Lizenz</td><td>Darf ich das trainieren? (Rechtlich oft wichtiger als technisch.)</td></tr>
+    </table>
+
+    <h2>Praktischer Workflow</h2>
+    <pre><code>1. Sammeln     → Rohdaten (Logs, Dokumente, kuratierte Quellen)
+2. Filtern     → Dedupe (Hash/embedding), Sprachfilter, Toxizität, Länge
+3. Qualitäts-Score → heuristisch oder LLM-as-Judge (Konzept 34)
+4. Splitten    → Train / Validation / Test — niemals mischen!
+5. Training    → Loss beobachten, Overfitting an Validierungs-Loss erkennen (05)
+6. Fehleranalyse → schlechte Fälle anschauen → gezielt Daten nachlegen</code></pre>
+    <p>Der Loop 6→2 ist der wichtigste: <strong>Datenkuratierung ist iterativ</strong>,
+       kein Einmal-Vorgang.</p>
+
+    <div class="mermaid">
+flowchart LR
+    RAW[Rohdaten] --> F[Filtern/Dedupe]
+    F --> S[Quality-Score<br/>Heuristik / Judge]
+    S -->|schlecht| BIN[Aussortieren]
+    S -->|gut| TR[Train-Split]
+    TR --> M[Training] --> EV[Evaluation]
+    EV -->|Fehleranalyse| GAP[Lücken identifiziert]
+    GAP -->|gezieltes Nachsammeln| RAW
+    </div>
+    <p class="diagram-cap">Datenkuratierung als Kreislauf: Evaluationsergebnisse fließen in die nächste Datenrunde zurück.</p>
+
+    <h2>Bekannte Referenz-Datensätze (zum Lernen/Studieren)</h2>
+    <ul>
+      <li><strong>C4 / The Pile / FineWeb</strong> — große Web-Corpora für Pre-Training.</li>
+      <li><strong>OpenAssistant / UltraChat / Tülu</strong> — Instruktions-/Dialog-Daten für SFT.</li>
+      <li><strong>MMLU / GSM8K / HumanEval</strong> — Evaluierungs-Benchmarks (Konzept 15/34), keine Trainingsdaten!</li>
+    </ul>
+
+    <h2>Warum das für dich als Code-Nutzer zentral ist</h2>
+    <ul>
+      <li><strong>Fine-Tuning-Erfolg = Datenarbeit</strong>: 80% der Zeit gehen ins
+        Kuratieren, nicht ins Trainieren (Konzept 10/25).</li>
+      <li><strong>Evals brauchen eigene Daten</strong>: ein Eval-Set aus deinen echten
+        Fällen ist wertvoller als jeder Benchmark.</li>
+      <li><strong>RAG lebt auch von Datenqualität</strong>: schlecht gescannte PDFs =
+        schlecht retrievte Chunks (Konzept 08/30).</li>
+      <li><strong>Rechtliche Risiken</strong> (Lizenz, Datenschutz) sitzen an den
+        Daten, nicht am Modell.</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="05-training-intuitiv.html">05 · Training intuitiv</a> — was mit den Daten passiert.</li>
+      <li><a href="08-rag.html">08 · RAG</a> + <a href="30-embedding-suche-vector-search.html">30 · Embedding-Suche</a> — Chunking ist Datenqualität zur Laufzeit.</li>
+      <li><a href="10-fine-tuning.html">10 · Fine-Tuning</a> + <a href="25-projekt-lora-trainieren.html">25 · LoRA-Projekt</a> — wo du selbst Daten baust.</li>
+      <li><a href="15-evaluierung-metriken.html">15 · Evaluierung</a> + <a href="34-testing-evaluation.html">34 · Testing &amp; Evaluation</a> — messen, was „gut“ heißt.</li>
+      <li><a href="16-halluzinationen-bias-limits.html">16 · Halluzinationen, Bias, Limits</a> — Folgen schlechter Daten.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Wie erkennt man synthetische Daten-Schleifen (Modell trainiert auf Modell-Output)?<br/>
+      • Data contamination: wie stellt man sicher, dass Benchmarks nicht im Training stecken?<br/>
+      • Wie viel Kuratierung kann man an LLM-as-Judge delegieren, ohne Bias einzubauen?<br/>
+      • Active Learning: welche Beispiele lohnen sich zu labeln?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>
