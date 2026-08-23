@@ -15,55 +15,117 @@
 
     <div class="callout kid">
       <span class="label">Explain it to a 12-year-old</span>
-      Imagine you have a chef who knows how to cook everything. Now you want them to specialize in pizza. Instead of teaching them to cook from scratch (that's pre-training), you just have them practice pizza for a week. That's fine-tuning — taking a generalist and making them a specialist.
+      Instead of explaining everything to the model in the prompt every single time,
+      you let it practice on examples — like in Concept 05, only much smaller and on
+      one special topic. With LoRA you clip a small trailer onto the model that it
+      learns, instead of rebuilding the whole model. Cheap, fast, swappable.
     </div>
 
-    <h2>What is Fine-Tuning?</h2>
-    <p>Fine-tuning takes a pre-trained model and continues training on a smaller, specialized dataset. The model retains its general knowledge but becomes better at specific tasks.</p>
+    <h2>The basic principle (connection to 05)</h2>
+    <p>It's <strong>the same training as in Concept 05</strong> — lowering loss by
+       adjusting weights — just on a small, targeted dataset instead of the huge
+       pre-training run. The result: a model "specialized" in your format/tone/domain.</p>
 
-    <h2>When to Fine-Tune?</h2>
+    <h2>Full fine-tuning vs. PEFT / LoRA</h2>
     <ul>
-      <li><strong>Domain expertise</strong> → Medical, legal, technical jargon</li>
-      <li><strong>Style/voice</strong> → Match your brand's tone</li>
-      <li><strong>Format</strong> → Always output JSON, specific templates</li>
-      <li><strong>Behavior</strong> → How to handle edge cases</li>
+      <li><strong>Full fine-tuning</strong> — <em>all</em> weights are adjusted.
+        Expensive (lots of memory/GPU), risks "catastrophic forgetting" (losing
+        general knowledge).</li>
+      <li><strong>LoRA (Low-Rank Adaptation)</strong> — the base model stays
+        <em>frozen</em>. Only small extra matrices (adapters) are trained and added
+        alongside. Tiny (MB instead of GB), fast, and you can swap adapters like
+        expansion cards.</li>
+      <li><strong>PEFT</strong> = umbrella term for "train only a small part"
+        (LoRA is the best-known variant).</li>
     </ul>
 
-    <h2>LoRA / PEFT</h2>
-    <p>Full fine-tuning is expensive — you update all billions of parameters. LoRA (Low-Rank Adaptation) only updates small "adapter" layers. Same result, 1% of the cost.</p>
+    <h2>Demo: base model + LoRA adapter</h2>
+    <div class="demo-box">
+      <div class="controls">
+        <button id="toggle" style="background:#58a6ff;color:#0e1116;border:none;border-radius:8px;padding:8px 16px;font-family:monospace;cursor:pointer;">Adapter: OFF</button>
+      </div>
+      <div id="loraSketch"></div>
+      <p class="meta">Visualization: the big model stays the same (frozen). The
+        LoRA adapter (green) sits on top — when "ON", behavior is influenced by it
+        without changing the base model.</p>
+    </div>
 
-    <h2>Fine-Tuning vs. RAG vs. Prompting</h2>
-    <table>
-      <tr><th>Method</th><th>Cost</th><th>When</th></tr>
-      <tr><td>Prompting</td><td>Free</td><td>Simple tasks, quick iteration</td></tr>
-      <tr><td>RAG</td><td>Low</td><td>Need external/up-to-date knowledge</td></tr>
-      <tr><td>Fine-Tuning</td><td>High</td><td>Need specific behavior/style</td></tr>
-    </table>
-
-    <h2>Why this matters to you</h2>
+    <h2>When fine-tuning is worth it — and when NOT</h2>
     <ul>
-      <li><strong>Custom models</strong> → Build models that match your exact needs</li>
-      <li><strong>Privacy</strong> → Keep sensitive data in-house</li>
-      <li><strong>Cost</strong> → Smaller fine-tuned models can replace larger general ones</li>
+      <li><strong>Worth it:</strong> fixed output format, specific tone/style,
+        domain jargon, many recurring similar tasks (cuts prompt &amp; token costs
+        at high volume).</li>
+      <li><strong>Not worth it:</strong> general tasks, little example data, or when
+        a good prompt (07) or RAG (08) already suffices. Training = effort.</li>
+    </ul>
+
+    <h2>Why this is central for you as a code user</h2>
+    <ul>
+      <li><strong>Your own models</strong> offline/self-hosted, without asking an API every time.</li>
+      <li><strong>LoRA is small</strong>: you version only the adapter, not the 7B model.</li>
+      <li><strong>Ecosystem</strong>: Hugging Face PEFT library, axolotl, the tools from our Concept 11 (Stage D).</li>
+      <li><strong>Distinction</strong>: RAG = knowledge at runtime; fine-tuning = baking in behavior.</li>
     </ul>
 
     <h2>Related</h2>
     <ul>
-      <li><a href="05-training-intuitively.html">05 · Training Intuitively</a> → How training works</li>
-      <li><a href="08-rag.html">08 · RAG</a> → Alternative to fine-tuning</li>
+      <li><a href="05-training-intuitiv.html">05 · Training Intuitively</a> — fine-tuning is the same loop, just smaller.</li>
+      <li><a href="07-prompting-patterns.html">07 · Prompting Patterns</a> — the cheaper alternative; try first.</li>
+      <li><a href="08-rag.html">08 · RAG</a> — knowledge at runtime instead of baked in.</li>
+      <li><a href="25-projekt-lora-trainieren.html">25 · Project: Train a LoRA</a> — do it yourself.</li>
     </ul>
 
     <div class="callout warn">
       <span class="label">Open Questions / Gaps</span>
-      • How much data do you need for fine-tuning?<br/>
-      • How to avoid "catastrophic forgetting"?<br/>
-      • When is full fine-tuning worth it over LoRA?
+      • SFT (supervised fine-tuning) vs. RLHF vs. DPO — which phases exist?<br/>
+      • Catastrophic forgetting — why does it happen with full FT?<br/>
+      • Data quality vs. quantity — how much is enough for LoRA?<br/>
+      • How do you evaluate a fine-tune objectively?
     </div>
   </div>
 
   <footer id="bottomnav"></footer>
-  <script src="../assets/mermaid-init.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
   <script src="../assets/nav.js"></script>
+  <script>
+    let adapterOn = false;
+    const sketch = (p) => {
+      p.setup = () => {
+        const c = p.createCanvas(420, 200);
+        c.parent("loraSketch");
+        p.frameRate(8);
+        p.textAlign(p.CENTER, p.CENTER);
+      };
+      p.draw = () => {
+        p.background(22, 27, 34);
+        // base model (frozen)
+        p.rectMode(p.CENTER);
+        p.noStroke();
+        p.fill(40, 60, 90);
+        p.rect(210, 110, 360, 90, 12);
+        p.fill(230); p.textSize(16);
+        p.text("Base model (frozen)", 210, 110);
+        // LoRA adapter on top
+        if (adapterOn) {
+          p.fill(126, 231, 135, 220);
+          p.rect(210, 48, 280, 46, 10);
+          p.fill(14); p.textSize(15);
+          p.text("LoRA adapter (trained)", 210, 48);
+          // connecting arrows
+          p.stroke(126, 231, 135); p.strokeWeight(2);
+          p.line(120, 71, 120, 65); p.line(300, 71, 300, 65);
+          p.noStroke();
+        }
+        // status
+        p.fill(154, 167, 180); p.textSize(13); p.textAlign(p.LEFT, p.CENTER);
+        p.text("Adapter: " + (adapterOn ? "ON (influences behavior)" : "OFF (base only)"), 20, 180);
+      };
+    };
+    new p5(sketch);
+    document.getElementById("toggle").addEventListener("click", (e) => {
+      adapterOn = !adapterOn;
+      e.target.textContent = "Adapter: " + (adapterOn ? "ON" : "OFF");
+    });
+  </script>
 </body>
 </html>
-

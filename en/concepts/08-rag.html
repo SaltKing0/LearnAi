@@ -15,53 +15,117 @@
 
     <div class="callout kid">
       <span class="label">Explain it to a 12-year-old</span>
-      Imagine you're taking a test and you're allowed to look things up in your textbook. RAG is like that — the model doesn't need to know everything by heart. It can "look up" relevant information before answering. This way, it can answer questions about things it was never trained on.
+      The model can't know everything and forgets details fast. So before your
+      question you tell it: "Here — first read these matching book pages," and only
+      then: "Now answer the question using them." This way it answers with fresh,
+      real information instead of guessing.
     </div>
 
-    <h2>What is RAG?</h2>
-    <p>RAG = Retrieval Augmented Generation. Instead of relying only on what the model learned during training, RAG retrieves relevant documents at query time and includes them in the prompt.</p>
-
-    <h2>Why RAG?</h2>
+    <h2>The three words</h2>
     <ul>
-      <li><strong>Up-to-date info</strong> → Model knowledge has a cutoff date</li>
-      <li><strong>Domain knowledge</strong> → Your company docs, private data</li>
-      <li><strong>Hallucination reduction</strong> → Ground answers in real documents</li>
-      <li><strong>Source attribution</strong> → Show where the answer came from</li>
+      <li><strong>Retrieval</strong> — search for the text passages that match the question.</li>
+      <li><strong>Augmented</strong> — attach those passages to the prompt (Concept 07).</li>
+      <li><strong>Generation</strong> — the model answers based on them.</li>
     </ul>
 
-    <h2>The RAG Pipeline</h2>
-    <ol>
-      <li><strong>Index</strong> → Split documents into chunks, embed them, store in vector DB</li>
-      <li><strong>Retrieve</strong> → User query → embed → find similar chunks</li>
-      <li><strong>Augment</strong> → Insert retrieved chunks into prompt</li>
-      <li><strong>Generate</strong> → Model answers based on retrieved context</li>
-    </ol>
+    <div class="mermaid">
+flowchart LR
+    subgraph OFF["Offline · Build index"]
+        D[Documents] --> C[Chunking]
+        C --> E[Embedding per chunk]
+        E --> DB[(Vector database)]
+    end
+    subgraph LIVE["At runtime · Query"]
+        Q[Question] --> QE[Embed question]
+        QE --> R[Top-k similar chunks<br/>via cosine similarity]
+        DB --> R
+        R --> A[Prompt = question + context]
+        A --> G[Model generates answer]
+        G --> Z[Answer with source / citation]
+    end
+    </div>
+    <p class="diagram-cap">RAG in two phases: index once, then retrieve &amp; generate per question.</p>
 
-    <h2>Why this matters to you</h2>
+    <h2>How the search works (connection to Concept 02)</h2>
+    <p>Documents are split into chunks and each is turned into an
+       <strong>embedding</strong> (vector) — just like tokens in Concept 02.
+       The question is embedded too. <strong>Cosine similarity</strong> between the
+       question vector and document vectors finds the closest ones. That's the whole
+       "search" — distance in space instead of keyword matching.</p>
+    <p>These embeddings + search live in a <strong>vector database</strong>
+       (Chroma, pgvector, Pinecone, Qdrant). Offline: build the index. At runtime:
+       retrieve only the top-k chunks and append them.</p>
+
+    <h2>Demo: simplified retrieval (toy, keyword-based)</h2>
+    <div class="demo-box">
+      <input id="q" type="text" placeholder="e.g. 'How does the model learn?'" style="width:100%;background:#0e1116;color:#e6edf3;border:1px solid #2a3340;border-radius:8px;padding:10px;font-family:monospace;" />
+      <div class="controls"><button id="go" style="background:#58a6ff;color:#0e1116;border:none;border-radius:8px;padding:8px 16px;font-family:monospace;cursor:pointer;">Search →</button></div>
+      <div id="res" style="margin-top:14px;"></div>
+      <p class="meta">Note: this is a <strong>toy</strong> (word overlap), not real
+        embeddings. It only shows the principle: question → similarity ranking → top hits.</p>
+    </div>
+
+    <h2>Why this is central for you as a code user</h2>
     <ul>
-      <li><strong>Chat with your data</strong> → Build a bot that knows your docs</li>
-      <li><strong>Cost-effective</strong> → Cheaper than fine-tuning for most use cases</li>
-      <li><strong>Fast iteration</strong> → Add new docs without retraining</li>
+      <li><strong>Your own data</strong> without retraining the model (10).</li>
+      <li><strong>Freshness</strong>: documents change, model stays the same.</li>
+      <li><strong>Fewer hallucinations</strong>: answers are tied to a source (with citation).</li>
+      <li><strong>Standard building block</strong>: most "AI chatbots over your own data" are RAG.</li>
     </ul>
 
     <h2>Related</h2>
     <ul>
-      <li><a href="02-tokens-and-embeddings.html">02 · Tokens &amp; Embeddings</a> → How similarity works</li>
-      <li><a href="30-embedding-search-vector-search.html">30 · Embedding Search</a> → The retrieval part</li>
+      <li><a href="02-tokens-und-embeddings.html">02 · Tokens &amp; Embeddings</a> — the vectors RAG search is built on.</li>
+      <li><a href="07-prompting-patterns.html">07 · Prompting Patterns</a> — retrieval = "better prompt through context".</li>
+      <li><a href="09-agents-tool-use.html">09 · Agents / Tool-Use</a> — retrieval as one possible tool.</li>
+      <li><a href="30-embedding-suche-vector-search.html">30 · Embedding Search &amp; Vector Search</a> — the deep dive into the retrieval part.</li>
       <li><a href="../playground/rag-demo.html">Playground · RAG Demo</a></li>
     </ul>
 
     <div class="callout warn">
       <span class="label">Open Questions / Gaps</span>
-      • How to choose the right chunk size?<br/>
-      • What if retrieved chunks are irrelevant?<br/>
-      • How to evaluate RAG quality?
+      • Chunking strategy (size, overlap) — why is it decisive?<br/>
+      • Re-ranking: why sort similarity-top-k again?<br/>
+      • Hybrid search (keyword + vector) — when is it better?<br/>
+      • What is "context poisoning" in RAG?
     </div>
   </div>
 
   <footer id="bottomnav"></footer>
-  <script src="../assets/mermaid-init.js"></script>
   <script src="../assets/nav.js"></script>
+  <script>
+    const DOCS = [
+      { id: 1, text: "Training: the model learns through backpropagation, minimally adjusting its weights to reduce the error (loss)." },
+      { id: 2, text: "Attention is a mechanism where each word pays attention to other words to resolve things like pronoun references." },
+      { id: 3, text: "RAG combines search with generation: relevant documents are retrieved and appended to the prompt." },
+      { id: 4, text: "A token is the smallest piece of text the model computes with; embeddings turn it into a vector in meaning space." },
+      { id: 5, text: "Fine-tuning further trains a pre-trained model on a small, specific dataset — often via LoRA as small adapters." },
+    ];
+    function overlap(q, doc) {
+      const qw = q.toLowerCase().match(/[a-z]+/g) || [];
+      const dw = doc.toLowerCase().match(/[a-z]+/g) || [];
+      const set = new Set(dw);
+      let hit = 0;
+      qw.forEach((w) => { if (set.has(w)) hit++; });
+      return qw.length ? hit / qw.length : 0;
+    }
+    document.getElementById("go").addEventListener("click", () => {
+      const q = document.getElementById("q").value.trim();
+      if (!q) return;
+      const ranked = DOCS.map((d) => ({ d, s: overlap(q, d.text) }))
+        .sort((a, b) => b.s - a.s).slice(0, 3);
+      const box = document.getElementById("res");
+      box.innerHTML = ranked.map((r) =>
+        `<div class="callout" style="margin:10px 0;"><span class="label">Hit #${r.d.id} · Score ${r.s.toFixed(2)}</span>${r.d.text}</div>`
+      ).join("");
+    });
+    document.getElementById("q").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") document.getElementById("go").click();
+    });
+  </script>
+
+  <!-- Mermaid for flow/architecture diagrams (CDN, no build step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
 </body>
 </html>
-

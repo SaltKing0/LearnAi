@@ -15,49 +15,131 @@
 
     <div class="callout kid">
       <span class="label">Explain it to a 12-year-old</span>
-      Training is like studying for a test — you learn from books, make mistakes, try again. Inference is the test itself — you use what you learned to answer questions. Training takes days and expensive computers. Inference takes seconds and runs on your phone.
+      Training is <em>school</em>: long, expensive, the model learns. Inference is
+      <em>the exam</em>: what was learned gets applied to produce an answer. At school
+      you practice a thousand times — in the exam you just want the right result,
+      fast. That's why the two phases cost completely different amounts and run on
+      different hardware.
     </div>
 
-    <h2>Training</h2>
-    <p>Training is the process of teaching the model. It requires massive compute (thousands of GPUs), massive data (terabytes of text), and massive time (weeks to months). The result is a model file.</p>
+    <h2>The two phases compared</h2>
+    <pre><code>Training:  data + backprop + weight updates  →  expensive, slow, GPU, once
+Inference: input → prediction (no updates)   →  cheap*, fast, GPU/CPU, always</code></pre>
+    <p>During <strong>inference</strong> the weights are <em>not</em> changed anymore —
+       the model only "thinks" forward (forward pass), exactly the autoregressive
+       loop from Concept 01. That's why a single token can be generated relatively
+       quickly.</p>
 
-    <h2>Inference</h2>
-    <p>Inference is using the trained model. You give it input, it gives output. Much cheaper than training — can run on a laptop for small models, or a server for large ones.</p>
-
-    <h2>Key Differences</h2>
-    <table>
-      <tr><th></th><th>Training</th><th>Inference</th></tr>
-      <tr><td>What</td><td>Learning</td><td>Using</td></tr>
-      <tr><td>Compute</td><td>1000s of GPUs</td><td>1 GPU or CPU</td></tr>
-      <tr><td>Time</td><td>Weeks</td><td>Milliseconds</td></tr>
-      <tr><td>Cost</td><td>Millions of dollars</td><td>Cents per query</td></tr>
-      <tr><td>Who does it</td><td>OpenAI, Anthropic, Meta</td><td>You, API users</td></tr>
-    </table>
-
-    <h2>Why this matters to you</h2>
+    <h2>Why training is so much more expensive</h2>
     <ul>
-      <li><strong>API costs</strong> → You pay for inference, not training</li>
-      <li><strong>Latency</strong> → Inference speed determines user experience</li>
-      <li><strong>Fine-tuning</strong> → You can do "mini-training" on your data</li>
+      <li><strong>Backprop</strong> needs the complete graph in both directions +
+        intermediate values → far more memory and compute per step.</li>
+      <li><strong>Epochs</strong>: the same data is passed through thousands of times.</li>
+      <li><strong>Model size</strong> scales both, but training grows ~linearly
+        stronger with batch size and steps.</li>
+    </ul>
+    <p>That's why only a few players (OpenAI, Meta, …) train huge models — and most
+       of us only do inference (or light fine-tuning).</p>
+
+    <h2>What "expensive" means in practice</h2>
+    <ul>
+      <li><strong>Training:</strong> millions of $ for a frontier model; days/weeks
+        on hundreds of GPUs. You practically never do this yourself — you take a
+        pre-trained model.</li>
+      <li><strong>Inference:</strong> paid per token (API) or per GPU-hour
+        (self-hosted). This is where you save: fewer tokens, smaller models,
+        quantization (Concept 04), caching.</li>
+    </ul>
+
+    <h2>Visualization: where does what run?</h2>
+    <div class="demo-box">
+      <div id="phaseSketch"></div>
+      <p class="meta">Animation toggling between "Training" (weights being turned,
+        many arrows) vs. "Inference" (forward only, one arrow).</p>
+    </div>
+
+    <h2>Why this is central for you as a code user</h2>
+    <ul>
+      <li><strong>API choice:</strong> you pay for inference. Model size, latency and
+        cost are purely inference topics.</li>
+      <li><strong>Self-hosting:</strong> inference can run on your own GPU/CPU
+        (e.g. via Ollama, vLLM) — training hardly ever.</li>
+      <li><strong>Quantization/distillation</strong> target inference costs.</li>
+      <li><strong>Fine-tuning</strong> (Stage C) is a compromise: short, small
+        training on top of a pre-trained model.</li>
     </ul>
 
     <h2>Related</h2>
     <ul>
-      <li><a href="05-training-intuitively.html">05 · Training Intuitively</a> → How training works</li>
-      <li><a href="17-kosten-latenz.html">17 · Cost &amp; Latency</a> → Inference costs</li>
+      <li><a href="05-training-intuitiv.html">05 · Training Intuitively</a> — the loop that only runs in phase one here.</li>
+      <li><a href="01-sprachmodell-als-funktion.html">01 · Language Model as a Function</a> — the inference loop.</li>
+      <li><a href="04-transformer-ueberblick.html">04 · Transformer Overview</a> — the layers passed through forward-only during inference.</li>
     </ul>
 
     <div class="callout warn">
       <span class="label">Open Questions / Gaps</span>
-      • How do you optimize inference speed?<br/>
-      • What's the environmental impact of training vs inference?<br/>
-      • When does training happen vs inference in a chat session?
+      • What is "KV-cache" and why does long context make inference expensive?<br/>
+      • Batch inference: why is parallel prediction more efficient?<br/>
+      • What is "throughput" vs. "latency" in inference?<br/>
+      • Why can't training easily run on a consumer GPU (memory)?
     </div>
   </div>
 
   <footer id="bottomnav"></footer>
-  <script src="../assets/mermaid-init.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
   <script src="../assets/nav.js"></script>
+  <script>
+    // Two phases animated, toggling.
+    let phase = 0;          // 0 = training, 1 = inference
+    const sketch = (p) => {
+      p.setup = () => {
+        const c = p.createCanvas(460, 200);
+        c.parent("phaseSketch");
+        p.frameRate(8);
+        p.textAlign(p.CENTER, p.CENTER);
+      };
+      p.draw = () => {
+        p.background(22, 27, 34);
+        // toggle phase every 8 frames
+        if (p.frameCount % 8 === 0) phase = 1 - phase;
+        const isTrain = phase === 0;
+
+        // model box
+        p.rectMode(p.CENTER);
+        p.noStroke();
+        p.fill(40, 60, 90);
+        p.rect(230, 100, 160, 90, 10);
+        p.fill(230); p.textSize(15);
+        p.text("Model", 230, 100);
+
+        // left input
+        p.fill(isTrain ? 126 : 88, isTrain ? 231 : 166, isTrain ? 135 : 255);
+        p.text("Data", 40, 100);
+        p.text(isTrain ? "Weights\nupdated" : "Answer", 420, 100);
+
+        // arrows
+        p.stroke(126, 231, 135);
+        p.strokeWeight(3);
+        if (isTrain) {
+          // many back-and-forth arrows (backprop)
+          p.line(110, 100, 150, 100);
+          p.line(310, 100, 350, 100);
+          p.fill(126, 231, 135); p.noStroke();
+          p.text("↑↓ Backprop\n(lots of compute)", 230, 175);
+        } else {
+          // single forward arrow
+          p.line(110, 100, 150, 100);
+          p.line(310, 100, 350, 100);
+          p.fill(126, 231, 135); p.noStroke();
+          p.text("→ forward only", 230, 175);
+        }
+        // top label
+        p.fill(isTrain ? 255 : 154, isTrain ? 166 : 167, isTrain ? 87 : 180);
+        p.textSize(18);
+        p.text(isTrain ? "TRAINING (expensive)" : "INFERENCE (cheap)", 230, 25);
+      };
+    };
+    new p5(sketch);
+  </script>
 </body>
 </html>
-
