@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>44 · Programming Paradigms &amp; Languages — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 44 · Stage 0 · CS Foundations</p>
+    <h1>44 · Programming Paradigms &amp; Languages</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      A paradigm is a <em>way of thinking</em> when you write code. Object-Oriented is like organizing a school by students and classes. Functional is like a recipe that always gives the same dish from the same ingredients — no sneaky changes. And a language is just a dialect that makes one way of thinking easy and another hard.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>Languages differ less in "what they can do" (all are Turing-complete) and more in <strong>which paradigm they make natural</strong> and <strong>how they turn your code into something the machine runs</strong>. Knowing the paradigms helps you read any codebase and pick the right tool — including in the AI ecosystem, which is a mix of Python (imperative/OOP), TypeScript (OOP + FP), and Rust/Go (systems + concurrency).</p>
+
+    <h2>The paradigms</h2>
+    <table>
+      <tr><th>Paradigm</th><th>Core idea</th><th>Mental image</th><th>Typical languages</th></tr>
+      <tr><td>Imperative</td><td>Say <em>how</em>: step-by-step commands</td><td>A recipe with numbered steps</td><td>C, Python, JS</td></tr>
+      <tr><td>Declarative</td><td>Say <em>what</em> you want, not how</td><td>"Give me all users over 18" (SQL)</td><td>SQL, HTML, CSS, YAML</td></tr>
+      <tr><td>Procedural</td><td>Imperative + reusable functions/procedures</td><td>Recipe, but steps as named helpers</td><td>C, early Python</td></tr>
+      <tr><td>Object-Oriented</td><td>Bundle data + behavior into objects with state</td><td>School: students, classes, methods</td><td>Java, C#, Python, TS</td></tr>
+      <tr><td>Functional</td><td>Pure functions, no shared mutable state</td><td>Recipe: same in → same out, always</td><td>Haskell, Clojure, F#, much of JS/TS</td></tr>
+    </table>
+    <p>Real code is almost always <strong>multi-paradigm</strong> — Python and TypeScript let you mix OOP and FP freely. The "paradigm" is a style you choose per problem, not a cage.</p>
+
+    <h2>Language families — how code becomes machine code</h2>
+    <table>
+      <tr><th>Family</th><th>How it runs</th><th>Trade-off</th><th>Examples</th></tr>
+      <tr><td>Compiled (native)</td><td>Compiler → machine code, runs directly</td><td>Fast, but compile step + manual memory (or not)</td><td>C, C++, Rust, Go</td></tr>
+      <tr><td>Interpreted / scripting</td><td>Interpreter runs source line by line</td><td>Fast to write, slower to run, needs runtime</td><td>Python, JavaScript, Ruby</td></tr>
+      <tr><td>Managed / VM-based</td><td>Compiles to bytecode, runs on a virtual machine with GC</td><td>Portable + safe (GC), some overhead</td><td>Java, C#, Kotlin</td></tr>
+    </table>
+    <ul>
+      <li><strong>Compiled:</strong> C++/Rust for performance-critical inference; Go for fast, simple concurrent services (great for agent backends).</li>
+      <li><strong>Interpreted:</strong> Python is the AI lingua franca (PyTorch, transformers); JavaScript/TypeScript powers the web + most agent frameworks.</li>
+      <li><strong>Managed:</strong> Java/C# in big enterprise stacks (Spring Boot, ASP.NET).</li>
+    </ul>
+
+    <h2>Why this helps me (as an AI/code user)</h2>
+    <ul>
+      <li><strong>Choosing tools:</strong> Python for model work, TypeScript for browser/agent UIs, Rust/Go for high-throughput serving — each is the right paradigm for its job.</li>
+      <li><strong>Reading model code:</strong> PyTorch is OOP with a functional flavor; recognizing that makes transformers code readable.</li>
+      <li><strong>Functional thinking in agents:</strong> treating tool calls as pure functions (input → output) makes agent loops testable and predictable.</li>
+      <li><strong>Declarative skills:</strong> prompts, YAML configs, and SQL are declarative — you describe the outcome, the engine figures out how.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="05-training-intuitively.html">05 · Training Intuitively</a> → PyTorch/OOP in practice</li>
+      <li><a href="33-serving-deployment.html">33 · Serving</a> → Rust/Go/C++ at the inference layer</li>
+      <li><a href="46-frontend-development.html">46 · Frontend Development</a> → TypeScript/JS paradigms</li>
+      <li><a href="47-backend-development.html">47 · Backend Development</a> → language choice per backend stack</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • When does functional purity actually pay off vs. slow things down?<br/>
+      • Why is Python "slow" yet the AI standard? (hint: it's the libraries)<br/>
+      • Rust ownership vs. GC: when is the compile-time cost worth it?<br/>
+      • Want a paradigm-comparison playground with the same problem in 3 styles?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

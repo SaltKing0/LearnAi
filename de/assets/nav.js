@@ -16,6 +16,22 @@ const SITE = {
   // Stufen = Gruppierung. Reihenfolge = Lernpfad.
   stages: [
     {
+      id: "0",
+      label: "Stufe 0 · CS & Engineering-Grundlagen",
+      items: [
+        { file: "concepts/41-datenstrukturen-algorithmen.html", title: "41 · Datenstrukturen & Algorithmen", desc: "Arrays, Bäume, Graphen, Sortieren, Suchen, Big O — der Werkzeugkasten hinter jedem Programm." },
+        { file: "concepts/42-systemarchitektur-design.html", title: "42 · Systemarchitektur & Design", desc: "Monolithen, Microservices, Serverless, event-getrieben, SOLID & GoF-Patterns." },
+        { file: "concepts/43-betriebssysteme-netzwerke.html", title: "43 · Betriebssysteme & Netzwerke", desc: "Threads, Concurrency, Speicher, TCP/IP, HTTP/HTTPS, DNS, Sockets." },
+        { file: "concepts/44-programmierparadigmen-sprachen.html", title: "44 · Programmierparadigmen & Sprachen", desc: "OOP, FP, imperativ vs. deklarativ; kompiliert vs. interpretiert vs. verwaltet." },
+        { file: "concepts/45-software-engineering-lebenszyklus.html", title: "45 · Software-Engineering & Lebenszyklus", desc: "Agile, Scrum, Git-Branching, Code Review und die Test-Ebenen." },
+        { file: "concepts/46-frontend-entwicklung.html", title: "46 · Frontend-Entwicklung", desc: "HTML/CSS/JS/TS, React & Co., Performance, PWAs, a11y, responsive." },
+        { file: "concepts/47-backend-entwicklung.html", title: "47 · Backend-Entwicklung", desc: "REST/GraphQL/gRPC, Server-Frameworks, SQL- & NoSQL-Datenbanken." },
+        { file: "concepts/48-devops-cloud.html", title: "48 · DevOps, Infrastruktur & Cloud", desc: "Docker/K8s, CI/CD, Cloud & IaC, Observability." },
+        { file: "concepts/49-sicherheit-compliance.html", title: "49 · Sicherheit & Compliance", desc: "OWASP, AuthN/AuthZ, OAuth/OIDC/JWT, Kryptografie, Key-Management." },
+        { file: "concepts/50-spezialisierte-domaenen.html", title: "50 · Spezialisierte Domänen", desc: "KI/ML, Mobile, Data Engineering, Embedded/IoT — eine Karte der Landschaft." },
+      ],
+    },
+    {
       id: "A",
       label: "Stufe A · Mentale Modelle",
       items: [

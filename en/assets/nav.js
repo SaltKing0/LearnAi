@@ -16,6 +16,22 @@ const SITE = {
   // Stages = grouping. Order = learning path.
   stages: [
     {
+      id: "0",
+      label: "Stage 0 · CS & Engineering Foundations",
+      items: [
+        { file: "concepts/41-data-structures-algorithms.html", title: "41 · Data Structures & Algorithms", desc: "Arrays, trees, graphs, sorting, searching, Big O — the toolbox behind every program." },
+        { file: "concepts/42-system-architecture-design.html", title: "42 · System Architecture & Design", desc: "Monoliths, microservices, serverless, event-driven, SOLID & GoF patterns." },
+        { file: "concepts/43-os-networking.html", title: "43 · Operating Systems & Networking", desc: "Threads, concurrency, memory, TCP/IP, HTTP/HTTPS, DNS, sockets." },
+        { file: "concepts/44-programming-paradigms.html", title: "44 · Programming Paradigms & Languages", desc: "OOP, FP, imperative vs. declarative; compiled vs. interpreted vs. managed." },
+        { file: "concepts/45-software-engineering-lifecycle.html", title: "45 · Software Engineering & Lifecycle", desc: "Agile, Scrum, Git branching, code review, and the testing levels." },
+        { file: "concepts/46-frontend-development.html", title: "46 · Frontend Development", desc: "HTML/CSS/JS/TS, React & friends, performance, PWAs, a11y, responsive." },
+        { file: "concepts/47-backend-development.html", title: "47 · Backend Development", desc: "REST/GraphQL/gRPC, server frameworks, SQL & NoSQL databases." },
+        { file: "concepts/48-devops-cloud.html", title: "48 · DevOps, Infrastructure & Cloud", desc: "Docker/K8s, CI/CD, cloud & IaC, observability." },
+        { file: "concepts/49-security-compliance.html", title: "49 · Security & Compliance", desc: "OWASP, authN/authZ, OAuth/OIDC/JWT, cryptography, key management." },
+        { file: "concepts/50-specialized-domains.html", title: "50 · Specialized Domains", desc: "AI/ML, mobile, data engineering, embedded/IoT — a map of the landscape." },
+      ],
+    },
+    {
       id: "A",
       label: "Stage A · Mental Models",
       items: [

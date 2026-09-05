@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>46 · Frontend Development — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 46 · Stage 0 · CS Foundations</p>
+    <h1>46 · Frontend Development</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      The frontend is the <em>part you see and touch</em> — the page, the buttons, the animations. HTML is the skeleton, CSS is the clothes and colors, JavaScript is the muscles that make it react. Frameworks like React are like a well-organized toy box that keeps everything tidy as the page grows.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>The frontend is where the user meets your product. Its core challenge is <strong>state → pixels</strong>: you have data that changes, and the UI must reflect it smoothly. Frameworks exist to make that mapping predictable and fast, instead of hand-writing DOM updates.</p>
+
+    <h2>Core web technologies</h2>
+    <ul>
+      <li><strong>HTML5:</strong> structure — semantic tags (<code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;article&gt;</code>) that also help accessibility and SEO.</li>
+      <li><strong>CSS3 / SASS:</strong> styling — layout (Flexbox, Grid), responsive breakpoints; SASS adds variables, nesting, mixins on top.</li>
+      <li><strong>JavaScript (ES6+):</strong> behavior — modules, arrow functions, promises/async-await, destructuring, classes.</li>
+      <li><strong>TypeScript:</strong> JS with types — catches errors at compile time, better autocomplete; increasingly the default for serious projects (including this repo's own tooling mindset).</li>
+    </ul>
+
+    <h2>Frameworks &amp; libraries</h2>
+    <table>
+      <tr><th>Tool</th><th>Model</th><th>Best for</th></tr>
+      <tr><td>React</td><td>Component + virtual DOM, huge ecosystem</td><td>Large apps, most popular</td></tr>
+      <tr><td>Vue.js</td><td>Component, gentle learning curve</td><td>Fast start, small-to-medium apps</td></tr>
+      <tr><td>Angular</td><td>Full framework, batteries included</td><td>Large enterprise apps</td></tr>
+      <tr><td>Svelte</td><td>Compiles away the framework, no virtual DOM</td><td>Small, fast, minimal</td></tr>
+      <tr><td>Next.js</td><td>React + server-side rendering + routing</td><td>Full-stack React, SEO, streaming UI</td></tr>
+    </table>
+
+    <h2>Performance &amp; UX</h2>
+    <ul>
+      <li><strong>Rendering optimization:</strong> only re-render what changed; code-splitting; lazy loading; caching.</li>
+      <li><strong>Web Workers:</strong> run heavy work (parsing, tokenizing, even small local models) off the main thread so the UI stays smooth.</li>
+      <li><strong>Progressive Web Apps (PWAs):</strong> installable, offline-capable web apps via service workers.</li>
+      <li><strong>Accessibility (a11y):</strong> semantic HTML, ARIA labels, keyboard navigation, contrast — so everyone can use it.</li>
+      <li><strong>Responsive design:</strong> one layout that adapts to phone/tablet/desktop.</li>
+    </ul>
+
+    <h2>Why this helps me (as an AI/code user)</h2>
+    <ul>
+      <li><strong>Chat UIs &amp; streaming:</strong> rendering token-by-token output is a frontend problem — how to update the DOM fast without jank (React + streaming).</li>
+      <li><strong>Interactive demos &amp; playgrounds:</strong> this repo's own playgrounds are frontend apps; Web Workers can run tokenizers locally.</li>
+      <li><strong>Agent frontends:</strong> tool-call visualizations, memory panels, and streaming logs are all frontend work.</li>
+      <li><strong>TypeScript:</strong> the type-safety mindset carries straight into backend and agent code.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="44-programming-paradigms.html">44 · Programming Paradigms &amp; Languages</a> → JS/TS paradigms</li>
+      <li><a href="47-backend-development.html">47 · Backend Development</a> → the other half of the stack</li>
+      <li><a href="12-llm-apis-praktisch.html">12 · LLM APIs Practically</a> → streaming output to the UI</li>
+      <li><a href="07-prompting-patterns.html">07 · Prompting Patterns</a> → designing chat UIs</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • React vs. Svelte for a streaming chat UI — which is smoother?<br/>
+      • When does a Web Worker actually help vs. add complexity?<br/>
+      • How do SSR and hydration work in Next.js?<br/>
+      • Want a playground: same chat UI in 2 frameworks side by side?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

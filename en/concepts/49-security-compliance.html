@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>49 · Security &amp; Compliance — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 49 · Stage 0 · CS Foundations</p>
+    <h1>49 · Security &amp; Compliance</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Security is <em>locking the doors</em>: making sure only the right people get in (authentication), only do what they're allowed (authorization), and that messages can't be read or faked along the way (encryption). For AI, there's an extra door to watch — the model itself can be tricked into doing things it shouldn't (prompt injection).
+    </div>
+
+    <h2>Intuition</h2>
+    <p>Security is a <strong>threat model</strong>: you ask "who might attack this, and how?" then design defenses. For a normal web app the big risks are injection, broken access control, and data leaks. For an AI app, add prompt injection and data exposure through the model. Compliance (GDPR, SOC 2, etc.) is the legal/audit side — proving you handle data responsibly.</p>
+
+    <h2>Application security (AppSec)</h2>
+    <p><strong>OWASP Top 10</strong> is the standard list of web-app risks. The ones you'll meet most:</p>
+    <table>
+      <tr><th>Risk</th><th>What it is</th><th>Defense</th></tr>
+      <tr><td>SQL injection</td><td>Attacker injects SQL into your query</td><td>Parameterized queries / ORMs (never string-concat)</td></tr>
+      <tr><td>XSS</td><td>Attacker injects script into a page others view</td><td>Escape output, sanitize, CSP headers</td></tr>
+      <tr><td>Broken access control</td><td>Users reach data they shouldn't</td><td>AuthN + AuthZ on every request, least privilege</td></tr>
+      <tr><td>Security misconfig</td><td>Default creds, exposed debug, open ports</td><td>Hardening, secrets management, scanning</td></tr>
+    </table>
+    <p>Rule: <strong>never trust input</strong>. Sanitize/validate everything that crosses a trust boundary.</p>
+
+    <h2>Authentication &amp; authorization</h2>
+    <ul>
+      <li><strong>Authentication (who are you?)</strong> vs. <strong>Authorization (what may you do?)</strong>.</li>
+      <li><strong>OAuth 2.0:</strong> delegated authorization — lets an app access your data without your password (e.g. "Sign in with Google").</li>
+      <li><strong>OpenID Connect (OIDC):</strong> identity layer on top of OAuth 2.0 — gives you the <em>who</em>.</li>
+      <li><strong>JWT:</strong> signed token carrying claims (who + what they can do) — stateless auth, but must be validated carefully (signature, expiry, audience).</li>
+      <li><strong>RBAC / ABAC:</strong> Role-Based (permissions by role) vs. Attribute-Based (permissions by attributes/context) access control.</li>
+    </ul>
+
+    <h2>Cryptography</h2>
+    <ul>
+      <li><strong>Encryption at rest</strong> (data stored — AES) and <strong>in transit</strong> (data moving — TLS/HTTPS).</li>
+      <li><strong>Hashing:</strong> one-way (passwords, integrity) — SHA-256; never store plaintext passwords, use salted hashes (bcrypt/argon2).</li>
+      <li><strong>PKI / certificates:</strong> public-key infrastructure — how TLS establishes trust via certificate authorities (that's the "lock" in your browser).</li>
+      <li><strong>Key management:</strong> keys are the crown jewels — use a key vault (AWS KMS, etc.), rotate them, never hardcode secrets.</li>
+    </ul>
+
+    <h2>Why this helps me (as an AI/code user)</h2>
+    <ul>
+      <li><strong>Prompt injection</strong> is the AppSec of LLMs — untrusted input steering the model (26).</li>
+      <li><strong>API keys &amp; secrets:</strong> never ship keys in code; use env vars / vaults — the same key-management discipline (12).</li>
+      <li><strong>Sandboxing:</strong> running model-generated code or tools needs isolation (40).</li>
+      <li><strong>Data protection:</strong> what you send to a model may leave your control — a compliance decision (14).</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="26-security-prompt-injection.html">26 · Security &amp; Prompt Injection</a> → LLM-specific attacks</li>
+      <li><a href="40-sandboxing-hardening.html">40 · Sandboxing &amp; Hardening</a> → isolating risky execution</li>
+      <li><a href="12-llm-apis-praktisch.html">12 · LLM APIs Practically</a> → key handling</li>
+      <li><a href="43-os-networking.html">43 · OS &amp; Networking</a> → TLS/HTTPS under the hood</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • OAuth 2.0 flows: when authorization code vs. client credentials?<br/>
+      • How does a JWT get validated safely in practice?<br/>
+      • What does "compliance" concretely require for an AI product?<br/>
+      • Want a playground simulating a prompt-injection attack?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

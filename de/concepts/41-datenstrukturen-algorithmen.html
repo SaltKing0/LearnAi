@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>41 · Datenstrukturen &amp; Algorithmen — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 41 · Stufe 0 · CS-Grundlagen</p>
+    <h1>41 · Datenstrukturen &amp; Algorithmen</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Eine Datenstruktur ist <em>wie du deine Sachen ordnest</em> — Bücher auf einem Haufen, oder sortiert im Regal, oder in beschrifteten Kisten. Ein Algorithmus ist <em>das Rezept aus Schritten</em>, mit dem du etwas suchst oder umsortierst. Manche Ordnungen machen „finde das rote Buch" sofort, andere dauern ewig. Die richtige Ordnung zu wählen ist die halbe Programmierung.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>Fast jedes Programm dreht sich um zwei Fragen: <strong>wie speichere ich die Daten</strong> (Datenstruktur) und <strong>wie verarbeite ich sie</strong> (Algorithmus). Der Trick: Keine Struktur ist überall am besten — eine Hash-Map findet in ~O(1), kann aber keine Ordnung halten; ein sortiertes Array hält Ordnung, aber Einfügen ist langsam. Du tauschst eines gegen ein anderes, und <strong>Big-O-Notation</strong> ist das Lineal für diesen Tausch.</p>
+
+    <h2>Datenstrukturen — der Werkzeugkasten</h2>
+    <table>
+      <tr><th>Struktur</th><th>Bild im Kopf</th><th>Schnell bei</th><th>Langsam bei</th></tr>
+      <tr><td>Array</td><td>Nummerierte Boxen in einer Reihe</td><td>Index-Zugriff (arr[i])</td><td>Einfügen/Löschen in der Mitte (O(n))</td></tr>
+      <tr><td>Verkettete Liste</td><td>Schnitzeljagd, jeder Zettel zeigt auf den nächsten</td><td>Einfügen/Löschen am Anfang</td><td>k-tes Element finden (muss laufen)</td></tr>
+      <tr><td>Stack</td><td>Pfannkuchen: zuletzt drauf, zuerst runter</td><td>Push/Pop (LIFO)</td><td>Zugriff auf die Mitte</td></tr>
+      <tr><td>Queue</td><td>Schlange im Laden: zuerst rein, zuerst raus</td><td>Enqueue/Dequeue (FIFO)</td><td>Zugriff auf die Mitte</td></tr>
+      <tr><td>Hash-Map / Dict</td><td>Garderobe mit Namensschild</td><td>Lookup/Einfügen per Schlüssel (~O(1))</td><td>Geordnete Iteration, Bereichsabfragen</td></tr>
+      <tr><td>Binärbaum / Heap</td><td>Stammbaum, sortiert</td><td>Min/Max, geordnete Traversierung (O(log n))</td><td>Unbalancierter Worst Case (O(n))</td></tr>
+      <tr><td>Graph</td><td>Karte mit Städten und Straßen</td><td>Beziehungen, Pfade, Netzwerke</td><td>Große dichte Graphen (Speicher)</td></tr>
+    </table>
+
+    <h2>Algorithmen — die Rezepte</h2>
+    <ul>
+      <li><strong>Sortieren:</strong> Bubble (O(n²), einfach), Merge (O(n log n), stabil), Quick (O(n log n) im Schnitt, in der Praxis schnell).</li>
+      <li><strong>Suchen:</strong> Linear (O(n), jede Liste), Binär (O(log n), nur auf einer <em>sortierten</em> Liste — halbiert jeden Schritt).</li>
+      <li><strong>Graph-Traversierung:</strong> BFS (Ebene für Ebene, kürzester Weg in ungewichteten Graphen), DFS (Tiefe zuerst, gut zum Erkunden/Zyklen).</li>
+    </ul>
+
+    <h2>Big O — das Lineal</h2>
+    <p>Big O beschreibt, wie die Laufzeit <em>mit der Eingabegröße</em> wächst, ohne Konstanten. Es beantwortet: „Was passiert bei 10× Daten?"</p>
+    <table>
+      <tr><th>Notation</th><th>Name</th><th>Gefühl</th><th>Beispiel</th></tr>
+      <tr><td>O(1)</td><td>Konstant</td><td>Instant, immer</td><td>Hash-Lookup, arr[i]</td></tr>
+      <tr><td>O(log n)</td><td>Logarithmisch</td><td>Verdoppelte Daten kaum spürbar</td><td>Binäre Suche, balancierter Baum</td></tr>
+      <tr><td>O(n)</td><td>Linear</td><td>Skaliert 1:1</td><td>Liste durchlaufen</td></tr>
+      <tr><td>O(n log n)</td><td>Linearithmisch</td><td>Gutes Sortieren</td><td>Merge/Quick-Sort</td></tr>
+      <tr><td>O(n²)</td><td>Quadratisch</td><td>Doppelte Daten = 4× Arbeit</td><td>Verschachtelte Schleifen, Bubble-Sort</td></tr>
+      <tr><td>O(2ⁿ) / O(n!)</td><td>Exponentiell / Fakultät</td><td>Stirbt schnell</td><td>Brute-Force Teilmengen / Permutationen</td></tr>
+    </table>
+    <p>Faustregel: <strong>O(n²) ist die Gefahrenlinie.</strong> n=1000 → eine Million Operationen; n=100.000 → zehn Milliarden. Deshalb taucht „O(n²)" in der KI überall auf — Attention ist quadratisch in der Sequenzlänge, genau deshalb sind lange Kontexte teuer (17).</p>
+
+    <h2>Warum hilft mir das (als KI-/Code-Nutzer)</h2>
+    <ul>
+      <li><strong>Embeddings &amp; Vektorsuche:</strong> „finde das nächste Embedding" ist ein Suchproblem — Brute-Force ist O(n·d), deshalb gibt es ANN-Indizes (HNSW etc.) (30).</li>
+      <li><strong>Attention ist O(n²):</strong> die Kernkosten des Transformers sind eine Komplexitäts-Tatsache, kein Bug. Big O erklärt, <em>warum</em> Kontextfenster teuer werden.</li>
+      <li><strong>KV-Cache, Token-Buffer, Queues</strong> in Agent-Harnesses sind Datenstruktur-Entscheidungen — die Trade-offs zu kennen hilft, die richtige zu wählen.</li>
+      <li><strong>Modellcode lesen:</strong> Tokenizer, Beam-Search, Sampling-Schleifen sind Algorithmen; das Muster zu erkennen macht sie lesbar.</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="30-embedding-suche-vector-search.html">30 · Embedding-Suche</a> → Nächste-Nachbarn-Suche als Algorithmus-Problem</li>
+      <li><a href="17-kosten-latenz.html">17 · Kosten &amp; Latenz</a> → quadratische Attention als Kostentatsache</li>
+      <li><a href="02-tokens-und-embeddings.html">02 · Tokens &amp; Embeddings</a> → Tokens als Zahlen-Arrays</li>
+      <li><a href="43-betriebssysteme-netzwerke.html">43 · Betriebssysteme &amp; Netzwerke</a> → Queues/Scheduling auf OS-Ebene</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Wann schlägt O(n²) Brute-Force ein O(n log n) für kleines n?<br/>
+      • Wie erreichen HNSW / ANN-Indizes wirklich sublineare Suche?<br/>
+      • Big O vs. echte Konstanten: wann ist „schlechteres" Big O schneller?<br/>
+      • Sortier-Visualisierungs-Playground hier? (siehe ROADMAP Playground)
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

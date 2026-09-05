@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>50 · Spezialisierte Domänen — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 50 · Stufe 0 · CS-Grundlagen</p>
+    <h1>50 · Spezialisierte Domänen</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Über „normale" Web-Apps hinaus programmieren Entwickler in speziellen Welten: winzige Chips in deinem Auto (Embedded), Apps auf deinem Handy (Mobile), riesige Datenfabriken (Data Engineering) und Maschinen, die lernen (KI). Jede Welt hat eigene Tools und Regeln — aber dieselben Kernideen (Code, Daten, Netzwerke) darunter.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>Diese Seite ist eine <strong>Karte der größeren Landschaft</strong> — eine Tour durch die spezialisierten Domänen, von denen du hörst, damit du sie einordnen und entscheiden kannst, wo du tiefer eintauchst. Der rote Faden: Jede Domäne ist dieselben Grundlagen (Datenstrukturen, Netzwerke, Concurrency), angewendet mit domänenspezifischen Beschränkungen.</p>
+
+    <h2>Künstliche Intelligenz &amp; Machine Learning</h2>
+    <p>Die Domäne, in der dieser ganze Kurs lebt. Die wichtigsten Teile kennst du schon aus anderen Seiten:</p>
+    <ul>
+      <li><strong>LLMs</strong> (01–06), <strong>Prompt Engineering</strong> (07), <strong>RAG</strong> (08), <strong>Agents</strong> (09), <strong>Fine-Tuning</strong> (10).</li>
+      <li><strong>ML-Pipelines:</strong> Daten → Trainieren → Evaluieren → Deployen → Überwachen; die „Ops"-Hälfte überschneidet sich mit 48.</li>
+      <li><strong>Modell-Integration &amp; RAG-Architekturen:</strong> wie Modelle in echte Systeme gesteckt werden (8, 30).</li>
+    </ul>
+
+    <h2>Mobile-Entwicklung</h2>
+    <table>
+      <tr><th>Ansatz</th><th>Sprache</th><th>Trade-off</th></tr>
+      <tr><td>Nativ</td><td>Swift (iOS) / Kotlin (Android)</td><td>Beste Performance &amp; Plattformzugriff, zwei Codebasen</td></tr>
+      <tr><td>Cross-Platform</td><td>React Native / Flutter</td><td>Eine Codebasis für beide, einige Plattform-Trade-offs</td></tr>
+    </table>
+    <p>Mobile ist für KI wichtig: On-Device-Modelle (kleine LLMs), Chat-Apps und Edge-Inferenz sind Mobile-Domänen-Probleme.</p>
+
+    <h2>Data Engineering &amp; Analytics</h2>
+    <ul>
+      <li><strong>ETL:</strong> Extract, Transform, Load — Daten bewegen/bereinigen in ein Warehouse.</li>
+      <li><strong>Apache Spark:</strong> verteilte Verarbeitung riesiger Datensätze (Map/Reduce-Stil).</li>
+      <li><strong>Kafka:</strong> High-Throughput-Event-Streaming — das Rückgrat event-getriebener Systeme (42) und Echtzeitdaten.</li>
+      <li><strong>Data Warehousing:</strong> Snowflake, BigQuery — massive analytische SQL-Stores. (Die Datenseite, die Modell-Training und RAG-Korpora speist.)</li>
+    </ul>
+
+    <h2>Embedded Systems &amp; IoT</h2>
+    <ul>
+      <li><strong>Low-Level-Programmierung:</strong> C/C++/Rust nah an der Hardware, ohne OS oder mit einem winzigen.</li>
+      <li><strong>Mikrocontroller:</strong> kleine Chips (Arduino, ESP32) mit begrenztem Speicher und Strom.</li>
+      <li><strong>RTOS (Real-Time Operating Systems):</strong> garantiert, dass Aufgaben innerhalb einer Deadline fertig werden — in Autos, Medizingeräten, Industrie-Steuerung.</li>
+      <li><strong>IoT:</strong> Netzwerke dieser Geräte, die mit der Cloud reden.</li>
+    </ul>
+
+    <h2>Warum hilft mir das (als KI-/Code-Nutzer)</h2>
+    <ul>
+      <li><strong>Perspektive:</strong> die ganze Landschaft zu kennen hilft zu sehen, wo deine KI-Arbeit hineinpasst und was du ausleihen kannst (z. B. Kafka für Agent-Event-Streams, On-Device-Modelle für Mobile).</li>
+      <li><strong>Daten für KI:</strong> Data Engineering baut die Korpora und RAG-Pipelines, von denen Modelle abhängen.</li>
+      <li><strong>Edge-KI:</strong> kleine Modelle auf Handys/IoT zu betreiben ist, wo Embedded + ML sich treffen (27, 31).</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="08-rag.html">08 · RAG</a> → Datenpipelines, die Retrieval speisen</li>
+      <li><a href="27-lokale-modelle.html">27 · Lokale Modelle</a> → Edge / On-Device-Inferenz</li>
+      <li><a href="42-systemarchitektur-design.html">42 · Systemarchitektur &amp; Design</a> → event-getrieben (Kafka)</li>
+      <li><a href="32-multi-modal-modelle.html">32 · Multi-Modal Modelle</a> → Modelle über Medientypen</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • In welche Domäne zuerst tiefer eintauchen? (diese Seite ist nur eine Karte)<br/>
+      • Wie unterscheidet sich Kafkas Event-Modell von einer einfachen Queue?<br/>
+      • Was heißt „Echtzeit" wirklich in einem RTOS?<br/>
+      • Soll jede Domäne später eine eigene Konzeptseite bekommen?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

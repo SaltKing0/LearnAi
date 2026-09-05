@@ -5,6 +5,18 @@ Niveau-Ziel: Stufe 3–4 (API-erfahren, Mechanik will verstanden werden).
 
 Struktur = gespiegelt in `assets/nav.js` (dort Stufen als `stages`). Immer synchron halten!
 
+## Stufe 0 — CS & Engineering-Grundlagen
+- [x] 41 · Datenstrukturen & Algorithmen
+- [x] 42 · Systemarchitektur & Design
+- [x] 43 · Betriebssysteme & Netzwerke
+- [x] 44 · Programmierparadigmen & Sprachen
+- [x] 45 · Software-Engineering & Lebenszyklus
+- [x] 46 · Frontend-Entwicklung
+- [x] 47 · Backend-Entwicklung
+- [x] 48 · DevOps, Infrastruktur & Cloud
+- [x] 49 · Sicherheit & Compliance
+- [x] 50 · Spezialisierte Domänen
+
 ## Stufe A — Mentale Modelle
 - [x] 01 · Sprachmodell als Funktion (P(next|context), autoregressiver Loop)
 - [x] 02 · Tokens & Embeddings (Text→Zahlen, Bedeutung=Position)

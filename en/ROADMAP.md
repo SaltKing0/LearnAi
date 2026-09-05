@@ -4,6 +4,18 @@ Wachsender Lernpfad. Erledigtes abhaken (`- [x]`).
 Niveau-Ziel: Stufe 3–4 (API-erfahren, Mechanik will verstanden werden).
 Struktur = gespiegelt in `assets/nav.js` (dort Stufen als `stages`). Immer synchron halten!
 
+## Stage 0: CS & Engineering Foundations
+- [x] 41 · Data Structures & Algorithms
+- [x] 42 · System Architecture & Design
+- [x] 43 · Operating Systems & Networking
+- [x] 44 · Programming Paradigms & Languages
+- [x] 45 · Software Engineering & Lifecycle
+- [x] 46 · Frontend Development
+- [x] 47 · Backend Development
+- [x] 48 · DevOps, Infrastructure & Cloud
+- [x] 49 · Security & Compliance
+- [x] 50 · Specialized Domains
+
 ## Stage A: Mental Models
 - [x] 01 · Language Model as Function
 - [x] 02 · Tokens & Embeddings
