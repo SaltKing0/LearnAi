@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>16 · Hallucinations, Bias, Limits — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 16 · Stage E</p>
+    <h1>16 · Hallucinations, Bias, Limits</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      The model sometimes "invents" things that aren't true — like someone who has to
+      guess and pretends to know for sure. It doesn't do it out of malice, but because
+      it only guesses the next word (Concept 01) and doesn't "know" what is true.
+    </div>
+
+    <h2>Hallucinations</h2>
+    <p>Because the model <strong>knows nothing, it only guesses probabilities</strong>
+       (Concept 01), a wrong answer sounds just as confident as a real one.
+       There is no internal "true/false" filter — it optimizes for "plausibly
+       continuing text". Especially with rare facts or missing context.</p>
+    <ul>
+      <li><strong>Architectural cause</strong>: attention (03) only mixes context,
+        trained on "what often follows" (05) — not on "what is true".</li>
+      <li><strong>Countermeasures</strong>: RAG (08) brings in sources; eval (15) catches
+        errors; forcing "I don't know" via prompt (07).</li>
+    </ul>
+
+    <div class="mermaid">
+flowchart TD
+    P["Model guesses next word<br/>(P(next|context))"] --> T{Knows the<br/>answer?}
+    T -->|"yes, in context"| A[Answer correct]
+    T -->|"no / rare fact"| H["Hallucination:<br/>sounds confident, is wrong"]
+    H --> G["Countermeasures"]
+    G --> G1["RAG: include source (08)"]
+    G --> G2["Eval: measure errors (15)"]
+    G --> G3["Prompt: 'I don't know' (07)"]
+    </div>
+    <p class="diagram-cap">Hallucinations arise because the model guesses instead of knows — and can be contained with three levers.</p>
+
+    <h2>Bias (distortion)</h2>
+    <p>Models learn from human texts (05) — including their prejudices,
+       stereotypes, imbalances. The model <em>mirrors</em> the training dataset.
+       Awareness + countermeasures (diversity in data, RLHF/DPO from 10) needed.</p>
+
+    <h2>Hard limits</h2>
+    <ul>
+      <li><strong>No real knowledge/counting/logic</strong> at the core — it guesses patterns.</li>
+      <li><strong>Context length is limited</strong> (02/04) — too long text "falls out".</li>
+      <li><strong>No access to the world</strong> without tools (09) — no live data.</li>
+      <li><strong>No consciousness</strong> — "thinking" is weighted information mixing.</li>
+    </ul>
+
+    <h2>Demo: source vs. no source</h2>
+    <div class="demo-box">
+      <div class="controls">
+        <button id="hall" style="background:#58a6ff;color:#0e1116;border:none;border-radius:8px;padding:8px 16px;font-family:monospace;cursor:pointer;">Ask a question →</button>
+      </div>
+      <p id="hallOut" style="font-family:var(--mono);margin-top:10px;min-height:40px;"></p>
+      <p class="meta">Simulation: without a source the model "invents" a study; with
+        RAG (08) it names the source and is more cautious.</p>
+    </div>
+
+    <h2>Why this is central for you as a code user</h2>
+    <ul>
+      <li><strong>Never trust blindly</strong>: for facts use RAG + citations (08), for
+        critical outputs eval/human review (15).</li>
+      <li><strong>Prompting</strong> (07): "If unsure, say so" reduces hallucination.</li>
+      <li><strong>Compliance/risk</strong>: bias in products is a real problem.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="01-language-model-as-function.html">01 · Language Model as Function</a> — the root: it only guesses.</li>
+      <li><a href="08-rag.html">08 · RAG</a> — the most effective remedy against hallucination.</li>
+      <li><a href="15-evaluation-metrics.html">15 · Evaluation</a> — how to make limits measurable.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • What is "RLHF" (Reinforcement Learning from Human Feedback)?<br/>
+      • Confidence calibration: can uncertainty be measured?<br/>
+      • Synthetic data &amp; "model collapse" — self-training loops?<br/>
+      • Hallucination in reasoning models (CoT, 07) better or worse?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+  <script>
+    const HALL_NO = "A study from University X (2023) shows: 73% of users..."; // invented
+    const HALL_RAG = "[Source: paper.pdf p.4] The study reports 73% — see citation. Note: please check the exact number in the document.";
+    let rag = false;
+    function ask() {
+      rag = !rag; // visualization: toggles each time for the demo
+      document.getElementById("hallOut").style.color = rag ? "#7ee787" : "#ffa657";
+      document.getElementById("hallOut").textContent =
+        (rag ? "[with RAG] " : "[no source] ") + (rag ? HALL_RAG : HALL_NO);
+    }
+    document.getElementById("hall").addEventListener("click", ask);
+  </script>
+
+  <!-- Mermaid for flow/architecture diagrams (CDN, no build step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+</body>
+</html>

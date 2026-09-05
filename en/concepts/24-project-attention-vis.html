@@ -3,111 +3,111 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>24 · Mini-Projekt: Attention-Visualisierung — AI-Lernkurs</title>
+  <title>24 · Mini-Project: Attention Visualization — AI Learning Course</title>
   <link rel="stylesheet" href="../assets/style.css" />
 </head>
 <body>
   <header id="topnav"></header>
 
   <div class="wrap">
-    <p class="meta">Projekt 24 · Stage G (Praxis)</p>
-    <h1>24 · Mini-Projekt: Attention-Visualisierung</h1>
+    <p class="meta">Project 24 · Stage G (Practice)</p>
+    <h1>24 · Mini-Project: Attention Visualization</h1>
 
     <div class="callout kid">
       <span class="label">Explain it to a 12-year-old</span>
-      Du baust genau das Bild, das du in Concept 03 gesehen hast — aber selbst. Ein
-      Raster, das zeigt: welches Wort schaut wie stark auf welches andere. So wird
-      aus „gelesen“ → „selbst gemacht“.
+      You build exactly the picture you saw in Concept 03 — but yourself. A grid that
+      shows: which word looks how strongly at which other word. So "read" becomes
+      "made yourself".
     </div>
 
-    <h2>What du brauchst</h2>
+    <h2>What you need</h2>
     <ul>
-      <li><strong>Attention-Theorie</strong> (03) — Q/K/V, Softmax, Temperatur.</li>
-      <li><strong>Die Demo</strong> (playground/attention-demo.html) als Vorlage.</li>
-      <li><strong>p5.js / Canvas</strong> — Heatmap zeichnen.</li>
+      <li><strong>Attention theory</strong> (03) — Q/K/V, softmax, temperature.</li>
+      <li><strong>The demo</strong> (playground/attention-demo.html) as a template.</li>
+      <li><strong>p5.js / Canvas</strong> — draw the heatmap.</li>
     </ul>
 
-    <h2>Die Visualisierung (selbst gebaut)</h2>
-    <p>Gib einen Satz ein — die Heatmap zeigt, welches Wort wie stark auf welches
-       andere schaut. Die Scores entstehen hier echt aus einer <strong>Self-Attention-
-       Rechnung</strong> (Q·K, dann Softmax über Temperatur), nur mit <em>toy</em>-
-       Embeddings statt gelernten. Probier den Pronomen-Satz und schau, was „er“
-       fokussiert.</p>
+    <h2>The visualization (self-built)</h2>
+    <p>Enter a sentence — the heatmap shows which word looks how strongly at which
+       other word. The scores here really come from a <strong>self-attention
+       computation</strong> (Q·K, then softmax over temperature), just with <em>toy</em>
+       embeddings instead of learned ones. Try the pronoun sentence and see what "he"
+       focuses on.</p>
 
     <div class="demo-box">
-      <textarea id="sent" rows="2" style="width:100%;background:#0e1116;color:#e6edf3;border:1px solid #2a3340;border-radius:8px;padding:10px;font-family:var(--mono);font-size:15px;">Der Hund beißt den Mann, weil er hungrig ist</textarea>
+      <textarea id="sent" rows="2" style="width:100%;background:#0e1116;color:#e6edf3;border:1px solid #2a3340;border-radius:8px;padding:10px;font-family:var(--mono);font-size:15px;">The dog bites the man because he is hungry</textarea>
       <div class="controls">
-        Temperatur:
+        Temperature:
         <input id="temp" type="range" min="0.3" max="3" step="0.1" value="1" />
         <span id="tempVal">1.0</span>
         &nbsp;·&nbsp; Head:
-        <button class="head" data-h="0">Semantik</button>
-        <button class="head" data-h="1">Lokal</button>
-        <button class="head" data-h="2">Pronomen→Nomen</button>
+        <button class="head" data-h="0">Semantics</button>
+        <button class="head" data-h="1">Local</button>
+        <button class="head" data-h="2">Pronoun→Noun</button>
       </div>
       <div id="attSketch"></div>
-      <p id="hoverInfo" class="meta">Zeile zum Hervorheben: —</p>
+      <p id="hoverInfo" class="meta">Row to highlight: —</p>
     </div>
 
     <div class="mermaid">
 flowchart LR
-    W[Wörter] --> E["Embedding je Wort (toy)"]
-    E --> QK["Score = Q·K (Dot-Product)"]
-    QK --> SM["Softmax über Temperatur"]
-    SM --> H["Heatmap: Zeile i schaut auf Spalte j"]
+    W[Words] --> E["Embedding per word (toy)"]
+    E --> QK["Score = Q·K (dot product)"]
+    QK --> SM["Softmax over temperature"]
+    SM --> H["Heatmap: row i looks at column j"]
     </div>
-    <p class="diagram-cap">Genau diese Kette steckt in jedem Transformer-Layer (Concept 03/04).</p>
+    <p class="diagram-cap">Exactly this chain sits in every transformer layer (Concept 03/04).</p>
 
-    <h2>Erweiterungsideen</h2>
+    <h2>Extension ideas</h2>
     <ul>
-      <li>Echte Scores aus einem kleinen Modell (11) statt der simulierten (03).</li>
-      <li>Mehrere Heads nebeneinander zeigen (Multi-Head, 03/04).</li>
-      <li>Wort-Eingabe: welches Pronomen schaut auf welches Nomen (Kern-Beispiel 03)?</li>
+      <li>Real scores from a small model (11) instead of the simulated ones (03).</li>
+      <li>Show several heads side by side (multi-head, 03/04).</li>
+      <li>Word input: which pronoun looks at which noun (the core example of 03)?</li>
     </ul>
 
     <h2>Related</h2>
     <ul>
-      <li><a href="03-attention-ueberblick.html">03 · Attention</a> · <a href="../playground/attention-demo.html">Playground · Attention</a> · <a href="04-transformer-ueberblick.html">04 · Transformer</a></li>
+      <li><a href="03-attention-overview.html">03 · Attention</a> · <a href="../playground/attention-demo.html">Playground · Attention</a> · <a href="04-transformer-ueberblick.html">04 · Transformer</a></li>
     </ul>
 
     <div class="callout warn">
-      <span class="label">Offene Fragen</span>
-      • Wie extrahiert man Attention-Gewichte aus transformers (11)?<br/>
-      • What bedeutet ein „Head“ tatsächlich (03)?
+      <span class="label">Open Questions</span>
+      • How do you extract attention weights from transformers (11)?<br/>
+      • What does a "head" actually mean (03)?
     </div>
   </div>
 
   <footer id="bottomnav"></footer>
 
-  <!-- Mermaid für Fluss-/Architekturdiagramme (CDN, kein Build-Step) -->
+  <!-- Mermaid for flow/architecture diagrams (CDN, no build step) -->
   <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
   <script src="../assets/mermaid-init.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
   <script src="../assets/nav.js"></script>
   <script>
-    // ---- Toy-Embeddings: ein kleiner Vektor je Wort, der 3 "Head"-Perspektiven liefert.
-    // Wir bauen pro Head eine Score-Matrix aus Q·K-ähnlichen Heuristiken.
+    // ---- Toy embeddings: a small vector per word that yields 3 "head" perspectives.
+    // We build a score matrix per head from Q·K-like heuristics.
     function tokenize(s) {
       return s.trim().split(/\s+/).filter(Boolean);
     }
-    // Head-Perspektiven als Funktion (i, j, toks):
+    // Head perspectives as a function (i, j, toks):
     const HEADS = [
-      { name: "Semantik", f: (i, j, t) => {
-          // Subjekt-Verb-Objekt tendenziell verbunden (Rollen-Ähnlichkeit)
-          const role = (w) => /hund|mann|katze|frau|kind|er|sie|es/.test(w) ? 1
-                                : /beißt|frißt|sieht|hilft|liebt|ist|hat/.test(w) ? 2 : 0;
+      { name: "Semantics", f: (i, j, t) => {
+          // subject-verb-object tend to connect (role similarity)
+          const role = (w) => /dog|man|cat|woman|child|he|she|it/.test(w) ? 1
+                                : /bites|eats|sees|helps|loves|is|has/.test(w) ? 2 : 0;
           const ri = role(t[i].toLowerCase()), rj = role(t[j].toLowerCase());
           let s = (ri === rj && ri !== 0) ? 1.6 : 0.2;
-          if (ri === 2 && rj === 1) s += 1.2;        // Verb schaut auf Subjekt/Objekt
-          if (/er|sie|es/.test(t[i].toLowerCase()) && /hund|mann|katze|frau|kind/.test(t[j].toLowerCase())) s += 0.4;
+          if (ri === 2 && rj === 1) s += 1.2;        // verb looks at subject/object
+          if (/he|she|it/.test(t[i].toLowerCase()) && /dog|man|cat|woman|child/.test(t[j].toLowerCase())) s += 0.4;
           return s + 0.15 * Math.sin(i * 2 + j);
         } },
-      { name: "Lokal", f: (i, j, t) => 2.2 - Math.abs(i - j) * 0.9 + 0.25 * Math.sin(i * 3 + j) },
-      { name: "Pronomen→Nomen", f: (i, j, t) => {
-          const pro = /er|sie|es/.test(t[i].toLowerCase());
-          const noun = /hund|mann|katze|frau|kind/.test(t[j].toLowerCase());
-          const isProNoun = /hund|mann|katze|frau|kind|er|sie|es/.test(t[j].toLowerCase());
-          if (pro && noun) return 2.4 - Math.abs(i - j) * 0.2;       // Pronomen sucht das Nomen
+      { name: "Local", f: (i, j, t) => 2.2 - Math.abs(i - j) * 0.9 + 0.25 * Math.sin(i * 3 + j) },
+      { name: "Pronoun→Noun", f: (i, j, t) => {
+          const pro = /he|she|it/.test(t[i].toLowerCase());
+          const noun = /dog|man|cat|woman|child/.test(t[j].toLowerCase());
+          const isProNoun = /dog|man|cat|woman|child|he|she|it/.test(t[j].toLowerCase());
+          if (pro && noun) return 2.4 - Math.abs(i - j) * 0.2;       // pronoun seeks the noun
           if (pro && isProNoun) return 1.0;
           return 0.1;
         } }
@@ -141,12 +141,12 @@ flowchart LR
         p.background(22, 27, 34);
         const N = toks.length;
         cell = (SIZE - pad * 2) / N;
-        // Spalten-Labels
+        // column labels
         p.fill(154, 167, 180); p.textSize(13);
         for (let j = 0; j < N; j++) p.text(toks[j], pad + cell * (j + 0.5), pad / 2);
-        // Zeilen-Labels
+        // row labels
         for (let i = 0; i < N; i++) p.text(toks[i], pad / 2, pad + cell * (i + 0.5));
-        // Heatmap
+        // heatmap
         for (let i = 0; i < N; i++) {
           const w = softmaxRow(i, temp);
           for (let j = 0; j < N; j++) {
@@ -165,7 +165,7 @@ flowchart LR
           p.noFill(); p.stroke(126, 231, 135); p.strokeWeight(2);
           p.rect(pad, pad + cell * hoverRow, cell * N, cell); p.noStroke();
           document.getElementById("hoverInfo").textContent =
-            `"${toks[hoverRow]}" (Head: ${HEADS[head].name}) schaut am stärksten auf: "${toks[best]}" (${w[best].toFixed(2)})`;
+            `"${toks[hoverRow]}" (Head: ${HEADS[head].name}) looks most strongly at: "${toks[best]}" (${w[best].toFixed(2)})`;
         }
       };
       p.mouseMoved = () => {
