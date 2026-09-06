@@ -3,31 +3,33 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>29 · Function Calling (Deep Dive) — AI-Lernkurs</title>
+  <title>29 · Function Calling (Deep Dive) — AI Learning Course</title>
   <link rel="stylesheet" href="../assets/style.css" />
 </head>
 <body>
   <header id="topnav"></header>
 
   <div class="wrap">
-    <p class="meta">Concept 29 · Stage C · Praxis</p>
+    <p class="meta">Concept 29 · Stage C · Practice</p>
     <h1>29 · Function Calling (Deep Dive)</h1>
 
     <div class="callout kid">
       <span class="label">Explain it to a 12-year-old</span>
-      Stell dir vor, du bist in einem Restaurant. Du sagst dem Kellner "Ich möchte die Speisekarte". Der Kellner bringt sie dir. Function Calling ist wie dieser Kellner — das Modell sagt "Ich brauche das jetzt" und das Tool liefert es.
+      Imagine you're in a restaurant. You tell the waiter "I'd like the menu". The
+      waiter brings it to you. Function calling is like that waiter — the model says
+      "I need this now" and the tool delivers it.
     </div>
 
-    <h2>The loop im Detail</h2>
+    <h2>The loop in detail</h2>
     <ol>
-      <li>User fragt: "Wie ist das Wetter in Berlin?"</li>
-      <li>Modell erkennt: "Ich brauche Wetterdaten" → gibt Function-Call aus</li>
-      <li>Dein Code führt das Tool aus: <code>get_weather("Berlin")</code></li>
-      <li>Ergebnis wird dem Modell zurückgegeben</li>
-      <li>Modell formuliert Antwort: "In Berlin sind 18°C und sonnig"</li>
+      <li>User asks: "What's the weather in Berlin?"</li>
+      <li>The model recognizes: "I need weather data" → emits a function call</li>
+      <li>Your code runs the tool: <code>get_weather("Berlin")</code></li>
+      <li>The result is returned to the model</li>
+      <li>The model formulates the answer: "In Berlin it's 18°C and sunny"</li>
     </ol>
 
-    <h2>Tool-Definition (OpenAI-Format)</h2>
+    <h2>Tool definition (OpenAI format)</h2>
     <pre><code>{
   "name": "get_weather",
   "description": "Get current weather for a city",
@@ -43,36 +45,37 @@
   }
 }</code></pre>
 
-    <h2>Multi-Tool Calls</h2>
-    <p>Modell kann mehrere Tools gleichzeitig aufrufen:</p>
-    <pre><code>// Modell gibt zwei Calls zurück:
+    <h2>Multi-tool calls</h2>
+    <p>The model can call several tools at once:</p>
+    <pre><code>// model returns two calls:
 [
   { "name": "get_weather", "args": { "city": "Berlin" } },
-  { "name": "get_weather", "args": { "city": "München" } }
+  { "name": "get_weather", "args": { "city": "Munich" } }
 ]</code></pre>
 
-    <h2>Error Handling</h2>
-    <p>What wenn das Tool fehlschlägt?</p>
+    <h2>Error handling</h2>
+    <p>What if the tool fails?</p>
     <ul>
-      <li><strong>Retry</strong> → Modell versucht es mit anderen Parametern</li>
-      <li><strong>Fallback</strong> → Alternative Tools vorschlagen</li>
-      <li><strong>User fragen</strong> → "Ich konnte das nicht finden, meinst du...?"</li>
+      <li><strong>Retry</strong> → the model tries again with different parameters</li>
+      <li><strong>Fallback</strong> → suggest alternative tools</li>
+      <li><strong>Ask the user</strong> → "I couldn't find that, did you mean...?"</li>
     </ul>
 
-    <h2>Streaming mit Function Calls</h2>
-    <p>Bei Streaming kommen die Calls Stück für Stück. Dein Code muss "Function Call Accumulation" machen — die Teile sammeln und erst ausführen wenn alles da ist.</p>
+    <h2>Streaming with function calls</h2>
+    <p>With streaming, the calls arrive piece by piece. Your code must do "function call
+       accumulation" — collect the parts and only execute once everything is there.</p>
 
     <h2>Related</h2>
     <ul>
-      <li><a href="09-agents-tool-use.html">09 · Agents / Tool-Use</a> → Der Agent-Loop</li>
-      <li><a href="12-llm-apis-practically.html">12 · LLM-APIs praktisch</a> → API-Aufrufe</li>
+      <li><a href="09-agents-tool-use.html">09 · Agents / Tool-Use</a> → the agent loop</li>
+      <li><a href="12-llm-apis-practically.html">12 · LLM APIs Practically</a> → API calls</li>
     </ul>
 
     <div class="callout warn">
       <span class="label">Open Questions / Gaps</span>
-      • Wie testet man Function Calling?<br/>
-      • What bei 100+ Tools (Overwahl)?<br/>
-      • Wie verhindert man "Tool Missbrauch"?
+      • How do you test function calling?<br/>
+      • What about 100+ tools (over-choice)?<br/>
+      • How do you prevent "tool misuse"?
     </div>
   </div>
 
@@ -81,4 +84,3 @@
   <script src="../assets/nav.js"></script>
 </body>
 </html>
-

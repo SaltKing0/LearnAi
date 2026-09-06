@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>28 · Alignment (RLHF &amp; DPO) — AI-Lernkurs</title>
+  <title>28 · Alignment (RLHF &amp; DPO) — AI Learning Course</title>
   <link rel="stylesheet" href="../assets/style.css" />
 </head>
 <body>
@@ -15,39 +15,46 @@
 
     <div class="callout kid">
       <span class="label">Explain it to a 12-year-old</span>
-      Stell dir vor, du hast einen Hund. Der Hund bellt jeden an der vorbeigeht — das ist das "Base-Model" (nur Text raten). Jetzt trainierst du den Hund: Leckerli wenn er freundlich ist, "Nein" bei Beißen. Alignment ist dieses Training — das Modell wird von "Text raten" zu "hilfreich sein" trainiert.
+      Imagine you have a dog. The dog barks at everyone passing by — that's the "base model" (just guessing text). Now you train the dog: a treat when it's friendly, "no" when it bites. Alignment is that training — the model is trained from "guessing text" to "being helpful".
     </div>
 
-    <h2>Warum Alignment?</h2>
-    <p>Ein Base-Model (nur vortrainiert) macht das wahrscheinlichste nächste Wort. Es ist nicht hilfreich, nicht sicher, nicht ehrlich. Alignment bringt das Modell auf die richtige Wellenlänge.</p>
+    <h2>Why alignment?</h2>
+    <p>A base model (just pretrained) produces the most likely next word. It's not
+       helpful, not safe, not honest. Alignment gets the model onto the right wavelength.</p>
 
     <h2>RLHF (Reinforcement Learning from Human Feedback)</h2>
     <ol>
-      <li><strong>Supervised Fine-Tuning (SFT)</strong> → Modell lernt von guten Beispielen</li>
-      <li><strong>Reward Model</strong> → Menschen bewerten Antworten (gut/schlecht)</li>
-      <li><strong>PPO-Optimierung</strong> → Modell wird optimiert für hohe Belohnung</li>
+      <li><strong>Supervised Fine-Tuning (SFT)</strong> → the model learns from good examples</li>
+      <li><strong>Reward model</strong> → humans rate answers (good/bad)</li>
+      <li><strong>PPO optimization</strong> → the model is optimized for high reward</li>
     </ol>
 
     <h2>DPO (Direct Preference Optimization)</h2>
-    <p>DPO ist die moderne Alternative zu RLHF. Statt einem separaten Reward Model lernt das Modell direkt aus Präferenzen (A ist besser als B). Einfacher, stabiler, weniger Rechenaufwand.</p>
+    <p>DPO is the modern alternative to RLHF. Instead of a separate reward model, the
+       model learns directly from preferences (A is better than B). Simpler, more stable,
+       less compute.</p>
 
     <h2>Constitutional AI (CAI)</h2>
-    <p>Anthropics Ansatz: Statt menschlicher Bewertungen gibt es eine "Verfassung" (Prinzipien) die das Modell selbst befolgt. Das Modell bewertet und korrigiert sich selbst anhand dieser Prinzipien.</p>
+    <p>Anthropic's approach: instead of human ratings there is a "constitution"
+       (principles) the model follows itself. The model rates and corrects itself against
+       these principles.</p>
 
-    <h2>Das Alignment-Tax Problem</h2>
-    <p>Alignment macht Modelle sicherer, aber oft auch weniger fähig. Zu viel Alignment = "Ja-Sager" das nichts sagt. Zu wenig Alignment = gefährlich. Der Sweet Spot ist schwer zu finden.</p>
+    <h2>The alignment tax problem</h2>
+    <p>Alignment makes models safer, but often also less capable. Too much alignment =
+       a "yes-man" that says nothing. Too little alignment = dangerous. The sweet spot
+       is hard to find.</p>
 
     <h2>Related</h2>
     <ul>
-      <li><a href="05-training-intuitiv.html">05 · Training intuitiv</a> → Wie Modelle lernen</li>
-      <li><a href="16-hallucinations-bias-limits.html">16 · Halluzinationen, Bias, Limits</a> → Alignment verringert Halluzinationen</li>
+      <li><a href="05-training-intuitively.html">05 · Training Intuitively</a> → how models learn</li>
+      <li><a href="16-hallucinations-bias-limits.html">16 · Hallucinations, Bias, Limits</a> → alignment reduces hallucinations</li>
     </ul>
 
     <div class="callout warn">
       <span class="label">Open Questions / Gaps</span>
-      • Wie misst man Alignment-Qualität?<br/>
-      • Gibt es "over-alignment" (zu viel ist zu wenig)?<br/>
-      • Wie hält man Alignment bei Updates stabil?
+      • How do you measure alignment quality?<br/>
+      • Is there "over-alignment" (too much is too little)?<br/>
+      • How do you keep alignment stable across updates?
     </div>
   </div>
 
@@ -56,4 +63,3 @@
   <script src="../assets/nav.js"></script>
 </body>
 </html>
-

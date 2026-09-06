@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>18 · Deployment — AI-Lernkurs</title>
+  <title>18 · Deployment — AI Learning Course</title>
   <link rel="stylesheet" href="../assets/style.css" />
 </head>
 <body>
@@ -15,46 +15,45 @@
 
     <div class="callout kid">
       <span class="label">Explain it to a 12-year-old</span>
-      Ein Modell auf dem Schreibtisch nützt niemandem. „Deployment“ heißt: es so
-      aufstellen, dass andere es benutzen können — als Dienst im Internet, oder
-      sogar auf dem Handy. Und „Quantisierung“ ist das Diät-Machen: das Modell
-      schrumpfen, damit es auf schwächerer Hardware läuft.
+      A model on your desk is useless to anyone. "Deployment" means: setting it up so
+      others can use it — as a service on the internet, or even on a phone. And
+      "quantization" is the diet: shrinking the model so it runs on weaker hardware.
     </div>
 
-    <h2>Drei Wege, ein Modell bereitzustellen</h2>
+    <h2>Three ways to deploy a model</h2>
     <ul>
-      <li><strong>API / Cloud (Inference-Server)</strong> — du startest z.B. vLLM/
-        Ollama und rufst es wie in Concept 12 auf, nur selbst gehostet (aus 06/14).
-        Skaliert, aber braucht Server/GPU.</li>
-      <li><strong>Edge / Lokal</strong> — Modell läuft auf dem eigenen Rechner/
-        Handy/im Browser (WebGPU, llama.cpp). Privat, offline, aber begrenzte Power.</li>
-      <li><strong>Embedded / On-Premise</strong> — in deiner Firma, keine Daten
-        verlassen das Haus (14).</li>
+      <li><strong>API / cloud (inference server)</strong> — you start e.g. vLLM/
+        Ollama and call it like in Concept 12, just self-hosted (from 06/14).
+        Scales, but needs a server/GPU.</li>
+      <li><strong>Edge / local</strong> — the model runs on your own machine/
+        phone/in the browser (WebGPU, llama.cpp). Private, offline, but limited power.</li>
+      <li><strong>Embedded / on-premise</strong> — in your company, no data
+        leaves the house (14).</li>
     </ul>
 
     <div class="mermaid">
 flowchart LR
     subgraph C["Cloud / API"]
-        S1["Inference-Server<br/>(vLLM, Ollama)"] --> U1["Nutzer via API (12)"]
+        S1["Inference server<br/>(vLLM, Ollama)"] --> U1["Users via API (12)"]
     end
-    subgraph E["Edge / Lokal"]
-        S2["llama.cpp / WebGPU<br/>im Browser/Laptop"] --> U2["privat, offline"]
+    subgraph E["Edge / Local"]
+        S2["llama.cpp / WebGPU<br/>in browser/laptop"] --> U2["private, offline"]
     end
     subgraph O["On-Premise"]
-        S3["eigenes Rechenzentrum"] --> U3["keine Daten verlassen Haus"]
+        S3["own data center"] --> U3["no data leaves the house"]
     end
-    Q["Quantisierung (INT8/INT4)"] -->|"Modell schrumpft ~4×"| E
-    Q -->|"läuft auch auf schwacher HW"| O
+    Q["Quantization (INT8/INT4)"] -->|"model shrinks ~4×"| E
+    Q -->|"also runs on weak HW"| O
     </div>
-    <p class="diagram-cap">Drei Deployment-Wege; Quantisierung macht besonders Edge/On-Premise erst möglich.</p>
+    <p class="diagram-cap">Three deployment paths; quantization is what makes edge/on-premise possible in the first place.</p>
 
-    <h2>Quantisierung (Verbindung zu 04/17)</h2>
-    <p>Modelle speichern Gewichte als 16-Bit-Floats. <strong>Quantisierung</strong>
-       reduziert sie auf 8/4 Bit — das Modell wird ~4× kleiner und schneller, oft mit
-       kaum sichtbarem Qualitätsverlust (04). Das ist, warum ein 7B-Modell plötzlich
-       auf dem Laptop läuft. Kostet weniger RAM, weniger Latenz (17), keine GPU nötig.</p>
+    <h2>Quantization (connection to 04/17)</h2>
+    <p>Models store weights as 16-bit floats. <strong>Quantization</strong>
+       reduces them to 8/4 bits — the model becomes ~4× smaller and faster, often with
+       barely visible quality loss (04). That's why a 7B model suddenly runs
+       on a laptop. Less RAM, less latency (17), no GPU needed.</p>
 
-    <h2>Demo: Quantisierungs-Stagen</h2>
+    <h2>Demo: quantization stages</h2>
     <div class="demo-box">
       <div class="controls">
         Stage:
@@ -63,37 +62,37 @@ flowchart LR
         <button class="q" data-bits="4">INT4</button>
       </div>
       <table style="margin-top:12px;width:100%;border-collapse:collapse;font-family:var(--mono);font-size:14px;">
-        <tr><td style="padding:6px;color:var(--fg-dim)">Speicher (7B)</td><td id="qSize" style="padding:6px;"></td></tr>
-        <tr><td style="padding:6px;color:var(--fg-dim)">Qualität</td><td id="qQual" style="padding:6px;"></td></tr>
-        <tr><td style="padding:6px;color:var(--fg-dim)">Läuft auf</td><td id="qRun" style="padding:6px;"></td></tr>
+        <tr><td style="padding:6px;color:var(--fg-dim)">Memory (7B)</td><td id="qSize" style="padding:6px;"></td></tr>
+        <tr><td style="padding:6px;color:var(--fg-dim)">Quality</td><td id="qQual" style="padding:6px;"></td></tr>
+        <tr><td style="padding:6px;color:var(--fg-dim)">Runs on</td><td id="qRun" style="padding:6px;"></td></tr>
       </table>
-      <p class="meta">Vereinfachte Werte — zeigen nur das Verhältnis: kleiner = leichter,
-        aber irgendwann leidet die Qualität.</p>
+      <p class="meta">Simplified values — they only show the relationship: smaller = lighter,
+        but eventually quality suffers.</p>
     </div>
 
-    <h2>Warum das für dich als Code-Nutzer zentral ist</h2>
+    <h2>Why this is central for you as a code user</h2>
     <ul>
-      <li><strong>Self-Hosting</strong> (14): eigene API ohne Dritte, Kontrolle.</li>
-      <li><strong>Kosten senken</strong> (17): Quantisierung = weniger Hardware.</li>
-      <li><strong>Privatsphäre</strong>: Edge/On-Prem = Daten bleiben lokal.</li>
-      <li><strong>Demo-tauglich</strong>: kleine Modelle laufen auf dem Laptop für Prototypen.</li>
+      <li><strong>Self-hosting</strong> (14): your own API without third parties, control.</li>
+      <li><strong>Lower cost</strong> (17): quantization = less hardware.</li>
+      <li><strong>Privacy</strong>: edge/on-prem = data stays local.</li>
+      <li><strong>Demo-ready</strong>: small models run on a laptop for prototypes.</li>
     </ul>
 
     <h2>Related</h2>
     <ul>
-      <li><a href="04-transformer-ueberblick.html">04 · Transformer</a> — die Gewichte, die quantisiert werden.</li>
-      <li><a href="06-inference-vs-training.html">06 · Inference vs. Training</a> — Deployment ist Inference-Betrieb.</li>
-      <li><a href="14-open-vs-closed.html">14 · Open vs. Closed</a> — nur Open lässt sich so deployen.</li>
-      <li><a href="17-cost-latency.html">17 · Kosten & Latenz</a> — Quantisierung senkt beides.</li>
+      <li><a href="04-transformer-overview.html">04 · Transformer</a> — the weights that get quantized.</li>
+      <li><a href="06-inference-vs-training.html">06 · Inference vs. Training</a> — deployment is inference operation.</li>
+      <li><a href="14-open-vs-closed.html">14 · Open vs. Closed</a> — only open can be deployed this way.</li>
+      <li><a href="17-cost-latency.html">17 · Cost &amp; Latency</a> — quantization lowers both.</li>
       <li><a href="46-kv-cache-inference-optimization.html">46 · KV-Cache &amp; Inference Optimization</a> — batching &amp; caching in everyday deployment.</li>
     </ul>
 
     <div class="callout warn">
       <span class="label">Open Questions / Gaps</span>
-      • vLLM vs. vLLM vs. Ollama vs. llama.cpp — wann was?<br/>
-      • What ist „batching“/„continuous batching“ bei Inference-Servern?<br/>
-      • GPTQ vs. AWQ vs. GGUF — Quantisierungs-Formate?<br/>
-      • Wie skaliert Deployment bei viel Traffic (Autoscaling)?
+      • vLLM vs. Ollama vs. llama.cpp — when which?<br/>
+      • What is "batching"/"continuous batching" in inference servers?<br/>
+      • GPTQ vs. AWQ vs. GGUF — quantization formats?<br/>
+      • How does deployment scale at high traffic (autoscaling)?
     </div>
   </div>
 
@@ -101,9 +100,9 @@ flowchart LR
   <script src="../assets/nav.js"></script>
   <script>
     const Q = {
-      "16": { size: "~14 GB", qual: "100% (Referenz)", run: "GPU (16GB+)" },
-      "8":  { size: "~7 GB",  qual: "~99% (kaum Verlust)", run: "GPU oder großer RAM" },
-      "4":  { size: "~3.5 GB", qual: "~95% (leicht weicher)", run: "Laptop/Handy" },
+      "16": { size: "~14 GB", qual: "100% (reference)", run: "GPU (16GB+)" },
+      "8":  { size: "~7 GB",  qual: "~99% (barely any loss)", run: "GPU or large RAM" },
+      "4":  { size: "~3.5 GB", qual: "~95% (slightly softer)", run: "laptop/phone" },
     };
     function show(bits) {
       const d = Q[bits];
@@ -117,7 +116,7 @@ flowchart LR
     show("16");
   </script>
 
-  <!-- Mermaid für Fluss-/Architekturdiagramme (CDN, kein Build-Step) -->
+  <!-- Mermaid for flow/architecture diagrams (CDN, no build step) -->
   <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
   <script src="../assets/mermaid-init.js"></script>
 </body>

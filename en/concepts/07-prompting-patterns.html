@@ -3,69 +3,69 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>07 · Prompting-Patterns — AI-Lernkurs</title>
+  <title>07 · Prompting Patterns — AI Learning Course</title>
   <link rel="stylesheet" href="../assets/style.css" />
 </head>
 <body>
   <header id="topnav"></header>
 
   <div class="wrap">
-    <p class="meta">Concept 07 · Stage C · Erweitert</p>
-    <h1>07 · Prompting-Patterns</h1>
+    <p class="meta">Concept 07 · Stage C · Advanced</p>
+    <h1>07 · Prompting Patterns</h1>
 
     <div class="callout kid">
       <span class="label">Explain it to a 12-year-old</span>
-      Ein Prompt ist, wie du dem Modell zuredest. „Zeig mir ein Beispiel" (few-shot)
-      hilft ihm, das Muster zu verstehen. „Denk laut Schritt für Schritt" (chain-of-
-      thought) hilft ihm bei Knobelaufgaben, nicht gleich falsch zu raten. Beides
-      kostet kein Training — nur geschickte Worte.
+      A prompt is how you talk the model into something. "Show me an example" (few-shot)
+      helps it understand the pattern. "Think out loud step by step" (chain-of-
+      thought) helps it with puzzles so it doesn't guess wrong right away. Both
+      cost no training — just clever words.
     </div>
 
-    <h2>Why Prompting is the cheapest leverage</h2>
-    <p>Du hast in Concept 01 gelernt: das Modell rät nur das nächste Wort. What du
-       <em>davor</em> hinschreibst (der Prompt), steuert, <em>aus welcher Verteilung</em>
-       es rät. Bevor du ein Modell feinjustierst (Concept 10) oder RAG baust (08):
-       versuch es mit einem besseren Prompt. Oft reicht das.</p>
+    <h2>Why prompting is the cheapest leverage</h2>
+    <p>You learned in Concept 01: the model only guesses the next word. What you
+       write <em>before</em> it (the prompt) controls <em>which distribution</em>
+       it guesses from. Before you fine-tune a model (Concept 10) or build RAG (08):
+       try a better prompt first. Often that's enough.</p>
 
     <h2>The most important patterns</h2>
-    
+
     <h3>Basic patterns</h3>
     <ul>
-      <li><strong>Zero-shot</strong> — einfach die Aufgabe stellen. Basishaltung.</li>
-      <li><strong>Few-shot</strong> — 2–5 Beispiele (Input→gewünschtes Output) im Prompt geben das <em>Format</em> und den <em>Ton</em> vor. Sehr stark bei Struktur.</li>
-      <li><strong>Chain-of-Thought (CoT)</strong> — „Denk schrittweise" / Beispiele mit Zwischenschritten. Das Modell „schreibt laut mit", was es tut → bessere Logik/Mathe. Kostet mehr Tokens.</li>
+      <li><strong>Zero-shot</strong> — just pose the task. The baseline.</li>
+      <li><strong>Few-shot</strong> — 2–5 examples (input→desired output) in the prompt set the <em>format</em> and <em>tone</em>. Very strong for structure.</li>
+      <li><strong>Chain-of-Thought (CoT)</strong> — "think step by step" / examples with intermediate steps. The model "writes along" what it does → better logic/math. Costs more tokens.</li>
     </ul>
 
     <h3>Advanced patterns</h3>
     <ul>
-      <li><strong>ReAct (Reasoning + Acting)</strong> — Modell alterniert zwischen Denken und Handeln. „Ich muss X wissen → rufe Tool Y → basierend auf Ergebnis → nächster Schritt". Basis für Agenten.</li>
-      <li><strong>Self-Consistency</strong> — gleiche Frage mehrmals stellen, häufigste Antwort nehmen. Reduziert Zufallsfehler.</li>
-      <li><strong>Tree of Thought</strong> — mehrere Denkpfade gleichzeitig explorieren, besten wählen. Wie Brainstorming für LLMs.</li>
-      <li><strong>Prompt Chaining</strong> → komplexe Aufgabe in mehrere Prompts unterteilen, Output von Prompt A wird Input von Prompt B.</li>
+      <li><strong>ReAct (Reasoning + Acting)</strong> — the model alternates between thinking and acting. "I need to know X → call tool Y → based on result → next step". The basis for agents.</li>
+      <li><strong>Self-Consistency</strong> — ask the same question several times, take the most common answer. Reduces random errors.</li>
+      <li><strong>Tree of Thought</strong> — explore several reasoning paths at once, pick the best. Like brainstorming for LLMs.</li>
+      <li><strong>Prompt Chaining</strong> — split a complex task into several prompts; the output of prompt A is the input of prompt B.</li>
     </ul>
 
-    <h3>Structure & Control</h3>
+    <h3>Structure &amp; control</h3>
     <ul>
-      <li><strong>System Prompt vs User Prompt</strong> — System setzt Rolle/Regeln („Du bist …", „Antworte immer als JSON"), User ist die eigentliche Anfrage.</li>
-      <li><strong>Role Prompting</strong> — „Du bist ein Senior Developer mit 10 Jahren Erfahrung" → verändert Antwortqualität.</li>
-      <li><strong>Negative Prompts</strong> — „Antworte nicht mit...", „Vermeide..." → exkludiert unerwünschte Antworten.</li>
-      <li><strong>Structured Output</strong> — „Gib mir JSON mit Feldern x,y" → direkt parsebar in Code.</li>
+      <li><strong>System prompt vs. user prompt</strong> — system sets role/rules ("You are …", "Always answer as JSON"), user is the actual request.</li>
+      <li><strong>Role prompting</strong> — "You are a senior developer with 10 years of experience" → changes answer quality.</li>
+      <li><strong>Negative prompts</strong> — "Don't answer with...", "Avoid..." → excludes unwanted answers.</li>
+      <li><strong>Structured output</strong> — "Give me JSON with fields x,y" → directly parseable in code.</li>
     </ul>
 
     <div class="mermaid">
 flowchart TD
-    S[Task vorhanden] --> Q1{Braucht strukturierte<br/>Ausgabe?}
-    Q1 -->|Ja| JSON["Structured Output / System-Prompt:<br/>'Antworte als JSON'"]
-    Q1 -->|Nein| Q2{Braucht das Modell<br/>Beispiele?}
-    Q2 -->|Ja| FEW["Few-shot:<br/>2–5 Input → Output Beispiele"]
-    Q2 -->|Nein| Q3{Logik / Mathe /<br/>Mehrstufig?}
-    Q3 -->|Ja| COT["Chain-of-Thought:<br/>'Denk schrittweise'"]
-    Q3 -->|Nein| ZERO[Zero-shot:<br/>schlichte Aufgabe]
+    S[Task present] --> Q1{Needs structured<br/>output?}
+    Q1 -->|Yes| JSON["Structured output / system prompt:<br/>'Answer as JSON'"]
+    Q1 -->|No| Q2{Does the model<br/>need examples?}
+    Q2 -->|Yes| FEW["Few-shot:<br/>2–5 input → output examples"]
+    Q2 -->|No| Q3{Logic / math /<br/>multi-step?}
+    Q3 -->|Yes| COT["Chain-of-Thought:<br/>'Think step by step'"]
+    Q3 -->|No| ZERO[Zero-shot:<br/>plain task]
     end
-    <p class="diagram-cap">Faustregel zur Pattern-Wahl — günstigster Hebel zuerst.</p>
+    <p class="diagram-cap">Rule of thumb for choosing a pattern — cheapest lever first.</p>
     </div>
 
-    <h2>Demo: Zero-shot vs. Few-shot vs. CoT (illustriert)</h2>
+    <h2>Demo: Zero-shot vs. Few-shot vs. CoT (illustrated)</h2>
     <div class="demo-box">
       <div class="controls">
         Mode:
@@ -73,43 +73,43 @@ flowchart TD
         <button class="pmode" data-m="few">Few-shot</button>
         <button class="pmode" data-m="cot">Chain-of-Thought</button>
       </div>
-      <p class="meta">Task: „Die Tomaten sind rot. Ist der Satz positiv oder negativ?"</p>
+      <p class="meta">Task: "The tomatoes are red. Is the sentence positive or negative?"</p>
       <pre id="promptOut" style="white-space:pre-wrap"></pre>
       <p class="meta" id="noteOut"></p>
     </div>
 
-    <h2>Prompt Engineering vs Prompt Tuning</h2>
+    <h2>Prompt engineering vs. prompt tuning</h2>
     <table>
       <tr><th></th><th>Prompt Engineering</th><th>Prompt Tuning</th></tr>
-      <tr><td>What</td><td>Text-Prompts optimieren</td><td>Numerische Vektoren lernen</td></tr>
-      <tr><td>Effort</td><td>Manuell, schnell</td><td>Training nötig</td></tr>
-      <tr><td>Flexible</td><td>Hoher</td><td>Weniger</td></tr>
-      <tr><td>Use-Case</td><td>APIs, schnelle Iteration</td><td>Spezialisierte Modelle</td></tr>
+      <tr><td>What</td><td>Optimize text prompts</td><td>Learn numeric vectors</td></tr>
+      <tr><td>Effort</td><td>Manual, fast</td><td>Training needed</td></tr>
+      <tr><td>Flexible</td><td>High</td><td>Less</td></tr>
+      <tr><td>Use case</td><td>APIs, fast iteration</td><td>Specialized models</td></tr>
     </table>
 
-    <h2>Warum das für dich als Code-Nutzer zentral ist</h2>
+    <h2>Why this is central for you as a code user</h2>
     <ul>
-      <li><strong>No training, immediately</strong> — in der API nur der Prompt-String.</li>
-      <li><strong>Structured outputs</strong> (JSON) machen Modelle zu Pipelines-Gliedern.</li>
-      <li><strong>Cost/Latency</strong>: CoT + Few-shot fressen Tokens — bei viel Traffic relevant.</li>
-      <li><strong>Reproducibility</strong>: Version prompts (exactly this repo!).</li>
+      <li><strong>No training, immediately</strong> — in the API just the prompt string.</li>
+      <li><strong>Structured outputs</strong> (JSON) make models pipeline components.</li>
+      <li><strong>Cost/latency</strong>: CoT + few-shot eat tokens — relevant at high traffic.</li>
+      <li><strong>Reproducibility</strong>: version your prompts (exactly this repo!).</li>
     </ul>
 
     <h2>Related</h2>
     <ul>
-      <li><a href="01-sprachmodell-als-funktion.html">01 · Sprachmodell als Funktion</a> — der Prompt ist die Eingabe in P(next|prompt).</li>
-      <li><a href="08-rag.html">08 · RAG</a> — Retrieval is ultimately „better prompt through context".</li>
+      <li><a href="01-language-model-as-function.html">01 · Language Model as Function</a> — the prompt is the input to P(next|prompt).</li>
+      <li><a href="08-rag.html">08 · RAG</a> — retrieval is ultimately "better prompt through context".</li>
       <li><a href="10-fine-tuning.html">10 · Fine-Tuning</a> — the expensive alternative, when prompts are not enough.</li>
-      <li><a href="26-sicherheit-prompt-injection.html">26 · Sicherheit & Prompt Injection</a> — Prompts können manipuliert werden.</li>
+      <li><a href="26-security-prompt-injection.html">26 · Security &amp; Prompt Injection</a> — prompts can be manipulated.</li>
       <li><a href="49-agent-architectures.html">49 · Agent Architectures</a> — ReAct vs. Plan-and-Execute at the prompting level.</li>
     </ul>
 
     <div class="callout warn">
       <span class="label">Open Questions / Gaps</span>
       • Why does CoT work at all (not just more computing)?<br/>
-      • What ist Prompt-Injection and how dangerous with Tool-Use?<br/>
-      • Where is the limit of Few-shot (context length, confusion)?<br/>
-      • Difference: Instruction Tuning vs Prompting?
+      • What is prompt injection and how dangerous with tool-use?<br/>
+      • Where is the limit of few-shot (context length, confusion)?<br/>
+      • Difference: instruction tuning vs. prompting?
     </div>
   </div>
 
@@ -118,16 +118,16 @@ flowchart TD
   <script>
     const PROMPTS = {
       zero: {
-        p: "Die Tomaten sind rot. Ist der Satz positiv oder negativ?",
-        n: "Modell muss das Muster aus dem Nichts erraten — bei unklaren Formaten oft inkonsistent."
+        p: "The tomatoes are red. Is the sentence positive or negative?",
+        n: "The model must guess the pattern from nothing — often inconsistent with unclear formats."
       },
       few: {
-        p: "Beispiele:\n'Ich liebe diesen Film.' → positiv\n'Das Essen war grässlich.' → negativ\n\nDie Tomaten sind rot. → ?",
-        n: "Das Muster (Satz → Label) ist vorgegeben. Modell folgt der Struktur."
+        p: "Examples:\n'I love this movie.' → positive\n'The food was awful.' → negative\n\nThe tomatoes are red. → ?",
+        n: "The pattern (sentence → label) is given. The model follows the structure."
       },
       cot: {
-        p: "Task: Sentiment bestimmen. Denk schrittweise.\nSchritt 1: Wörter analysieren. 'rot' ist neutral-beschreibend, keine Emotion.\nSchritt 2: Kein positives/negatives Signal erkennbar.\nSchritt 3: → neutral\n\nJetzt: 'Die Tomaten sind rot.' → ?",
-        n: "Zwischenschritte zwingen das Modell zur expliziten Schlussfolgerung — besser bei Logik."
+        p: "Task: determine sentiment. Think step by step.\nStep 1: analyze the words. 'red' is neutral-descriptive, no emotion.\nStep 2: no positive/negative signal visible.\nStep 3: → neutral\n\nNow: 'The tomatoes are red.' → ?",
+        n: "Intermediate steps force the model into explicit reasoning — better for logic."
       }
     };
     function show(mode) {
@@ -140,9 +140,8 @@ flowchart TD
     show("zero");
   </script>
 
-  <!-- Mermaid für Fluss-/Architekturdiagramme (CDN, kein Build-Step) -->
+  <!-- Mermaid for flow/architecture diagrams (CDN, no build step) -->
   <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
   <script src="../assets/mermaid-init.js"></script>
 </body>
 </html>
-
