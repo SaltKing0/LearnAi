@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>22 · Fine-Tuning — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 22 · Stufe C</p>
+    <h1>22 · Fine-Tuning (LoRA / PEFT)</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Statt dem Modell jedes Mal alles im Prompt zu erklären, lässt du es auf
+      Beispielen üben — so wie in Konzept 05, nur viel kleiner und zu einem
+      speziellen Thema. Bei LoRA klebt man dem Modell einen kleinen Zusatz-Anhänger
+      an, den es lernt, statt das ganze Modell umzubauen. Billig, schnell, tauschbar.
+    </div>
+
+    <h2>Das Grundprinzip (Verbindung zu 05)</h2>
+    <p>Es ist <strong>dasselbe Training wie in Konzept 05</strong> — Loss senken durch
+       Gewichte-Anpassen — nur auf einem kleinen, zielgerichteten Datensatz statt dem
+       riesigen Pre-Training. Das Ergebnis: ein Modell, das sich auf dein Format/Ton/
+       Domäne „spezialisiert“ hat.</p>
+
+    <h2>Full Fine-Tuning vs. PEFT / LoRA</h2>
+    <ul>
+      <li><strong>Full Fine-Tuning</strong> — <em>alle</em> Gewichte werden angepasst.
+        Teuer (viel Speicher/GPU), riskiert „catastrophic forgetting“ (vergisst
+        Allgemeinwissen).</li>
+      <li><strong>LoRA (Low-Rank Adaptation)</strong> — das Basismodell bleibt
+        <em>eingefroren</em>. Es werden nur kleine Zusatz-Matrizen (Adapter)
+        trainiert und zur Seite addiert. Winzig (MB statt GB), schnell, und du kannst
+        Adapters wie Steckkarten tauschen.</li>
+      <li><strong>PEFT</strong> = Überbegriff für „trainiere nur einen kleinen Teil“
+        (LoRA ist die bekannteste Variante).</li>
+    </ul>
+
+    <h2>Demo: Basismodell + LoRA-Adapter</h2>
+    <div class="demo-box">
+      <div class="controls">
+        <button id="toggle" style="background:#58a6ff;color:#0e1116;border:none;border-radius:8px;padding:8px 16px;font-family:monospace;cursor:pointer;">Adapter: AUS</button>
+      </div>
+      <div id="loraSketch"></div>
+      <p class="meta">Visualisierung: Das große Modell bleibt gleich (eingefroren). Der
+        LoRA-Adapter (grün) liegt darüber — bei „AN“ wird das Verhalten davon
+        beeinflusst, ohne das Basis-Modell zu verändern.</p>
+    </div>
+
+    <h2>Wann Fine-Tuning lohnt — und wann NICHT</h2>
+    <ul>
+      <li><strong>Lohnt:</strong> festes Ausgabeformat, spezifischer Ton/Stil,
+        Domänenjargon, viele wiederkehrende ähnliche Aufgaben (senkt Prompt- &amp;
+        Token-Kosten bei hohem Volumen).</li>
+      <li><strong>Lohnt NICHT:</strong> allgemeine Aufgaben, wenig Beispieldaten,
+        wenn ein guter Prompt (07) oder RAG (08) schon reicht. Training = Aufwand.</li>
+    </ul>
+
+    <h2>Warum das für dich als Code-Nutzer zentral ist</h2>
+    <ul>
+      <li><strong>Eigene Modelle</strong> offline/selbst gehostet, ohne jedes Mal API zu fragen.</li>
+      <li><strong>LoRA ist klein</strong>: du versionierst nur den Adapter, nicht das 7B-Modell.</li>
+      <li><strong>Ökosystem</strong>: Hugging Face PEFT-Bibliothek, axolotl, unsere Konzept-11-Stufe-D-Tools.</li>
+      <li><strong>Abgrenzung</strong>: RAG = Wissen zur Laufzeit; Fine-Tuning = Verhalten einbacken.</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="16-training-intuitiv.html">16 · Training intuitiv</a> — Fine-Tuning ist derselbe Loop, nur kleiner.</li>
+      <li><a href="19-prompting-patterns.html">19 · Prompting-Patterns</a> — die günstigere Alternative, zuerst versuchen.</li>
+      <li><a href="20-rag.html">20 · RAG</a> — Wissen zur Laufzeit statt einbacken.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • SFT (Supervised Fine-Tuning) vs. RLHF vs. DPO — welche Phasen gibt es?<br/>
+      • Catastrophic Forgetting — warum passiert's bei Full FT?<br/>
+      • Datenqualität vs. Menge — wie viel reicht für LoRA?<br/>
+      • Wie evaluiert man ein Fine-Tune objektiv?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="../assets/nav.js"></script>
+  <script>
+    let adapterOn = false;
+    const sketch = (p) => {
+      p.setup = () => {
+        const c = p.createCanvas(420, 200);
+        c.parent("loraSketch");
+        p.frameRate(8);
+        p.textAlign(p.CENTER, p.CENTER);
+      };
+      p.draw = () => {
+        p.background(22, 27, 34);
+        // Basismodell (eingefroren)
+        p.rectMode(p.CENTER);
+        p.noStroke();
+        p.fill(40, 60, 90);
+        p.rect(210, 110, 360, 90, 12);
+        p.fill(230); p.textSize(16);
+        p.text("Basismodell (eingefroren)", 210, 110);
+        // LoRA-Adapter darüber
+        if (adapterOn) {
+          p.fill(126, 231, 135, 220);
+          p.rect(210, 48, 280, 46, 10);
+          p.fill(14); p.textSize(15);
+          p.text("LoRA-Adapter (trainiert)", 210, 48);
+          // Verbindungspfeile
+          p.stroke(126, 231, 135); p.strokeWeight(2);
+          p.line(120, 71, 120, 65); p.line(300, 71, 300, 65);
+          p.noStroke();
+        }
+        // Status
+        p.fill(154, 167, 180); p.textSize(13); p.textAlign(p.LEFT, p.CENTER);
+        p.text("Adapter: " + (adapterOn ? "AN (Verhalten beeinflusst)" : "AUS (nur Basis)"), 20, 180);
+      };
+    };
+    new p5(sketch);
+    document.getElementById("toggle").addEventListener("click", (e) => {
+      adapterOn = !adapterOn;
+      e.target.textContent = "Adapter: " + (adapterOn ? "AN" : "AUS");
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>19 · Prompting-Patterns — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 19 · Stufe C · Erweitert</p>
+    <h1>19 · Prompting-Patterns</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Ein Prompt ist, wie du dem Modell zuredest. „Zeig mir ein Beispiel" (few-shot)
+      hilft ihm, das Muster zu verstehen. „Denk laut Schritt für Schritt" (chain-of-
+      thought) hilft ihm bei Knobelaufgaben, nicht gleich falsch zu raten. Beides
+      kostet kein Training — nur geschickte Worte.
+    </div>
+
+    <h2>Warum Prompting die billigste Hebelwirkung hat</h2>
+    <p>Du hast in Konzept 01 gelernt: das Modell rät nur das nächste Wort. Was du
+       <em>davor</em> hinschreibst (der Prompt), steuert, <em>aus welcher Verteilung</em>
+       es rät. Bevor du ein Modell feinjustierst (Konzept 10) oder RAG baust (08):
+       versuch es mit einem besseren Prompt. Oft reicht das.</p>
+
+    <h2>Die wichtigsten Patterns</h2>
+    
+    <h3>Grundlegende Patterns</h3>
+    <ul>
+      <li><strong>Zero-shot</strong> — einfach die Aufgabe stellen. Basishaltung.</li>
+      <li><strong>Few-shot</strong> — 2–5 Beispiele (Input→gewünschtes Output) im Prompt geben das <em>Format</em> und den <em>Ton</em> vor. Sehr stark bei Struktur.</li>
+      <li><strong>Chain-of-Thought (CoT)</strong> — „Denk schrittweise" / Beispiele mit Zwischenschritten. Das Modell „schreibt laut mit", was es tut → bessere Logik/Mathe. Kostet mehr Tokens.</li>
+    </ul>
+
+    <h3>Fortgeschrittene Patterns</h3>
+    <ul>
+      <li><strong>ReAct (Reasoning + Acting)</strong> — Modell alterniert zwischen Denken und Handeln. „Ich muss X wissen → rufe Tool Y → basierend auf Ergebnis → nächster Schritt". Basis für Agenten.</li>
+      <li><strong>Self-Consistency</strong> — gleiche Frage mehrmals stellen, häufigste Antwort nehmen. Reduziert Zufallsfehler.</li>
+      <li><strong>Tree of Thought</strong> — mehrere Denkpfade gleichzeitig explorieren, besten wählen. Wie Brainstorming für LLMs.</li>
+      <li><strong>Prompt Chaining</strong> → komplexe Aufgabe in mehrere Prompts unterteilen, Output von Prompt A wird Input von Prompt B.</li>
+    </ul>
+
+    <h3>Struktur & Kontrolle</h3>
+    <ul>
+      <li><strong>System-Prompt vs. User-Prompt</strong> — System setzt Rolle/Regeln („Du bist …", „Antworte immer als JSON"), User ist die eigentliche Anfrage.</li>
+      <li><strong>Role Prompting</strong> — „Du bist ein Senior Developer mit 10 Jahren Erfahrung" → verändert Antwortqualität.</li>
+      <li><strong>Negative Prompts</strong> — „Antworte nicht mit...", „Vermeide..." → exkludiert unerwünschte Antworten.</li>
+      <li><strong>Structured Output</strong> — „Gib mir JSON mit Feldern x,y" → direkt parsebar in Code.</li>
+    </ul>
+
+    <div class="mermaid">
+flowchart TD
+    S[Task vorhanden] --> Q1{Braucht strukturierte<br/>Ausgabe?}
+    Q1 -->|Ja| JSON["Structured Output / System-Prompt:<br/>'Antworte als JSON'"]
+    Q1 -->|Nein| Q2{Braucht das Modell<br/>Beispiele?}
+    Q2 -->|Ja| FEW["Few-shot:<br/>2–5 Input → Output Beispiele"]
+    Q2 -->|Nein| Q3{Logik / Mathe /<br/>Mehrstufig?}
+    Q3 -->|Ja| COT["Chain-of-Thought:<br/>'Denk schrittweise'"]
+    Q3 -->|Nein| ZERO[Zero-shot:<br/>schlichte Aufgabe]
+    end
+    <p class="diagram-cap">Faustregel zur Pattern-Wahl — günstigster Hebel zuerst.</p>
+    </div>
+
+    <h2>Demo: Zero-shot vs. Few-shot vs. CoT (illustriert)</h2>
+    <div class="demo-box">
+      <div class="controls">
+        Modus:
+        <button class="pmode" data-m="zero">Zero-shot</button>
+        <button class="pmode" data-m="few">Few-shot</button>
+        <button class="pmode" data-m="cot">Chain-of-Thought</button>
+      </div>
+      <p class="meta">Aufgabe: „Die Tomaten sind rot. Ist der Satz positiv oder negativ?"</p>
+      <pre id="promptOut" style="white-space:pre-wrap"></pre>
+      <p class="meta" id="noteOut"></p>
+    </div>
+
+    <h2>Prompt-Engineering vs. Prompt-Tuning</h2>
+    <table>
+      <tr><th></th><th>Prompt Engineering</th><th>Prompt Tuning</th></tr>
+      <tr><td>Was</td><td>Text-Prompts optimieren</td><td>Numerische Vektoren lernen</td></tr>
+      <tr><td>Aufwand</td><td>Manuell, schnell</td><td>Training nötig</td></tr>
+      <tr><td>Flexibel</td><td>Hoher</td><td>Weniger</td></tr>
+      <tr><td>Use-Case</td><td>APIs, schnelle Iteration</td><td>Spezialisierte Modelle</td></tr>
+    </table>
+
+    <h2>Warum das für dich als Code-Nutzer zentral ist</h2>
+    <ul>
+      <li><strong>Kein Training, sofort</strong> — in der API nur der Prompt-String.</li>
+      <li><strong>Strukturierte Ausgaben</strong> (JSON) machen Modelle zu Pipelines-Gliedern.</li>
+      <li><strong>Kosten/Latenz</strong>: CoT + Few-shot fressen Tokens — bei viel Traffic relevant.</li>
+      <li><strong>Reproduzierbarkeit</strong>: Prompts versionieren (genau das hier im Repo!).</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="12-sprachmodell-als-funktion.html">12 · Sprachmodell als Funktion</a> — der Prompt ist die Eingabe in P(next|prompt).</li>
+      <li><a href="20-rag.html">20 · RAG</a> — Retrieval ist letztlich „besserer Prompt durch Kontext".</li>
+      <li><a href="22-fine-tuning.html">22 · Fine-Tuning</a> — die teure Alternative, wenn Prompts nicht reichen.</li>
+      <li><a href="38-sicherheit-prompt-injection.html">38 · Sicherheit & Prompt Injection</a> — Prompts können manipuliert werden.</li>
+      <li><a href="60-agent-architekturen.html">60 · Agent-Architekturen</a> — ReAct vs. Plan-and-Execute auf Prompt-Ebene.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Warum funktioniert CoT überhaupt (nicht nur mehr Rechnen)?<br/>
+      • Was ist Prompt-Injection und wie gefährlich bei Tool-Use?<br/>
+      • Wo ist die Grenze von Few-shot (Kontext-Länge, Verwirrung)?<br/>
+      • Unterschied: Instruction-Tuning vs. Prompting?
+    </div>
+  </div>
+
+  <h2>Nächste Schritte</h2>
+  <ul>
+    <li><strong>Übung:</strong> Schreibe 3 verschiedene Prompts für dieselbe Aufgabe und vergleiche die Ergebnisse.</li>
+    <li><strong>Vertiefung:</strong> Lies <a href="27-function-calling-deep-dive.html">Konzept 29</a> — wie definiere ich Tools?</li>
+    <li><strong>Projekt:</strong> Baue einen CLI-Chatbot mit System-Prompt (siehe Konzept 22).</li>
+  </ul>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+  <script>
+    const PROMPTS = {
+      zero: {
+        p: "Die Tomaten sind rot. Ist der Satz positiv oder negativ?",
+        n: "Modell muss das Muster aus dem Nichts erraten — bei unklaren Formaten oft inkonsistent."
+      },
+      few: {
+        p: "Beispiele:\n'Ich liebe diesen Film.' → positiv\n'Das Essen war grässlich.' → negativ\n\nDie Tomaten sind rot. → ?",
+        n: "Das Muster (Satz → Label) ist vorgegeben. Modell folgt der Struktur."
+      },
+      cot: {
+        p: "Aufgabe: Sentiment bestimmen. Denk schrittweise.\nSchritt 1: Wörter analysieren. 'rot' ist neutral-beschreibend, keine Emotion.\nSchritt 2: Kein positives/negatives Signal erkennbar.\nSchritt 3: → neutral\n\nJetzt: 'Die Tomaten sind rot.' → ?",
+        n: "Zwischenschritte zwingen das Modell zur expliziten Schlussfolgerung — besser bei Logik."
+      }
+    };
+    function show(mode) {
+      document.getElementById("promptOut").textContent = PROMPTS[mode].p;
+      document.getElementById("noteOut").textContent = PROMPTS[mode].n;
+    }
+    document.querySelectorAll(".pmode").forEach((b) => {
+      b.addEventListener("click", () => show(b.dataset.m));
+    });
+    show("zero");
+  </script>
+
+  <!-- Mermaid für Fluss-/Architekturdiagramme (CDN, kein Build-Step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+</body>
+</html>

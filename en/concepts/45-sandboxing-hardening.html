@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>45 · Sandboxing &amp; Hardening — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept · Level 3–4</p>
+    <h1>45 · Sandboxing &amp; Hardening</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Dangerous experiments belong in the playground, not the living room. Sandboxing means:
+      code you don't trust runs isolated — so a mistake can't wreck the whole system.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>An agent runs code that <em>it</em> (or a model) wrote — often unreliable or malicious. So
+       that a bug or attack does no damage, such execution runs in a <em>sandbox</em>: an isolated
+       area with limited rights, files, and network access.</p>
+
+    <h2>What happens technically</h2>
+    <h3>1) Risk tiers (least privilege)</h3>
+    <ul>
+      <li><strong>Read-only:</strong> read/grep — no write rights, little risk.</li>
+      <li><strong>Writable root:</strong> write only to allowed directories (writable_roots).</li>
+      <li><strong>Irreversible:</strong> delete/force-push/deploy — always human confirmation.</li>
+    </ul>
+    <h3>2) Isolation levels</h3>
+    <ul>
+      <li><strong>Light (bwrap/Landlock/seccomp):</strong> namespace/syscall isolation, ~0 overhead —
+          good for read-only and small builds.</li>
+      <li><strong>Medium (Docker-rootless/Podman):</strong> container with read-only rootfs, non-root
+          user, no docker.sock — good for builds/execution.</li>
+      <li><strong>Heavy (gVisor/microVM):</strong> own kernel — only for highly sensitive code.</li>
+    </ul>
+    <h3>3) Network &amp; credentials</h3>
+    <p>Outbound via <strong>allowlist</strong> (only allowed domains, better: SNI filtering at a proxy);
+       <strong>credentials never in the sandbox context</strong> (e.g. Git token injected only on
+       clone). Important: network AND filesystem isolation always together — otherwise a
+       compromised process exfiltrates secrets.</p>
+
+    <h2>Why it helps me (as a code user)</h2>
+    <ul>
+      <li>You can let agents run code <em>autonomously</em> without risking the machine.</li>
+      <li>You understand the security blast radius: sandbox per session = one bug hits only that session.</li>
+      <li>“Fail closed”: if the sandbox doesn't start, abort hard — never run unprotected.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="38-security-prompt-injection.html">38 · Security / Prompt Injection</a> — the threat</li>
+      <li><a href="40-deployment.html">40 · Deployment</a> — container basis</li>
+      <li><a href="23-agent-loop-harness.html">23 · Agent Loop &amp; Harness</a> — where code is executed</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open questions / gaps</span>
+      How do I build an egress proxy with SNI allowlist myself? When is light (bwrap) enough and
+      when do I need a container? — Becomes a GitHub issue.
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

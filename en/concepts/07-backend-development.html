@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>07 · Backend Development — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 07 · Stage 0 · CS Foundations</p>
+    <h1>07 · Backend Development</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      The backend is the <em>kitchen of a restaurant</em>: the frontend is the menu and the waiter, but the real work — fetching the data, doing the math, talking to the database — happens in the kitchen. Your phone just sends a "give me this" request, and the kitchen answers with the finished dish.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>The backend is where the logic, data, and integrations live. Its job: <strong>receive requests, enforce rules, read/write data, and return responses</strong> — reliably and at scale. For AI, the backend is where you call the model, build RAG pipelines, and manage vector databases.</p>
+
+    <h2>API development</h2>
+    <table>
+      <tr><th>Style</th><th>Idea</th><th>Best for</th></tr>
+      <tr><td>REST</td><td>Resources + HTTP verbs (GET/POST/PUT/DELETE), JSON</td><td>Simple, widely compatible CRUD APIs</td></tr>
+      <tr><td>GraphQL</td><td>One endpoint; client asks for exactly the fields it needs</td><td>Flexible queries, many clients, mobile</td></tr>
+      <tr><td>gRPC</td><td>Typed, binary, high-performance RPC (protobuf)</td><td>Internal service-to-service, low latency</td></tr>
+      <tr><td>WebSockets</td><td>Persistent two-way connection</td><td>Real-time: chat, streaming, live updates</td></tr>
+    </table>
+    <p><strong>OpenAPI / Swagger</strong> is a machine-readable spec of your REST API — auto-generates docs, clients, and tests. LLM APIs (OpenAI-compatible) are themselves REST with an OpenAPI-style schema, and tool-calling reuses that contract (29).</p>
+
+    <h2>Server frameworks</h2>
+    <ul>
+      <li><strong>Node.js:</strong> Express (minimal) and NestJS (structured, TypeScript) — the agent-framework home turf.</li>
+      <li><strong>Python:</strong> FastAPI (modern, typed, async — very popular for LLM backends) and Django (batteries-included).</li>
+      <li><strong>Java:</strong> Spring Boot — heavyweight enterprise standard.</li>
+      <li><strong>Go:</strong> high-concurrency, simple, fast — great for proxy/serving layers.</li>
+      <li><strong>.NET:</strong> ASP.NET Core — enterprise C# stack.</li>
+    </ul>
+
+    <h2>Databases &amp; storage</h2>
+    <p><strong>Relational (SQL):</strong> PostgreSQL, MySQL. Data in tables with rows and relationships. Key ideas: <em>normalization</em> (removing duplicate data by splitting tables), <em>indexing</em> (speeding up lookups at the cost of writes), <em>ORMs</em> (object-relational mappers — SQLAlchemy, Prisma, Hibernate — let you use tables like objects).</p>
+    <p><strong>Non-relational (NoSQL):</strong> chosen when the data shape doesn't fit rigid tables or you need scale/performance:</p>
+    <table>
+      <tr><th>Type</th><th>Model</th><th>Example</th><th>Use for</th></tr>
+      <tr><td>Document</td><td>JSON-like documents</td><td>MongoDB</td><td>Flexible schemas, content</td></tr>
+      <tr><td>Key-value</td><td>Simple key→value, super fast</td><td>Redis</td><td>Caching, sessions, rate limits</td></tr>
+      <tr><td>Wide-column</td><td>Columns grouped, huge scale</td><td>Cassandra</td><td>Massive write throughput</td></tr>
+      <tr><td>Graph</td><td>Nodes + edges</td><td>Neo4j</td><td>Relationships, knowledge graphs</td></tr>
+      <tr><td>Vector</td><td>Embedding similarity</td><td>pgvector, Qdrant, Milvus</td><td>RAG, semantic search (30)</td></tr>
+    </table>
+
+    <h2>Why this helps me (as an AI/code user)</h2>
+    <ul>
+      <li><strong>LLM backends:</strong> FastAPI/Node services that proxy model calls, stream tokens, and handle auth are backend work (12).</li>
+      <li><strong>RAG:</strong> retrieval needs a vector database + an embedding pipeline — a classic backend architecture (8, 30).</li>
+      <li><strong>Tool-calling:</strong> tools are just APIs with an OpenAPI-style contract the model calls (29).</li>
+      <li><strong>State &amp; caching:</strong> Redis for KV-cache/rate-limits, SQL for conversation history — the same backend patterns apply to agents.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="20-rag.html">20 · RAG</a> → retrieval as a backend pipeline</li>
+      <li><a href="28-embedding-search-vector-search.html">28 · Embedding Search</a> → vector databases</li>
+      <li><a href="27-function-calling-deep-dive.html">27 · Function Calling</a> → tools as APIs</li>
+      <li><a href="02-system-architecture-design.html">02 · System Architecture &amp; Design</a> → how backends are structured</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • REST vs. GraphQL vs. gRPC: which for an LLM API?<br/>
+      • SQL vs. NoSQL: how do you actually decide?<br/>
+      • How do ORMs hide (and sometimes hurt) performance?<br/>
+      • Want a playground comparing a REST vs. GraphQL request?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

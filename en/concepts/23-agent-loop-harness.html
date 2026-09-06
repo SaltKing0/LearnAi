@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>23 · Agent Loop &amp; Harness — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept · Level 3–4</p>
+    <h1>23 · Agent Loop &amp; Harness</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      An agent is like a cook who keeps going back to the fridge: he thinks, grabs an
+      ingredient (a tool result), thinks again, grabs the next — until the dish is done.
+      That “going back again and again” is the <em>agent loop</em>; the kitchen that makes it
+      possible is the <em>harness</em>.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>A plain chat model answers once. An <em>agent</em> doesn't — it runs in a loop:
+       <strong>think → call a tool → look at the result → think again</strong>. That way it can
+       read files, run code, search the web, and then continue. The key point: it's the
+       <em>same</em> loop repeating — nothing magical.</p>
+    <p>The <strong>harness</strong> is the wrapper program around the model: it builds the prompt,
+       calls the API, runs tools, manages context, and decides when to stop. The model itself
+       only “thinks one step.” Worth knowing: a good agent needs <em>both</em> — a good model
+       AND a good harness.</p>
+
+    <h2>What happens technically</h2>
+    <pre class="code">while (model wants to keep going) {
+  1. send:   context + system prompt + available tools
+  2. infer:  model answers (text OR a tool call)
+  3. if tool call:
+       - execute the tool (e.g. read_file, bash, web_search)
+       - append the result to the context
+       - jump back to 1
+  4. else:   done → emit the answer
+}</pre>
+
+    <p>Two things professionals watch for:</p>
+    <ul>
+      <li><strong>Context grows with each step.</strong> Every loop step is a new API call that
+          re-sends the whole history. Long agent runs get expensive and slow — that's the
+          O(n²) problem (see concept 36).</li>
+      <li><strong>The harness must be able to abort.</strong> A stuck agent (rate limit, endless
+          loop, wrong tool) needs a clean interrupt: an abort signal, keep partial output, never
+          run a tool twice.</li>
+    </ul>
+
+    <h2>Why it helps me (as a code user)</h2>
+    <ul>
+      <li>You see where <em>you</em> steer: system prompt, tool list, context limit, interrupt —
+          all that belongs to the harness, not the model.</li>
+      <li>You grasp why “good model” alone isn't enough — the loop and context management decide too.</li>
+      <li>You can estimate cost: each tool step = a new call = new tokens.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="21-agents-tool-use.html">21 · Agents / Tool-Use</a> — the core idea of the loop</li>
+      <li><a href="27-function-calling-deep-dive.html">27 · Function-Calling Deep Dive</a> — how the harness calls tools</li>
+      <li><a href="24-context-engineering.html">24 · Context Engineering</a> — solving the O(n²) problem</li>
+      <li><a href="37-cost-latency.html">37 · Cost &amp; Latency</a> — why the loop is expensive</li>
+      <li><a href="60-agent-architectures.html">60 · Agent Architectures</a> — ReAct vs. Plan-and-Execute on top of the loop.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open questions / gaps</span>
+      How do you measure whether one harness is really better than another? (Hint:
+      deterministic verifiers instead of LLM-as-judge — see concept 34.) — Becomes a GitHub issue.
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

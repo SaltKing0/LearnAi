@@ -38,8 +38,8 @@ LearnAi/
   de/                     # 🇩🇪 Deutsche Version
     index.html            # Hub / Navigationskarte
     concepts/             # EINE Datei pro Konzept
-      01-sprachmodell-als-funktion.html
-      02-tokens-und-embeddings.html
+      12-sprachmodell-als-funktion.html
+      13-tokens-und-embeddings.html
       ...
       _template.html      # Vorlage für neue Seiten
     playground/           # Interaktive Demos

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>18 · Alignment (RLHF &amp; DPO) — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 18 · Stage B · Training</p>
+    <h1>18 · Alignment (RLHF &amp; DPO)</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Imagine you have a dog. The dog barks at everyone passing by — that's the "base model" (just guessing text). Now you train the dog: a treat when it's friendly, "no" when it bites. Alignment is that training — the model is trained from "guessing text" to "being helpful".
+    </div>
+
+    <h2>Why alignment?</h2>
+    <p>A base model (just pretrained) produces the most likely next word. It's not
+       helpful, not safe, not honest. Alignment gets the model onto the right wavelength.</p>
+
+    <h2>RLHF (Reinforcement Learning from Human Feedback)</h2>
+    <ol>
+      <li><strong>Supervised Fine-Tuning (SFT)</strong> → the model learns from good examples</li>
+      <li><strong>Reward model</strong> → humans rate answers (good/bad)</li>
+      <li><strong>PPO optimization</strong> → the model is optimized for high reward</li>
+    </ol>
+
+    <h2>DPO (Direct Preference Optimization)</h2>
+    <p>DPO is the modern alternative to RLHF. Instead of a separate reward model, the
+       model learns directly from preferences (A is better than B). Simpler, more stable,
+       less compute.</p>
+
+    <h2>Constitutional AI (CAI)</h2>
+    <p>Anthropic's approach: instead of human ratings there is a "constitution"
+       (principles) the model follows itself. The model rates and corrects itself against
+       these principles.</p>
+
+    <h2>The alignment tax problem</h2>
+    <p>Alignment makes models safer, but often also less capable. Too much alignment =
+       a "yes-man" that says nothing. Too little alignment = dangerous. The sweet spot
+       is hard to find.</p>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="16-training-intuitively.html">16 · Training Intuitively</a> → how models learn</li>
+      <li><a href="36-hallucinations-bias-limits.html">36 · Hallucinations, Bias, Limits</a> → alignment reduces hallucinations</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • How do you measure alignment quality?<br/>
+      • Is there "over-alignment" (too much is too little)?<br/>
+      • How do you keep alignment stable across updates?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

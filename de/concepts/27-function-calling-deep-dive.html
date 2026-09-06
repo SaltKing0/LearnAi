@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>27 · Function Calling (Deep Dive) — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 27 · Stufe C · Praxis</p>
+    <h1>27 · Function Calling (Deep Dive)</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Stell dir vor, du bist in einem Restaurant. Du sagst dem Kellner "Ich möchte die Speisekarte". Der Kellner bringt sie dir. Function Calling ist wie dieser Kellner — das Modell sagt "Ich brauche das jetzt" und das Tool liefert es.
+    </div>
+
+    <h2>Der Loop im Detail</h2>
+    <ol>
+      <li>User fragt: "Wie ist das Wetter in Berlin?"</li>
+      <li>Modell erkennt: "Ich brauche Wetterdaten" → gibt Function-Call aus</li>
+      <li>Dein Code führt das Tool aus: <code>get_weather("Berlin")</code></li>
+      <li>Ergebnis wird dem Modell zurückgegeben</li>
+      <li>Modell formuliert Antwort: "In Berlin sind 18°C und sonnig"</li>
+    </ol>
+
+    <h2>Tool-Definition (OpenAI-Format)</h2>
+    <pre><code>{
+  "name": "get_weather",
+  "description": "Get current weather for a city",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "city": {
+        "type": "string",
+        "description": "The city name"
+      }
+    },
+    "required": ["city"]
+  }
+}</code></pre>
+
+    <h2>Multi-Tool Calls</h2>
+    <p>Modell kann mehrere Tools gleichzeitig aufrufen:</p>
+    <pre><code>// Modell gibt zwei Calls zurück:
+[
+  { "name": "get_weather", "args": { "city": "Berlin" } },
+  { "name": "get_weather", "args": { "city": "München" } }
+]</code></pre>
+
+    <h2>Error Handling</h2>
+    <p>Was wenn das Tool fehlschlägt?</p>
+    <ul>
+      <li><strong>Retry</strong> → Modell versucht es mit anderen Parametern</li>
+      <li><strong>Fallback</strong> → Alternative Tools vorschlagen</li>
+      <li><strong>User fragen</strong> → "Ich konnte das nicht finden, meinst du...?"</li>
+    </ul>
+
+    <h2>Streaming mit Function Calls</h2>
+    <p>Bei Streaming kommen die Calls Stück für Stück. Dein Code muss "Function Call Accumulation" machen — die Teile sammeln und erst ausführen wenn alles da ist.</p>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="21-agents-tool-use.html">21 · Agents / Tool-Use</a> → Der Agent-Loop</li>
+      <li><a href="30-llm-apis-praktisch.html">30 · LLM-APIs praktisch</a> → API-Aufrufe</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Wie testet man Function Calling?<br/>
+      • Was bei 100+ Tools (Overwahl)?<br/>
+      • Wie verhindert man "Tool Missbrauch"?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>
+

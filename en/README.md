@@ -40,8 +40,8 @@ LearnAi/
   en/                     # 🇺🇸 English version
     index.html            # Hub / navigation map
     concepts/             # ONE file per concept
-      01-language-model-as-function.html
-      02-tokens-and-embeddings.html
+      12-language-model-as-function.html
+      13-tokens-and-embeddings.html
       ...
       _template.html      # Template for new pages
     playground/           # Interactive demos

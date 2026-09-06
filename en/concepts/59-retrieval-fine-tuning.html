@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>59 · Retrieval Fine-Tuning — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 59 · Stage C · RAG deep dive</p>
+    <h1>59 · Retrieval Fine-Tuning</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Imagine searching a library for the one chapter that answers your question. If
+      everything is bound into giant tomes, you can't find anything precise; if it's all
+      torn into tiny scraps, you lose the context. RAG has exactly the same problem:
+      <em>how</em> you cut up documents, search them, and re-sort the best hits decides
+      whether the answer is good or garbage.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>RAG (08) isn't a switch, it's a loop with many tuning knobs. Most "RAG doesn't
+       work for us" cases aren't model problems but <strong>retrieval problems</strong>:
+       the right text wasn't retrieved, was chopped up, or got crowded out by fifteen
+       mediocre hits. This concept is the toolbox for exactly those knobs.</p>
+
+    <h2>Chunking: why chunk size determines answer quality</h2>
+    <p>A chunk is the smallest unit that gets stored and found. Too big: the embedding
+       vector averages over many topics → imprecise similarity, and one hit eats half
+       your context window. Too small: the sentence "therefore it also applies
+       retroactively" lands in the index without its reference sentence → the content
+       is there, but incomprehensible.</p>
+    <table>
+      <thead><tr><th>Strategy</th><th>Idea</th><th>Strength</th><th>Weakness</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Fixed size</strong></td><td>e.g. 500 tokens each, with <strong>overlap</strong> (50–100)</td><td>simple, fast, predictable</td><td>saws mid-thought / through tables</td></tr>
+        <tr><td><strong>Semantic</strong></td><td>cut at topic shifts (sentences, paragraphs, headings)</td><td>chunks = meaningful units</td><td>more effort, needs structure</td></tr>
+        <tr><td><strong>Structure-based</strong></td><td>split by Markdown headers / code functions</td><td>perfect for docs &amp; code</td><td>very uneven chunk sizes</td></tr>
+        <tr><td><strong>Parent / small-to-big</strong></td><td>search small chunks but return the parent paragraph</td><td>precise search + full context</td><td>two indexes needed</td></tr>
+      </tbody>
+    </table>
+    <p>Attaching <strong>metadata</strong> (source, date, chapter, department) to every chunk
+       almost always pays off: it lets you filter ("manual 2024 only"), cite, and suppress
+       duplicates. Overlap prevents a sentence sitting exactly on the boundary between two
+       chunks from losing its neighbors.</p>
+
+    <h2>Hybrid search: BM25 + vectors</h2>
+    <p>Vector search (30) understands meaning but fails on <strong>exact tokens</strong>: error
+       codes ("ERR_4091"), product names, IDs. BM25 — classic keyword search with term
+       weighting — hits those exactly, but understands no synonyms. Hybrid runs both searches
+       in parallel and fuses the rankings, usually via <strong>Reciprocal Rank Fusion (RRF)</strong>:
+       each hit earns <code>1/(k+rank)</code> from every list, and the sum is the fusion score.
+       Robust because RRF only compares ranks, not incompatible scores.</p>
+
+    <h2>Re-ranking: cross-encoder vs. bi-encoder</h2>
+    <p>The first search is fast but coarse. A <strong>re-ranker</strong> re-sorts the top-k
+       candidates (say top 50):</p>
+    <ul>
+      <li><strong>Bi-encoder</strong> (embedding search): question and document are each mapped to their own vector, cosine distance between them. Fast enough for millions of documents — but the pair is never directly compared.</li>
+      <li><strong>Cross-encoder</strong>: question + document go into the network <strong>together</strong> → direct relevance score. Much more accurate, but O(k) forward passes → only viable for ~50–100 candidates. Examples: Cohere Rerank, bge-reranker.</li>
+    </ul>
+    <p>The pattern: <em>buy recall from bi-encoders/BM25, buy precision from a cross-encoder.</em></p>
+
+    <h2>Query transformation: HyDE, multi-query</h2>
+    <ul>
+      <li><strong>Multi-query</strong>: the model rephrases the question 3–5 times (synonyms, perspectives) → run all variants, deduplicate results. Catches what one phrasing misses.</li>
+      <li><strong>HyDE</strong> (Hypothetical Document Embeddings): the model first writes a <em>fictional answer</em>, then searches using that answer's embedding. The trick: candidate answers resemble each other more than question ↔ document — "answer-to-answer search".</li>
+      <li>Simpler: rewrite/condense questions (resolve chat history: "and she?" → "How old is Anna?").</li>
+    </ul>
+
+    <div class="mermaid">
+flowchart LR
+    Q[User question] --> QT[Query transformation<br/>multi-query / HyDE]
+    QT --> V[Vector search<br/>bi-encoder]
+    QT --> K[Keyword search<br/>BM25]
+    V --> F{RRF fusion}
+    K --> F
+    F --> RR[Re-ranking<br/>cross-encoder · top-k']
+    DB[(Index +<br/>metadata)] --> V
+    DB --> K
+    RR --> P[Prompt = question + best chunks]
+    </div>
+    <p class="diagram-cap">A modern retrieval pipeline: transform → hybrid search → fuse → re-rank → into the prompt.</p>
+
+    <h2>Evaluating retrieval: Recall@k</h2>
+    <p>Without measurement, every chunking debate is faith. The core metric is
+       <strong>Recall@k</strong> — of all chunks containing the gold answer, how many made it
+       into the top-k? For that you need a small eval set (~20–100 question/gold-chunk pairs),
+       then change one thing at a time: chunk size, hybrid on/off, add a re-ranker.
+       Complementary metrics: MRR (rank of the first correct hit) and ultimately end-to-end
+       answer quality (15) — good retrieval is necessary but not sufficient.</p>
+
+    <h2>Why this helps me</h2>
+    <ul>
+      <li><strong>Diagnosis instead of gut feeling</strong>: "wrong answer" → first ask: was the right chunk in context? (Measure Recall@k.)</li>
+      <li><strong>Cheap lever</strong>: better chunking/re-ranking often beats (and costs less than) a bigger LLM.</li>
+      <li><strong>Exact + semantic</strong>: hybrid search covers both failure modes.</li>
+      <li><strong>Transferable</strong>: the same ideas apply to code search (agent context, 35/41), not just docs-RAG.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="20-rag.html">20 · RAG</a> — the baseline this page refines.</li>
+      <li><a href="49-project-mini-rag.html">49 · Project Mini-RAG</a> — experience chunking &amp; top-k yourself.</li>
+      <li><a href="28-embedding-search-vector-search.html">28 · Embedding Search &amp; Vector Search</a> — how vector search works technically.</li>
+      <li><a href="54-rag-vs-finetuning-vs-prompting.html">54 · RAG vs. Fine-Tuning vs. Prompting</a> — when is RAG even the right tool?</li>
+      <li><a href="55-datenqualitaet-datensaetze.html">55 · Data Quality &amp; Datasets</a> — no chunking saves a bad source.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • When is a fine-tuned embedding model worth it (adapters instead of off-the-shelf bge/E5)?<br/>
+      • How do you evaluate without gold chunks ("is this chunk relevant" is subjective)?<br/>
+      • GraphRAG / knowledge-graph augmentation — hype or real value?<br/>
+      • How do you keep index &amp; metadata fresh when documents change daily?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+
+  <!-- Mermaid for flow/architecture diagrams (CDN, no build step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+</body>
+</html>

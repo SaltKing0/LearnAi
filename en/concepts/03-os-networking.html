@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>03 · Operating Systems &amp; Networking — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 03 · Stage 0 · CS Foundations</p>
+    <h1>03 · Operating Systems &amp; Networking</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      The operating system is the manager of your computer: it decides which program gets the CPU, hands out memory, and lets many programs run "at the same time." Networking is the postal system between computers — it wraps your message in envelopes (TCP/IP), looks up the address (DNS), and delivers it over HTTP. Almost everything you do online is one program mailing another.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>Two layers sit under every app you write: the <strong>OS</strong> (processes, threads, memory) and the <strong>network</strong> (how machines talk). You don't often touch them directly, but they decide your program's speed, reliability, and failure modes — a slow API call, a deadlock, or an out-of-memory crash all come from here.</p>
+
+    <h2>Threading, concurrency &amp; memory</h2>
+    <ul>
+      <li><strong>Process vs. thread:</strong> a process is a running program with its own memory; threads are lighter workers <em>inside</em> one process sharing its memory.</li>
+      <li><strong>Concurrency</strong> = making progress on many things at once (interleaving). <strong>Parallelism</strong> = actually running them on multiple cores at once.</li>
+      <li><strong>Race condition:</strong> two threads write the same memory without coordination → unpredictable results. Fixed with locks, atomic ops, or message passing.</li>
+      <li><strong>Deadlock:</strong> two threads each wait for a resource the other holds → both freeze forever.</li>
+      <li><strong>Memory management:</strong> the OS hands out memory in pages; your language handles the rest — manual (C), reference-counted/GC (Python, Java, Go), or ownership-based (Rust, catching errors at compile time).</li>
+    </ul>
+
+    <h2>Networking — the stack</h2>
+    <div class="mermaid">
+flowchart TB
+    APP["Application: HTTP/HTTPS, DNS, WebSockets"] --> TCP["Transport: TCP (reliable) / UDP (fast)"]
+    TCP --> IP["Internet: IP — addressing &amp; routing"]
+    IP --> LINK["Link: Ethernet / Wi-Fi — physical frames"]
+    </div>
+    <p class="diagram-cap">The TCP/IP stack — each layer wraps the one below it. HTTPS adds encryption at the application layer.</p>
+    <ul>
+      <li><strong>TCP</strong> is reliable: it retransmits lost packets and orders them (used by HTTP). <strong>UDP</strong> is fast but lossy (used by video calls, games).</li>
+      <li><strong>HTTP/HTTPS:</strong> request/response over TCP; HTTPS = HTTP inside a TLS-encrypted tunnel. Methods: GET, POST, PUT, DELETE. Status codes: 2xx ok, 3xx redirect, 4xx client error, 5xx server error.</li>
+      <li><strong>DNS:</strong> the phone book — turns <code>example.com</code> into an IP address (a distributed lookup, with caching at every hop).</li>
+      <li><strong>Sockets:</strong> the API your program uses to open a connection and send/receive bytes; the OS manages the actual packets.</li>
+    </ul>
+
+    <h2>Why this helps me (as an AI/code user)</h2>
+    <ul>
+      <li><strong>API calls &amp; latency:</strong> every LLM request is a network round-trip; retries, timeouts, and streaming (WebSockets/SSE) are networking concepts (12).</li>
+      <li><strong>Parallel tool calls in agents:</strong> running several tool calls concurrently is a concurrency problem — where threads/async and shared state bite (35, 39).</li>
+      <li><strong>Streaming:</strong> token-by-token output arrives over a persistent connection; understanding HTTP/SSE/WebSockets demystifies it.</li>
+      <li><strong>Debugging:</strong> "5xx" vs. "4xx", timeouts, and DNS failures are the everyday vocabulary of production AI apps.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="30-llm-apis-practically.html">30 · LLM APIs Practically</a> → real HTTP calls to a model</li>
+      <li><a href="37-cost-latency.html">37 · Cost &amp; Latency</a> → latency as a first-class cost</li>
+      <li><a href="23-agent-loop-harness.html">23 · Agent Loop &amp; Harness</a> → concurrency in agent loops</li>
+      <li><a href="01-data-structures-algorithms.html">01 · Data Structures &amp; Algorithms</a> → queues &amp; scheduling</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • Async vs. threads vs. processes: which concurrency model for what?<br/>
+      • How does TLS handshake actually establish trust (PKI)?<br/>
+      • TCP vs. UDP: when would an AI app choose UDP?<br/>
+      • Want a playground visualizing an HTTP request through the stack?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

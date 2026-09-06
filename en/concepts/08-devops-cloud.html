@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>08 · DevOps, Infrastructure &amp; Cloud — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 08 · Stage 0 · CS Foundations</p>
+    <h1>08 · DevOps, Infrastructure &amp; Cloud</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      DevOps is <em>making sure your app gets from your laptop to the real world safely and automatically</em>. Instead of "works on my machine," you package it in a box (Docker), run the checks automatically (CI), ship it (CD), and keep an eye on it (monitoring). The cloud is just renting someone else's huge computer instead of buying your own.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>Software only matters when it runs reliably in production. DevOps is the set of practices that automate the journey from code to running service and back: <strong>package it, test it, ship it, watch it</strong>. For AI this is doubly important — models are heavy, GPUs are scarce, and inference must stay up and observable.</p>
+
+    <h2>Containerization &amp; orchestration</h2>
+    <ul>
+      <li><strong>Docker:</strong> packages your app + its exact environment into a container image — "it runs the same everywhere." The de-facto standard.</li>
+      <li><strong>Podman:</strong> a Docker-compatible, daemon-less alternative (more secure defaults, rootless).</li>
+      <li><strong>Kubernetes (K8s):</strong> orchestrates many containers across many machines — scaling, restarts, load balancing, rolling deploys. Powerful but complex.</li>
+    </ul>
+
+    <h2>CI/CD pipelines</h2>
+    <div class="mermaid">
+flowchart LR
+    C["Commit / PR"] --> CI["CI: build + lint + unit tests + evals"]
+    CI --> CD["CD: build image, deploy"]
+    CD --> P["Production"]
+    P --> M["Monitor: logs, metrics, alerts"]
+    M -->|"feedback"| C
+    </div>
+    <p class="diagram-cap">The CI/CD loop — automated checks before deploy, monitoring after. For AI, "tests" include evals on model output.</p>
+    <ul>
+      <li><strong>GitHub Actions / GitLab CI:</strong> define pipelines in YAML inside the repo; runs on every push/PR.</li>
+      <li><strong>Jenkins:</strong> older, self-hosted, very flexible.</li>
+      <li>Automated build → test → deploy workflows make releases safe and frequent.</li>
+    </ul>
+
+    <h2>Cloud &amp; Infrastructure as Code (IaC)</h2>
+    <ul>
+      <li><strong>Cloud providers:</strong> AWS, Google Cloud, Azure — rent compute, storage, GPUs, managed services.</li>
+      <li><strong>IaC:</strong> define infrastructure in code, not by clicking. <em>Terraform</em> (provider-agnostic) and <em>CloudFormation</em> (AWS-native) let you version and review your whole infra like code.</li>
+      <li><strong>GPU-specific:</strong> for AI you often need GPU instances or serverless GPU — the same cloud patterns apply, just pricier (17).</li>
+    </ul>
+
+    <h2>Observability</h2>
+    <ul>
+      <li><strong>Logging:</strong> structured event records (what happened).</li>
+      <li><strong>Metrics:</strong> numeric counters/gauges (requests/sec, latency, error rate).</li>
+      <li><strong>Distributed tracing:</strong> follow one request across many services (OpenTelemetry is the standard).</li>
+      <li><strong>Tools:</strong> Prometheus + Grafana (open-source metrics + dashboards), Datadog (SaaS), OpenTelemetry (the collection standard).</li>
+    </ul>
+
+    <h2>Why this helps me (as an AI/code user)</h2>
+    <ul>
+      <li><strong>Deploying models:</strong> vLLM/TGI as containers, orchestrated with Docker/K8s, behind a serving layer (33).</li>
+      <li><strong>Eval in CI:</strong> run evals and LLM-as-judge automatically on every change (34).</li>
+      <li><strong>Cost control:</strong> autoscaling and right-sizing GPU instances are DevOps decisions that hit the budget (17).</li>
+      <li><strong>Observability of agents:</strong> tracing an agent loop across model + tools is distributed tracing in miniature.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="43-serving-deployment.html">43 · Serving</a> → running models in production</li>
+      <li><a href="40-deployment.html">40 · Deployment</a> → where inference runs</li>
+      <li><a href="44-testing-evaluation.html">44 · Testing &amp; Evaluation</a> → evals in CI</li>
+      <li><a href="37-cost-latency.html">37 · Cost &amp; Latency</a> → infra cost decisions</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • Docker vs. Podman: when does the daemon-less one win?<br/>
+      • Kubernetes vs. simpler deploy for a small AI service?<br/>
+      • How do you monitor cost, not just uptime?<br/>
+      • Want a playground visualizing a CI/CD pipeline?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

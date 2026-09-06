@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>30 · LLM APIs Practically — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 30 · Stage D</p>
+    <h1>30 · LLM APIs Practically</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Instead of running the model yourself on your computer, you send your question
+      over the internet to a company that does that for you. You get the answer back —
+      piece by piece, like a typesetter typing it out live.
+    </div>
+
+    <h2>The three things you really need</h2>
+    <ul>
+      <li><strong>System Prompt</strong> — sets the role/rules (Concept 07). In the
+        API it's usually a separate message type <code>role: "system"</code>.</li>
+      <li><strong>Streaming</strong> — instead of waiting until the whole text is done,
+        it arrives token by token (as Concept 01 generates). Better UX, easier to build
+        than it sounds.</li>
+      <li><strong>Tool-Calls</strong> — the model requests tools (Concept 09); the API
+        returns them structured, you execute them and send the result back.</li>
+    </ul>
+
+    <h2>The API call (simplified, OpenAI-compatible)</h2>
+    <pre><code>client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "system",    "content": "You are a precise assistant."},
+        {"role": "user",      "content": "What is 17*23?"},
+    ],
+    temperature=0.2,   # low = factually faithful
+    stream=True,       # token by token
+)</code></pre>
+
+    <h2>Demo: Simulating streaming</h2>
+    <div class="demo-box">
+      <div class="controls">
+        <button id="stream" style="background:#58a6ff;color:#0e1116;border:none;border-radius:8px;padding:8px 16px;font-family:monospace;cursor:pointer;">Stream answer →</button>
+        Temperature:
+        <input id="temp" type="range" min="0" max="1" step="0.1" value="0.2" />
+        <span id="tempVal">0.2</span>
+      </div>
+      <pre id="out" style="white-space:pre-wrap;min-height:60px;margin-top:12px;"></pre>
+      <p class="meta">Simulation: At temperature 0 the same factually faithful answer always
+        appears; at high temperature it varies (random word choice). Shows the principle
+        of Concept 01/03.</p>
+    </div>
+
+    <h2>Why this is central for you as a code user</h2>
+    <ul>
+      <li><strong>Full service</strong>: no GPU, no model download needed.</li>
+      <li><strong>Streaming</strong> makes apps feel fast (first character immediately).</li>
+      <li><strong>Tool-Calls</strong> = the bridge to agents (09) without your own server.</li>
+      <li><strong>Control cost</strong>: <code>max_tokens</code>, model choice, caching.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="19-prompting-patterns.html">19 · Prompting Patterns</a> — System Prompt &amp; Structured Output.</li>
+      <li><a href="21-agents-tool-use.html">21 · Agents / Tool-Use</a> — Tool-Calls are the API equivalent.</li>
+      <li><a href="12-language-model-as-function.html">12 · Language Model as Function</a> — the stream is the autoregressive loop.</li>
+      <li><a href="56-sampling-decoding.html">56 · Sampling &amp; Decoding</a> — what temperature &amp; top_p actually do in the API.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • Difference between OpenAI- vs. Anthropic- vs. local API (schema)?<br/>
+      • What is "function calling" vs. "tool calling"?<br/>
+      • Rate limiting &amp; retries — how to make robust?<br/>
+      • What does a token really cost (prices per model)?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+  <script>
+    const FACTUAL = "17 * 23 = 391. The result is the product of the two numbers.";
+    const CREATIVE = [
+      "17 * 23 = 391 — by the way, close to a prime, interesting!",
+      "Let's compute: 17·23 = 391. You could also think 20·20 - x.",
+      "That makes 391. Back in the day you'd have needed an abacus.",
+      "391 — and did you know 391 = 17 × 23 works out exactly?",
+    ];
+    let ci = 0;
+    function stream() {
+      const t = parseFloat(document.getElementById("temp").value);
+      const target = t < 0.4 ? FACTUAL : CREATIVE[ci++ % CREATIVE.length];
+      const out = document.getElementById("out");
+      out.textContent = "";
+      let i = 0;
+      const id = setInterval(() => {
+        out.textContent += target[i++];
+        if (i >= target.length) clearInterval(id);
+      }, 30);
+    }
+    document.getElementById("stream").addEventListener("click", stream);
+    document.getElementById("temp").addEventListener("input", (e) => {
+      document.getElementById("tempVal").textContent = parseFloat(e.target.value).toFixed(1);
+    });
+  </script>
+</body>
+</html>

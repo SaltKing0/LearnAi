@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>31 · Notebook Workflow — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 31 · Stage D</p>
+    <h1>31 · Notebook Workflow</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      A notebook is like a notepad where code and explanation sit side by side and you
+      can run each section on its own. If one piece doesn't work, you only change that
+      one and try it again — without rewriting the whole notepad.
+    </div>
+
+    <h2>What a notebook is</h2>
+    <p>A <strong>Jupyter/Colab notebook</strong> is a sequence of cells: sometimes text
+       (Markdown), sometimes executable code (Python). You run cell by cell; the
+       state (variables, loaded models) is kept for the next one. That's
+       perfect for experimental AI work — exactly what you do in this course.</p>
+
+    <h2>Why notebooks are so common in AI</h2>
+    <ul>
+      <li><strong>GPU in the cloud</strong>: Colab gives you a (free) GPU — needed
+        for inference/training of large models (Concept 06).</li>
+      <li><strong>Reproducible</strong>: you share the notebook, someone else clicks
+        "Run all" and sees the same thing.</li>
+      <li><strong>Interactive</strong>: intermediate results, plots, demos visible immediately.</li>
+    </ul>
+
+    <h2>Demo: running a cell (simulated)</h2>
+    <div class="demo-box">
+      <div style="font-family:var(--mono);font-size:13px;color:var(--fg-dim);">[1]</div>
+      <pre style="margin-top:4px;">from transformers import pipeline
+gen = pipeline("text-generation", model="gpt2")</pre>
+      <div style="font-family:var(--mono);font-size:13px;color:var(--fg-dim);margin-top:10px;">[2]</div>
+      <pre style="margin-top:4px;">gen("The AI learns by", max_new_tokens=8)</pre>
+      <div class="controls" style="margin-top:10px;">
+        <button id="runCell" style="background:#58a6ff;color:#0e1116;border:none;border-radius:8px;padding:8px 16px;font-family:monospace;cursor:pointer;">Run cell [2]</button>
+      </div>
+      <pre id="cellOut" style="white-space:pre-wrap;min-height:40px;margin-top:10px;"></pre>
+    </div>
+
+    <h2>Why this is central for you as a code user</h2>
+    <ul>
+      <li><strong>Fast prototyping</strong>: idea → running code in minutes.</li>
+      <li><strong>Bridge to production</strong>: working cells → later move into
+        real .py files/modules (Stage F).</li>
+      <li><strong>Learning</strong>: almost every Hugging Face / RAG tutorial is a notebook.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="29-hugging-face.html">29 · Hugging Face</a> — notebooks are the typical entry point for it.</li>
+      <li><a href="20-rag.html">20 · RAG</a> — many RAG tutorials are notebooks.</li>
+      <li><a href="17-inference-vs-training.html">17 · Inference vs. Training</a> — notebooks mostly for inference/experiments.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • When notebooks (experiment) vs. a real script (production)?<br/>
+      • What is a "kernel" and why does it sometimes hang?<br/>
+      • Colab free vs. Pro — where is the limit?<br/>
+      • How do you version notebooks (Git + nbconvert)?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+  <script>
+    const SAMPLE = [
+      "The AI learns by recognizing patterns in data.",
+      "The AI learns by minimizing errors.",
+      "The AI learns by adjusting weights.",
+    ];
+    let i = 0;
+    document.getElementById("runCell").addEventListener("click", () => {
+      const out = document.getElementById("cellOut");
+      out.textContent = "› " + SAMPLE[i++ % SAMPLE.length];
+    });
+  </script>
+</body>
+</html>

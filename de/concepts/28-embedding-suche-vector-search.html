@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>28 · Embedding-Suche &amp; Vector Search — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 28 · Stufe C · RAG-Grundlage</p>
+    <h1>28 · Embedding-Suche &amp; Vector Search</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Stell dir du hast 1000 Bücher und suchst eines über "Dinosaurier". Du liest nicht alle — du gehts ins Schlagwortverzeichnis. Embedding-Suche ist wie ein magisches Verzeichnis: "Dinosaurier" ist nah bei "T-Rex" und "Saurier", aber weit weg bei "Pizza".
+    </div>
+
+    <h2>Was ist ein Embedding?</h2>
+    <p>Ein Embedding ist ein Vektor (Liste von Zahlen) die einen Text repräsentiert. Ähnliche Texte haben ähnliche Vektoren.</p>
+    <pre><code>"Katze" → [0.2, 0.8, 0.1, ...]
+"Hund" → [0.3, 0.7, 0.2, ...]  // ähnlich
+"Auto" → [0.9, 0.1, 0.8, ...]  // unterschiedlich</code></pre>
+
+    <h2>Cosine Similarity</h2>
+    <p>Die Distanz zwischen zwei Vektoren misst man mit Cosine Similarity (Winkel zwischen den Vektoren). 1.0 = identisch, 0 = orthogonal, -1 = gegensätzlich.</p>
+
+    <h2>Vector Databases</h2>
+    <table>
+      <tr><th>DB</th><th>Typ</th><th>Schwerpunkt</th></tr>
+      <tr><td>ChromaDB</td><td>In-Memory / File</td><td>Einfach, lokal</td></tr>
+      <tr><td>Pinecone</td><td>Cloud</td><td>Managed, skalierbar</td></tr>
+      <tr><td>Weaviate</td><td>Hybrid</td><td>GraphQL, Multi-Modal</td></tr>
+      <tr><td>Qdrant</td><td>Self-Hosted</td><td>Rust, schnell</td></tr>
+      <tr><td>FAISS</td><td>Library</td><td>Meta's Such-Engine</td></tr>
+    </table>
+
+    <h2>Der RAG-Pipeline</h2>
+    <ol>
+      <li><strong>Chunking</strong> → Dokumente in Stücke teilen</li>
+      <li><strong>Embedding</strong> → Jedes Stück in Vektor umwandeln</li>
+      <li><strong>Storage</strong> → Vektoren in DB speichern</li>
+      <li><strong>Query</strong> → User-Frage auch embeddn</li>
+      <li><strong>Search</strong> → Ähnlichste Vektoren finden</li>
+      <li><strong>Generation</strong> → Top-K Ergebnisse in Prompt einfügen</li>
+    </ol>
+
+    <h2>Chunking-Strategien</h2>
+    <ul>
+      <li><strong>Fixed Size</strong> → z.B. 500 Tokens pro Chunk</li>
+      <li><strong>Recursive</strong> → Absätze → Sätze → Wörter</li>
+      <li><strong>Semantic</strong> → Nach Bedeutungsgrenzen teilen</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="20-rag.html">20 · RAG</a> → Retrieval Augmented Generation</li>
+      <li><a href="13-tokens-und-embeddings.html">13 · Tokens &amp; Embeddings</a> → Embeddings-Grundlagen</li>
+      <li><a href="59-retrieval-feintuning.html">59 · Retrieval-Feintuning</a> — Chunking, Hybrid Search, Re-Ranking im Detail.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Wie wählt man die richtige Chunk-Größe?<br/>
+      • Wann ist Vektorsuche besser als Volltextsuche?<br/>
+      • Wie aktualisiert man Embeddings bei neuen Daten?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>
+

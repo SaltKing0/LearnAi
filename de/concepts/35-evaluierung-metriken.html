@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>35 · Evaluierung & Metriken — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 35 · Stufe E</p>
+    <h1>35 · Evaluierung &amp; Metriken</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Wenn du testest, ob jemand rechnen kann, gibst du ihm Aufgaben und zählst, wie
+      viele er richtig löst. Bei Sprachmodellen macht man das Gleiche: eine Liste mit
+      Fragen + Musterlösungen, und man misst, wie oft die Antwort passt.
+    </div>
+
+    <h2>Warum Evaluierung überhaupt nötig ist</h2>
+    <p>„Das Modell wirkt gut“ ist kein Messwert. Sobald du zwischen Modellen,
+       Prompts (07) oder Fine-Tunes (10) wählen musst, brauchst du eine
+       <strong>wiederholbare Zahl</strong>. Sonst optimierst du an Gefühl — und Gefühl
+       trügt bei 1000 Tokens Output.</p>
+
+    <h2>Die zwei wichtigsten Metriken (intuitiv)</h2>
+    <ul>
+      <li><strong>Accuracy / F1</strong> — bei klar bewertbaren Aufgaben (Klassifikation,
+        Multiple-Choice): wie viel Prozent sind richtig. Einfach, aber braucht
+        eindeutige Lösungen.</li>
+      <li><strong>Perplexity (Verwunderung)</strong> — wie „überrascht“ das Modell vom
+        echten nächsten Wort war (Konzept 01/02). Tiefer = besser vorhergesagt.
+        Misst Sprachmodell-Qualität <em>ohne</em> Labels, nur am Text selbst.</li>
+    </ul>
+
+    <div class="mermaid">
+flowchart LR
+    T[("Test-Set:<br/>Frage + Musterlösung")] --> M[Modell beantwortet]
+    M --> V[Vergleich mit Erwartet]
+    V --> ME[Metrik:<br/>Accuracy / F1 / Perplexity]
+    ME --> R{Entscheidung}
+    R -->|besser| K1[Modell / Prompt übernehmen]
+    R -->|schlechter| K2[verwerfen / nachbessern]
+    </div>
+    <p class="diagram-cap">Eval ist kein einmaliger Test, sondern eine Schleife für jede Änderung.</p>
+
+    <h2>Demo: Accuracy eines „Modells“ (vereinfacht)</h2>
+    <div class="demo-box">
+      <div class="controls"><button id="eval" style="background:#58a6ff;color:#0e1116;border:none;border-radius:8px;padding:8px 16px;font-family:monospace;cursor:pointer;">Eval-Lauf starten →</button></div>
+      <table style="margin-top:12px;width:100%;border-collapse:collapse;font-family:var(--mono);font-size:14px;">
+        <tr style="color:var(--fg-dim);"><td style="padding:5px;">Aufgabe</td><td style="padding:5px;">Erwartet</td><td style="padding:5px;">Modell</td><td style="padding:5px;">✓</td></tr>
+        <tbody id="evalRows"></tbody>
+      </table>
+      <p id="accLine" style="font-family:var(--mono);margin-top:10px;"></p>
+      <p class="meta">Simulation: zufällige Treffer, um das Prinzip „Menge der Aufgaben
+        × Trefferquote = Accuracy“ zu zeigen.</p>
+    </div>
+
+    <h2>Warum das für dich als Code-Nutzer zentral ist</h2>
+    <ul>
+      <li><strong>Modellauswahl</strong>: statt „ich mag GPT-4o“ → „auf meinem Task: 91 % vs. 84 %“.</li>
+      <li><strong>Regressionen merken</strong>: nach Prompt-Änderung noch besser/schlechter?</li>
+      <li><strong>Benchmark bekannt</strong>: MMLU, HellaSwag, GSM8K — Public-Tasks, auf
+        denen Modelle verglichen werden (Stufe F: Papers lesen).</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="12-sprachmodell-als-funktion.html">12 · Sprachmodell als Funktion</a> — Perplexity misst genau diese Vorhersage.</li>
+      <li><a href="36-halluzinationen-bias-limits.html">36 · Halluzinationen, Bias, Limits</a> — Eval deckt diese auf.</li>
+      <li><a href="22-fine-tuning.html">22 · Fine-Tuning</a> — Eval ist die Qualitätskontrolle danach.</li>
+      <li><a href="60-agent-architekturen.html">60 · Agent-Architekturen</a> — Agent-Eval: Success-Rate, Steps/Kosten, Trajectories.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Perplexity mathematisch: was ist die exakte Formel?<br/>
+      • Warum reicht Accuracy bei offenem Text nicht (LLM-as-Judge)?<br/>
+      • Was ist „overfitting on benchmarks“ (Test-Satz auswendig)?<br/>
+      • Wie evaluiert man Agenten (09), nicht nur Antworten?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+  <script>
+    const TASKS = [
+      { q: "2+2", a: "4" }, { q: "Hauptstadt DE", a: "Berlin" },
+      { q: "Synonym freundlich", a: "nett" }, { q: "5*3", a: "15" },
+      { q: "Gegenteil heiß", a: "kalt" }, { q: "Farbe von Schnee", a: "weiß" },
+    ];
+    // simulierte Modellantworten: ~70% treffer
+    function modelAnswer(t) {
+      return Math.random() < 0.72 ? t.a : (t.a === "4" ? "5" : "???");
+    }
+    document.getElementById("eval").addEventListener("click", () => {
+      const rows = document.getElementById("evalRows");
+      rows.innerHTML = "";
+      let ok = 0;
+      TASKS.forEach((t) => {
+        const m = modelAnswer(t);
+        const correct = m === t.a;
+        if (correct) ok++;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td style="padding:5px;">${t.q}</td><td style="padding:5px;">${t.a}</td><td style="padding:5px;">${m}</td><td style="padding:5px;color:${correct?'#7ee787':'#ffa657'}">${correct?'✓':'✗'}</td>`;
+        rows.appendChild(tr);
+      });
+      const acc = (ok / TASKS.length * 100).toFixed(0);
+      document.getElementById("accLine").textContent = `Accuracy: ${acc}%  (${ok}/${TASKS.length} richtig)`;
+    });
+  </script>
+
+  <!-- Mermaid für Fluss-/Architekturdiagramme (CDN, kein Build-Step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+</body>
+</html>

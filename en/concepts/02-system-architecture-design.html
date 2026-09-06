@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>02 · System Architecture &amp; Design — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 02 · Stage 0 · CS Foundations</p>
+    <h1>02 · System Architecture &amp; Design</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      A monolith is one giant house where every room is connected and everyone shares one kitchen. Microservices are separate little houses that talk to each other by phone. "Architecture" is deciding how to split a big program into parts so it's easy to build, change, and fix — without everything breaking at once.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>Architecture is <strong>how you divide a system into pieces and how those pieces talk</strong>. The right split makes each part small enough to understand, replaceable, and independently scalable. The wrong split turns every change into a risky cross-cutting edit. There is no single best answer — only trade-offs between speed of development, cost, scalability, and operational complexity.</p>
+
+    <h2>Architecture styles</h2>
+    <table>
+      <tr><th>Style</th><th>Mental image</th><th>Great when</th><th>Cost</th></tr>
+      <tr><td>Monolith</td><td>One big app, one deploy</td><td>Small team, early stage, simple domain</td><td>Hard to scale one part, risky big deploys</td></tr>
+      <tr><td>Microservices</td><td>Many small services, own DB each, talk over network</td><td>Large orgs, independent scaling/deploys</td><td>Distributed-systems pain: latency, failures, ops</td></tr>
+      <tr><td>Serverless</td><td>Functions that run only when called, no server to manage</td><td>Spiky/low traffic, event triggers</td><td>Cold starts, vendor lock-in, cost at high load</td></tr>
+      <tr><td>Event-driven</td><td>Messages on a bus; producers don't wait for consumers</td><td>Decoupling, async workflows, fan-out</td><td>Harder to trace/debug, eventual consistency</td></tr>
+    </table>
+
+    <div class="mermaid">
+flowchart LR
+    M["Monolith<br/>one app, one DB"] --> A
+    subgraph MS["Microservices"]
+        S1["Service A"] -->|"API / queue"| S2["Service B"]
+        S2 -->|"event"| S3["Service C"]
+    end
+    A["API Gateway"] --> MS
+    A --> SL["Serverless functions"]
+    EV["Event bus (Kafka / SQS)"] --> MS
+    </div>
+    <p class="diagram-cap">Monolith vs. microservices vs. serverless vs. event-driven — the same problem, different ways of splitting and wiring.</p>
+
+    <h2>Design patterns</h2>
+    <p><strong>SOLID</strong> is a checklist for keeping code changeable:</p>
+    <ul>
+      <li><strong>S</strong>ingle Responsibility — a class has one job</li>
+      <li><strong>O</strong>pen/Closed — open for extension, closed for modification</li>
+      <li><strong>L</strong>iskov Substitution — subtypes usable where their base is</li>
+      <li><strong>I</strong>nterface Segregation — small, focused interfaces</li>
+      <li><strong>D</strong>ependency Inversion — depend on abstractions, not concretions</li>
+    </ul>
+    <p><strong>GoF patterns</strong> (Gang of Four) are reusable solutions to recurring problems. The ones you'll actually meet: <strong>Factory</strong> (create objects without naming the class), <strong>Singleton</strong> (one shared instance — e.g. a config or a DB pool), <strong>Observer</strong> (many listeners react to an event — the basis of event-driven systems and reactive UI), <strong>Strategy</strong> (swap algorithms at runtime — e.g. choosing a model or a retry policy).</p>
+
+    <h2>Why this helps me (as an AI/code user)</h2>
+    <ul>
+      <li><strong>Agent harnesses are systems:</strong> the model↔tool↔memory loop is an architecture — where the loop lives (harness vs. model) is a design decision (35).</li>
+      <li><strong>RAG services:</strong> retrieval, ranking, and generation are natural service boundaries (8, 30).</li>
+      <li><strong>Event-driven fits agents:</strong> tool results and streaming tokens are events; observers and message buses show up in real harness code.</li>
+      <li><strong>Reading codebases:</strong> recognizing patterns (factory, observer, strategy) makes unfamiliar code familiar fast.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="23-agent-loop-harness.html">23 · Agent Loop &amp; Harness</a> → the agent loop as a system design</li>
+      <li><a href="07-backend-development.html">07 · Backend Development</a> → APIs and services</li>
+      <li><a href="08-devops-cloud.html">08 · DevOps, Infrastructure &amp; Cloud</a> → running these architectures</li>
+      <li><a href="21-agents-tool-use.html">21 · Agents / Tool-Use</a> → tools as service boundaries</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • When does a monolith genuinely beat microservices? (hint: often)<br/>
+      • Event-driven vs. request/response: how to choose for an agent app?<br/>
+      • How do distributed systems fail (and how do you design for failure)?<br/>
+      • Want an architecture-diagram playground comparing the styles?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

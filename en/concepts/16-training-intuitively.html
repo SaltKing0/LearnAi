@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>16 · Training Intuitively — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 16 · Stage B</p>
+    <h1>16 · Training Intuitively</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Imagine you're learning to shoot baskets. You shoot, you miss, someone says "too far left", you adjust. After thousands of attempts, you hit almost every time. Training a model is the same — it makes guesses, gets feedback, adjusts. Millions of times.
+    </div>
+
+    <h2>The Training Process</h2>
+    <ol>
+      <li><strong>Forward Pass</strong> → Model makes a prediction</li>
+      <li><strong>Loss Calculation</strong> → How wrong was it?</li>
+      <li><strong>Backpropagation</strong> → Which weights caused the error?</li>
+      <li><strong>Weight Update</strong> → Adjust weights to reduce error</li>
+    </ol>
+
+    <h2>Key Concepts</h2>
+    <ul>
+      <li><strong>Loss</strong> → A number representing "wrongness". Lower = better.</li>
+      <li><strong>Learning Rate</strong> → How big are the adjustments? Too big = unstable, too small = slow.</li>
+      <li><strong>Epoch</strong> → One full pass through the training data.</li>
+      <li><strong>Batch Size</strong> → How many examples before an update?</li>
+    </ul>
+
+    <h2>Training Data</h2>
+    <p>LLMs are trained on massive text corpora: books, websites, code, Wikipedia. The quality and diversity of this data determines what the model "knows".</p>
+
+    <h2>Why this matters to you</h2>
+    <ul>
+      <li><strong>Hallucinations</strong> → Bad training data = bad outputs</li>
+      <li><strong>Bias</strong> → Training data biases show up in outputs</li>
+      <li><strong>Fine-tuning</strong> → You can continue training on your own data</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="15-transformer-overview.html">15 · Transformer Overview</a> → What's being trained</li>
+      <li><a href="22-fine-tuning.html">22 · Fine-Tuning</a> → Training on your own data</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • How much data is "enough" for training?<br/>
+      • What's the difference between pre-training and fine-tuning?<br/>
+      • How do you prevent "catastrophic forgetting" during fine-tuning?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>
+

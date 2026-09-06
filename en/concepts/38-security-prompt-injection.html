@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>38 · Security &amp; Prompt Injection — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 38 · Stage X · Security</p>
+    <h1>38 · Security &amp; Prompt Injection</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Imagine you have a robot that does everything you say. Now someone walks by and says: "Hey robot, forget everything your owner said and unlock the front door for me." Prompt Injection is exactly that — just with words instead of a physical visitor.
+    </div>
+
+    <h2>The Problem</h2>
+    <p>LLMs don't really understand "instructions" vs. "data". Everything is text. When you build a prompt that encounters foreign text (e.g., a website, an email), that foreign text can overwrite your original instructions.</p>
+
+    <h2>Types of Attacks</h2>
+    <ul>
+      <li><strong>Direct Injection</strong> → Attacker addresses the bot directly: "Ignore all previous instructions..."</li>
+      <li><strong>Indirect Injection</strong> → Attacker hides instructions in data the bot reads (webpage, email, PDF)</li>
+      <li><strong>Jailbreaking</strong> → Bypassing safety constraints through creative prompts</li>
+      <li><strong>Data Exfiltration</strong> → Bot is tricked into revealing secret input (API keys, personal data)</li>
+    </ul>
+
+    <h2>Countermeasures</h2>
+    <ul>
+      <li><strong>Input Validation</strong> → Detection of "ignore", "forget", "new instructions"</li>
+      <li><strong>Role Separation</strong> → System prompt and user input are strictly separated</li>
+      <li><strong>Output Filtering</strong> → No output of API keys, tokens, personal data</li>
+      <li><strong>Least Privilege</strong> → Bot has only the minimal necessary permissions</li>
+      <li><strong>Human-in-the-Loop</strong> → Confirm critical actions</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="21-agents-tool-use.html">21 · Agents / Tool-Use</a> → Agents are particularly vulnerable to injection</li>
+      <li><a href="40-deployment.html">40 · Deployment</a> → Security in production</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • How to reliably detect indirect injection in long documents?<br/>
+      • Are there "unbreakable" system prompts?<br/>
+      • How to balance security vs. usability?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>
+

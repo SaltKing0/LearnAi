@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>21 · Agents / Tool-Use — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 21 · Stufe C</p>
+    <h1>21 · Agents / Tool-Use</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Normalerweise tippt das Modell nur Wörter. Ein Agent darf aber <em>Werkzeuge</em>
+      benutzen — einen Taschenrechner, das Internet, Code. Es denkt: „Ich brauche
+      das Ergebnis von 17×23“, ruft den Rechner auf, bekommt 391 zurück, und denkt
+      dann weiter. So löst es Aufgaben, die nur Wörter allein nicht können.
+    </div>
+
+    <h2>Der Loop (das ist die ganze Magie)</h2>
+    <pre><code>wiederhole:
+    antwort = modell(verlauf)
+    wenn antwort ist ein Tool-Call:
+        ergebnis = werkzeug.ausführen(antwort.argumente)
+        verlauf += ergebnis
+    sonst:
+        return antwort   # fertig</code></pre>
+    <p>Das Modell „ruft ein Werkzeug auf“ durch eine <strong>strukturierte Ausgabe</strong>
+       (meist JSON: welches Tool + Argumente) — genau das Structured-Output-Pattern
+       aus Konzept 07. Ein Framework (LangChain, etc.) ist im Kern nichts anderes als
+       diese Schleife plus eine Sammlung vorgefertigter Werkzeuge.</p>
+
+    <h2>Demo: der Agent-Loop (festes Szenario)</h2>
+    <div class="demo-box">
+      <div id="agentSketch"></div>
+      <p class="meta">Animation eines Laufs: Frage → Modell will Rechner → Tool liefert
+        391 → Modell formuliert Antwort. Neustart alle paar Sekunden.</p>
+    </div>
+
+    <h2>Bausteine eines Agents</h2>
+    <ul>
+      <li><strong>Tools</strong> — Funktionen mit Beschreibung („Rechner: multipliziert zwei Zahlen“). Das Modell wählt anhand der Beschreibung.</li>
+      <li><strong>Stop-Bedingung</strong> — wann ist die Aufgabe gelöst? (kein Tool-Call mehr, oder max. Schritte).</li>
+      <li><strong>Planung</strong> — bei komplexen Tasks plant das Modell Zwischenschritte (verwandt mit CoT, 07).</li>
+      <li><strong>Memory</strong> — was im Verlauf bleibt, was vergessen wird.</li>
+    </ul>
+
+    <h2>Warum das für dich als Code-Nutzer zentral ist</h2>
+    <ul>
+      <li><strong>Automatisierung</strong>: API aufrufen, Dateien lesen/schreiben, Code ausführen — das Modell orchestriert.</li>
+      <li><strong>Eigene Tools</strong>: du schreibst eine Funktion + Beschreibung, das Modell nutzt sie.</li>
+      <li><strong>Kosten/Latenz</strong>: jeder Schritt = ein Modell-Aufruf → Loops können teuer/lang werden.</li>
+      <li><strong>Sicherheit</strong>: Tool-Aufrufe ausführen = Code ausführen → Sandboxing nötig.</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="19-prompting-patterns.html">19 · Prompting-Patterns</a> — Tool-Calls sind strukturierte Ausgaben.</li>
+      <li><a href="20-rag.html">20 · RAG</a> — Retrieval kann ein Werkzeug des Agents sein.</li>
+      <li><a href="12-sprachmodell-als-funktion.html">12 · Sprachmodell als Funktion</a> — der Loop nutzt denselben autoregressiven Aufruf.</li>
+      <li><a href="60-agent-architekturen.html">60 · Agent-Architekturen</a> — ReAct, Plan-and-Execute, Agent-Eval.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Wie verhindert man halluzinierte/ungültige Tool-Calls?<br/>
+      • Agent Frameworks (LangChain, AutoGen, …) — Mehrwert vs. Overhead?<br/>
+      • Plan-Execute vs. ReAct — verschiedene Agent-Architekturen?<br/>
+      • Wie evaluiert man einen Agenten (nicht nur eine Antwort)?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="../assets/nav.js"></script>
+  <script>
+    const STEPS = [
+      { who: "User",   txt: "Wie viel ist 17 × 23?" },
+      { who: "Modell", txt: "Tool-Call: calculator(17,23)" },
+      { who: "Tool",   txt: "→ 391" },
+      { who: "Modell", txt: "17 × 23 = 391." },
+    ];
+    let i = 0;
+    const sketch = (p) => {
+      p.setup = () => {
+        const c = p.createCanvas(460, 200);
+        c.parent("agentSketch");
+        p.frameRate(2);
+        p.textAlign(p.LEFT, p.CENTER);
+      };
+      p.draw = () => {
+        p.background(22, 27, 34);
+        p.fill(154, 167, 180); p.textSize(13);
+        p.text("Agent-Loop:", 12, 16);
+        for (let s = 0; s < STEPS.length; s++) {
+          const y = 45 + s * 38;
+          const done = s <= i;
+          const isCur = s === i;
+          p.noStroke();
+          const col = STEPS[s].who === "Modell" ? [88, 166, 255]
+                     : STEPS[s].who === "Tool"   ? [126, 231, 135]
+                     :                                [160, 160, 170];
+          p.fill(done ? col[0] : 30, done ? col[1] : 35, done ? col[2] : 48);
+          if (isCur) { p.stroke(255, 166, 87); p.strokeWeight(2); } else p.noStroke();
+          p.rect(12, y, 436, 30, 7);
+          p.noStroke();
+          p.fill(done ? 14 : 130);
+          p.text(STEPS[s].who + ":  " + STEPS[s].txt, 24, y + 15);
+        }
+        i = (i + 1) % (STEPS.length + 1);
+      };
+    };
+    new p5(sketch);
+  </script>
+</body>
+</html>

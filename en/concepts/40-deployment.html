@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>40 · Deployment — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 40 · Stage F</p>
+    <h1>40 · Deployment</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      A model on your desk is useless to anyone. "Deployment" means: setting it up so
+      others can use it — as a service on the internet, or even on a phone. And
+      "quantization" is the diet: shrinking the model so it runs on weaker hardware.
+    </div>
+
+    <h2>Three ways to deploy a model</h2>
+    <ul>
+      <li><strong>API / cloud (inference server)</strong> — you start e.g. vLLM/
+        Ollama and call it like in Concept 12, just self-hosted (from 06/14).
+        Scales, but needs a server/GPU.</li>
+      <li><strong>Edge / local</strong> — the model runs on your own machine/
+        phone/in the browser (WebGPU, llama.cpp). Private, offline, but limited power.</li>
+      <li><strong>Embedded / on-premise</strong> — in your company, no data
+        leaves the house (14).</li>
+    </ul>
+
+    <div class="mermaid">
+flowchart LR
+    subgraph C["Cloud / API"]
+        S1["Inference server<br/>(vLLM, Ollama)"] --> U1["Users via API (12)"]
+    end
+    subgraph E["Edge / Local"]
+        S2["llama.cpp / WebGPU<br/>in browser/laptop"] --> U2["private, offline"]
+    end
+    subgraph O["On-Premise"]
+        S3["own data center"] --> U3["no data leaves the house"]
+    end
+    Q["Quantization (INT8/INT4)"] -->|"model shrinks ~4×"| E
+    Q -->|"also runs on weak HW"| O
+    </div>
+    <p class="diagram-cap">Three deployment paths; quantization is what makes edge/on-premise possible in the first place.</p>
+
+    <h2>Quantization (connection to 04/17)</h2>
+    <p>Models store weights as 16-bit floats. <strong>Quantization</strong>
+       reduces them to 8/4 bits — the model becomes ~4× smaller and faster, often with
+       barely visible quality loss (04). That's why a 7B model suddenly runs
+       on a laptop. Less RAM, less latency (17), no GPU needed.</p>
+
+    <h2>Demo: quantization stages</h2>
+    <div class="demo-box">
+      <div class="controls">
+        Stage:
+        <button class="q" data-bits="16">FP16 (original)</button>
+        <button class="q" data-bits="8">INT8</button>
+        <button class="q" data-bits="4">INT4</button>
+      </div>
+      <table style="margin-top:12px;width:100%;border-collapse:collapse;font-family:var(--mono);font-size:14px;">
+        <tr><td style="padding:6px;color:var(--fg-dim)">Memory (7B)</td><td id="qSize" style="padding:6px;"></td></tr>
+        <tr><td style="padding:6px;color:var(--fg-dim)">Quality</td><td id="qQual" style="padding:6px;"></td></tr>
+        <tr><td style="padding:6px;color:var(--fg-dim)">Runs on</td><td id="qRun" style="padding:6px;"></td></tr>
+      </table>
+      <p class="meta">Simplified values — they only show the relationship: smaller = lighter,
+        but eventually quality suffers.</p>
+    </div>
+
+    <h2>Why this is central for you as a code user</h2>
+    <ul>
+      <li><strong>Self-hosting</strong> (14): your own API without third parties, control.</li>
+      <li><strong>Lower cost</strong> (17): quantization = less hardware.</li>
+      <li><strong>Privacy</strong>: edge/on-prem = data stays local.</li>
+      <li><strong>Demo-ready</strong>: small models run on a laptop for prototypes.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="15-transformer-overview.html">15 · Transformer</a> — the weights that get quantized.</li>
+      <li><a href="17-inference-vs-training.html">17 · Inference vs. Training</a> — deployment is inference operation.</li>
+      <li><a href="32-open-vs-closed.html">32 · Open vs. Closed</a> — only open can be deployed this way.</li>
+      <li><a href="37-cost-latency.html">37 · Cost &amp; Latency</a> — quantization lowers both.</li>
+      <li><a href="57-kv-cache-inference-optimization.html">57 · KV-Cache &amp; Inference Optimization</a> — batching &amp; caching in everyday deployment.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • vLLM vs. Ollama vs. llama.cpp — when which?<br/>
+      • What is "batching"/"continuous batching" in inference servers?<br/>
+      • GPTQ vs. AWQ vs. GGUF — quantization formats?<br/>
+      • How does deployment scale at high traffic (autoscaling)?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+  <script>
+    const Q = {
+      "16": { size: "~14 GB", qual: "100% (reference)", run: "GPU (16GB+)" },
+      "8":  { size: "~7 GB",  qual: "~99% (barely any loss)", run: "GPU or large RAM" },
+      "4":  { size: "~3.5 GB", qual: "~95% (slightly softer)", run: "laptop/phone" },
+    };
+    function show(bits) {
+      const d = Q[bits];
+      document.getElementById("qSize").textContent = d.size;
+      document.getElementById("qQual").textContent = d.qual;
+      document.getElementById("qRun").textContent = d.run;
+    }
+    document.querySelectorAll(".q").forEach((b) => {
+      b.addEventListener("click", () => show(b.dataset.bits));
+    });
+    show("16");
+  </script>
+
+  <!-- Mermaid for flow/architecture diagrams (CDN, no build step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+</body>
+</html>

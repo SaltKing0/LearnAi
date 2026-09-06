@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>41 · Reading Papers &amp; News — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 41 · Stage F</p>
+    <h1>41 · Reading Papers &amp; News</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      The AI world moves so fast that books are already old when they're printed. To
+      keep up, you read the researchers' short notes ("papers") and see what's
+      happening — but you don't have to understand every word, just the essentials.
+    </div>
+
+    <h2>Where the information is</h2>
+    <ul>
+      <li><strong>arXiv</strong> (arxiv.org) — new research papers daily.
+        cs.CL (language AI), cs.LG (machine learning), cs.AI.</li>
+      <li><strong>Hugging Face blog / model cards</strong> (11) — practical, often with
+        examples instead of formulas.</li>
+      <li><strong>Lab blogs</strong> (OpenAI, Anthropic, Google DeepMind, Meta) —
+        product + high-level explanation.</li>
+      <li><strong>Newsletters / podcasts</strong> — curated summaries.</li>
+    </ul>
+
+    <h2>How to "read" a paper (without understanding everything)</h2>
+    <pre><code>1. Abstract + Conclusion  →  "What do they claim?"
+2. Figures/Tables         →  "What do the results show?"
+3. Related Work           →  "Where does it sit in the field?"
+4. Method only if needed  →  the math is usually optional</code></pre>
+    <p>Most <strong>intuition</strong> is in the abstract + figures. The deep
+       math you only need if you want to rebuild it yourself (→ notebooks, 13).</p>
+
+    <h2>Demo: flipping through a paper's structure</h2>
+    <div class="demo-box">
+      <div class="controls">
+        <button class="pp" data-s="abs">Abstract</button>
+        <button class="pp" data-s="fig">Figures</button>
+        <button class="pp" data-s="meth">Method</button>
+        <button class="pp" data-s="conc">Conclusion</button>
+      </div>
+      <div id="paperOut" style="font-family:var(--mono);font-size:14px;margin-top:12px;white-space:pre-wrap;"></div>
+      <p class="meta">Example: a fictional paper. Shows which part delivers what.</p>
+    </div>
+
+    <h2>Why this is central for you as a code user</h2>
+    <ul>
+      <li><strong>Tool selection</strong>: new method → is it already a library?</li>
+      <li><strong>Don't fall behind</strong>: in 6 months a lot changes.</li>
+      <li><strong>Source vs. hype</strong>: papers demystify buzzwords.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="16-training-intuitively.html">16 · Training</a> — papers often explain new training tricks.</li>
+      <li><a href="22-fine-tuning.html">22 · Fine-Tuning</a> — a lot of research happens here.</li>
+      <li><a href="36-hallucinations-bias-limits.html">36 · Hallucinations/Bias</a> — an active research field.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • What is "SOTA" (state of the art) and why does it matter?<br/>
+      • Preprint vs. peer-reviewed — trust?<br/>
+      • How to filter papers efficiently (too many)?<br/>
+      • What is a "benchmark" and how do you read the table?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+  <script>
+    const P = {
+      abs:  "ABSTRACT\nA new method X improves reasoning by 12% on GSM8K,\nwithout more parameters. We show that Y is the key.",
+      fig:  "FIGURES\nFig.1: X performs better than the baseline (blue > green).\nTab.2: +12% on GSM8K, +5% on MMLU.",
+      meth: "METHOD (simplified)\nWe modify the attention layer (see 03) and\nadd an auxiliary loss during training (05).",
+      conc: "CONCLUSION\nX is simple and effective. Code + model available on HF (11).",
+    };
+    function show(s) { document.getElementById("paperOut").textContent = P[s]; }
+    document.querySelectorAll(".pp").forEach((b) => {
+      b.addEventListener("click", () => show(b.dataset.s));
+    });
+    show("abs");
+  </script>
+</body>
+</html>

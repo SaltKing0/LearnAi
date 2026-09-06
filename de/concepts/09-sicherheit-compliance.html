@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>09 · Sicherheit &amp; Compliance — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 09 · Stufe 0 · CS-Grundlagen</p>
+    <h1>09 · Sicherheit &amp; Compliance</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Sicherheit heißt <em>die Türen abschließen</em>: nur die Richtigen reinlassen (Authentifizierung), nur tun, was sie dürfen (Autorisierung), und dass Nachrichten unterwegs nicht gelesen oder gefälscht werden können (Verschlüsselung). Bei KI gibt es eine Extra-Tür im Auge zu behalten — das Modell selbst kann dazu getrickst werden, Dinge zu tun, die es nicht soll (Prompt Injection).
+    </div>
+
+    <h2>Intuition</h2>
+    <p>Sicherheit ist ein <strong>Threat Model</strong>: Du fragst „wer könnte das angreifen und wie?" und designst dann Verteidigung. Für eine normale Web-App sind die großen Risiken Injection, kaputte Zugriffskontrolle und Datenlecks. Für eine KI-App kommen Prompt Injection und Daten-Exposition durch das Modell dazu. Compliance (DSGVO, SOC 2 usw.) ist die rechtliche/Prüf-Seite — nachweisen, dass du verantwortungsvoll mit Daten umgehst.</p>
+
+    <h2>Anwendungssicherheit (AppSec)</h2>
+    <p><strong>OWASP Top 10</strong> ist die Standardliste der Web-App-Risiken. Die, die du am häufigsten triffst:</p>
+    <table>
+      <tr><th>Risiko</th><th>Was es ist</th><th>Verteidigung</th></tr>
+      <tr><td>SQL-Injection</td><td>Angreifer injiziert SQL in deine Query</td><td>Parameterisierte Queries / ORMs (nie String-Konkatenation)</td></tr>
+      <tr><td>XSS</td><td>Angreifer injiziert Skript in eine Seite, die andere sehen</td><td>Ausgabe escapen, sanitieren, CSP-Header</td></tr>
+      <tr><td>Kaputte Zugriffskontrolle</td><td>Nutzer erreichen Daten, die sie nicht dürfen</td><td>AuthN + AuthZ bei jedem Request, Least Privilege</td></tr>
+      <tr><td>Security-Misconfig</td><td>Default-Creds, offenes Debug, offene Ports</td><td>Härtung, Secrets-Management, Scannen</td></tr>
+    </table>
+    <p>Regel: <strong>traue Eingaben nie</strong>. Sanitiere/validiere alles, was eine Vertrauensgrenze überschreitet.</p>
+
+    <h2>Authentifizierung &amp; Autorisierung</h2>
+    <ul>
+      <li><strong>Authentifizierung (wer bist du?)</strong> vs. <strong>Autorisierung (was darfst du?)</strong>.</li>
+      <li><strong>OAuth 2.0:</strong> delegierte Autorisierung — lässt eine App auf deine Daten zugreifen, ohne dein Passwort (z. B. „Mit Google anmelden").</li>
+      <li><strong>OpenID Connect (OIDC):</strong> Identitäts-Ebene über OAuth 2.0 — liefert das <em>Wer</em>.</li>
+      <li><strong>JWT:</strong> signiertes Token mit Claims (wer + was er darf) — zustandslose Auth, aber sorgfältig validieren (Signatur, Ablauf, Audience).</li>
+      <li><strong>RBAC / ABAC:</strong> Rollenbasierte (Berechtigungen pro Rolle) vs. Attributbasierte (Berechtigungen pro Attributen/Kontext) Zugriffskontrolle.</li>
+    </ul>
+
+    <h2>Kryptografie</h2>
+    <ul>
+      <li><strong>Verschlüsselung at rest</strong> (gespeicherte Daten — AES) und <strong>in transit</strong> (bewegte Daten — TLS/HTTPS).</li>
+      <li><strong>Hashing:</strong> Einweg (Passwörter, Integrität) — SHA-256; Passwörter nie im Klartext, sondern gesalzen (bcrypt/argon2).</li>
+      <li><strong>PKI / Zertifikate:</strong> Public-Key-Infrastruktur — wie TLS über Zertifizierungsstellen Vertrauen herstellt (das ist das „Schloss" im Browser).</li>
+      <li><strong>Key-Management:</strong> Schlüssel sind die Kronjuwelen — nutze einen Key Vault (AWS KMS usw.), rotiere sie, hartcode nie Secrets.</li>
+    </ul>
+
+    <h2>Warum hilft mir das (als KI-/Code-Nutzer)</h2>
+    <ul>
+      <li><strong>Prompt Injection</strong> ist das AppSec der LLMs — nicht vertrauenswürdige Eingabe lenkt das Modell (26).</li>
+      <li><strong>API-Keys &amp; Secrets:</strong> nie Keys in Code ausliefern; env vars / Vaults — dieselbe Key-Management-Disziplin (12).</li>
+      <li><strong>Sandboxing:</strong> modellgenerierten Code oder Tools auszuführen braucht Isolation (40).</li>
+      <li><strong>Datenschutz:</strong> was du an ein Modell schickst, kann deinen Kontrollbereich verlassen — eine Compliance-Entscheidung (14).</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="38-sicherheit-prompt-injection.html">38 · Sicherheit &amp; Prompt Injection</a> → LLM-spezifische Angriffe</li>
+      <li><a href="45-sandboxing-haertung.html">45 · Sandboxing &amp; Härtung</a> → riskante Ausführung isolieren</li>
+      <li><a href="30-llm-apis-praktisch.html">30 · LLM-APIs praktisch</a> → Key-Handling</li>
+      <li><a href="03-betriebssysteme-netzwerke.html">03 · Betriebssysteme &amp; Netzwerke</a> → TLS/HTTPS unter der Haube</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • OAuth-2.0-Flows: wann Authorization Code vs. Client Credentials?<br/>
+      • Wie wird ein JWT in der Praxis sicher validiert?<br/>
+      • Was verlangt „Compliance" konkret für ein KI-Produkt?<br/>
+      • Playground, das einen Prompt-Injection-Angriff simuliert?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

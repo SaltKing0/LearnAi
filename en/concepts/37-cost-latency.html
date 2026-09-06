@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>37 · Cost &amp; Latency — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 37 · Stage E</p>
+    <h1>37 · Cost &amp; Latency</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      You pay for every word the model reads and writes — like postage stamps per
+      sentence. And you wait until it has finished typing: the bigger the model and
+      the longer the answer, the longer it takes.
+    </div>
+
+    <h2>What the cost consists of</h2>
+    <ul>
+      <li><strong>Paid per token</strong> (02): input tokens + output tokens, often at
+        different prices. A long system prompt (07/12) costs with every call.</li>
+      <li><strong>Model size</strong> (04): bigger models more expensive per token, but
+        often better. Trade-off: is a small 7B model enough (11/14)?</li>
+      <li><strong>Self-hosting</strong> (06/14): instead of per token → per GPU hour.
+        At high volume often cheaper.</li>
+    </ul>
+
+    <h2>Where the latency comes from</h2>
+    <ul>
+      <li><strong>Autoregressive loop</strong> (01): each token is generated separately
+        → answer length = number of steps. Hence streaming (12) feels faster.</li>
+      <li><strong>Attention is quadratic</strong> (03/04): longer context →
+        significantly more compute per token.</li>
+      <li><strong>Batch/parallelism</strong>: API providers serve many requests at once
+        → latency fluctuates under load.</li>
+    </ul>
+
+    <div class="mermaid">
+flowchart LR
+    IN["Input tokens<br/>(system + prompt)"] --> OUT["Output tokens<br/>(autoregressive)"]
+    OUT -->|"1 token = 1 step"| L["Latency ∝ answer length"]
+    IN -->|"longer context"| Q["Quadratic<br/>attention effort"]
+    Q --> L2["Latency ↑ with long context"]
+    PR["Cost = (In + Out) × price/token"] --> B{Model size?}
+    B -->|bigger| T1["more expensive / often better"]
+    B -->|smaller| T2["cheaper / maybe weaker"]
+    </div>
+    <p class="diagram-cap">Cost is linear in tokens; latency grows with answer length and (quadratically) with context.</p>
+
+    <h2>Demo: Cost/latency calculator (simplified)</h2>
+    <div class="demo-box">
+      <div class="controls">
+        Model:
+        <select id="model" style="background:#0e1116;color:#e6edf3;border:1px solid #2a3340;border-radius:6px;padding:5px;font-family:monospace;">
+          <option value="0.5">Small (7B) – cheap/slow</option>
+          <option value="2.0">Medium (70B) – medium</option>
+          <option value="10.0">Frontier (large) – expensive/fast</option>
+        </select>
+        Answer tokens: <input id="tok" type="number" value="500" min="50" step="50" style="width:80px;background:#0e1116;color:#e6edf3;border:1px solid #2a3340;border-radius:6px;padding:4px;" />
+        <button id="calc" style="background:#58a6ff;color:#0e1116;border:none;border-radius:8px;padding:6px 14px;font-family:monospace;cursor:pointer;">Calculate</button>
+      </div>
+      <p id="costOut" style="font-family:var(--mono);margin-top:10px;"></p>
+      <p class="meta">Fictional prices for demonstration: price = (tokens/1000) ×
+        model factor. Pure intuition for the size↔cost relationship.</p>
+    </div>
+
+    <h2>Why this is central for you as a code user</h2>
+    <ul>
+      <li><strong>Choose the model</strong>: not always the biggest — often a smaller
+        one suffices for 1/20 of the cost.</li>
+      <li><strong>Shorten prompts</strong> (07): fewer input tokens = less per call.</li>
+      <li><strong>Caching</strong>: cache system prompts/reusable parts (with APIs).</li>
+      <li><strong>Streaming</strong> (12): better UX at the same latency.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="12-language-model-as-function.html">12 · Language Model as Function</a> — why latency grows linearly with answer length.</li>
+      <li><a href="15-transformer-overview.html">15 · Transformer</a> — quadratic attention = context cost.</li>
+      <li><a href="30-llm-apis-practically.html">30 · LLM APIs</a> — where you pay per token.</li>
+      <li><a href="56-sampling-decoding.html">56 · Sampling &amp; Decoding</a> — sampling settings cost nothing, but change everything.</li>
+      <li><a href="57-kv-cache-inference-optimization.html">57 · KV-Cache &amp; Inference Optimization</a> — TTFT/TPOT and why prompt caching saves money.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • What is "KV-Cache" and why does it lower repeated costs?<br/>
+      • Throughput vs. latency in batch inference (06)?<br/>
+      • Token prices: why is output more expensive than input?<br/>
+      • Quantization (04) saves cost — how much really?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+  <script>
+    document.getElementById("calc").addEventListener("click", () => {
+      const f = parseFloat(document.getElementById("model").value);
+      const tok = parseInt(document.getElementById("tok").value) || 0;
+      const cost = (tok / 1000 * f).toFixed(2);
+      const lat = (tok / 1000 * (f > 5 ? 1.5 : f > 1 ? 3 : 6)).toFixed(1); // sim. seconds
+      document.getElementById("costOut").textContent =
+        `Estimated cost: ${cost} (fictional) · Latency ~${lat}s · Tokens: ${tok}`;
+    });
+  </script>
+
+  <!-- Mermaid for flow/architecture diagrams (CDN, no build step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+</body>
+</html>

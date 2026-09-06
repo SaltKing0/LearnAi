@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>03 · Betriebssysteme &amp; Netzwerke — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 03 · Stufe 0 · CS-Grundlagen</p>
+    <h1>03 · Betriebssysteme &amp; Netzwerke</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Das Betriebssystem ist der Manager deines Computers: Es entscheidet, welches Programm die CPU bekommt, verteilt Speicher und lässt viele Programme „gleichzeitig" laufen. Netzwerke sind das Postsystem zwischen Computern — es verpackt deine Nachricht in Umschläge (TCP/IP), sucht die Adresse (DNS) und liefert sie über HTTP. Fast alles, was du online tust, ist ein Programm, das einem anderen eine Post schickt.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>Zwei Schichten liegen unter jeder App, die du schreibst: das <strong>OS</strong> (Prozesse, Threads, Speicher) und das <strong>Netzwerk</strong> (wie Maschinen reden). Du fasst sie selten direkt an, aber sie entscheiden über Tempo, Zuverlässigkeit und Fehlermodi deines Programms — ein langsamer API-Call, ein Deadlock oder ein Out-of-Memory-Crash kommen alle von hier.</p>
+
+    <h2>Threads, Concurrency &amp; Speicher</h2>
+    <ul>
+      <li><strong>Prozess vs. Thread:</strong> ein Prozess ist ein laufendes Programm mit eigenem Speicher; Threads sind leichtere Arbeiter <em>innerhalb</em> eines Prozesses, die sich seinen Speicher teilen.</li>
+      <li><strong>Concurrency</strong> = bei vielem gleichzeitig Fortschritt machen (verschränkt). <strong>Parallelität</strong> = es wirklich auf mehreren Kernen gleichzeitig ausführen.</li>
+      <li><strong>Race Condition:</strong> zwei Threads schreiben unkoordiniert in denselben Speicher → unvorhersehbare Ergebnisse. Gelöst mit Locks, atomaren Operationen oder Message Passing.</li>
+      <li><strong>Deadlock:</strong> zwei Threads warten jeweils auf eine Ressource, die der andere hält → beide frieren für immer ein.</li>
+      <li><strong>Speicherverwaltung:</strong> das OS vergibt Speicher in Seiten; deine Sprache übernimmt den Rest — manuell (C), Referenzzählung/GC (Python, Java, Go) oder Ownership-basiert (Rust, fängt Fehler beim Kompilieren).</li>
+    </ul>
+
+    <h2>Netzwerke — der Stack</h2>
+    <div class="mermaid">
+flowchart TB
+    APP["Anwendung: HTTP/HTTPS, DNS, WebSockets"] --> TCP["Transport: TCP (zuverlässig) / UDP (schnell)"]
+    TCP --> IP["Internet: IP — Adressierung &amp; Routing"]
+    IP --> LINK["Link: Ethernet / WLAN — physische Frames"]
+    </div>
+    <p class="diagram-cap">Der TCP/IP-Stack — jede Schicht umhüllt die darunter. HTTPS fügt auf der Anwendungsschicht Verschlüsselung hinzu.</p>
+    <ul>
+      <li><strong>TCP</strong> ist zuverlässig: es sendet verlorene Pakete erneut und ordnet sie (genutzt von HTTP). <strong>UDP</strong> ist schnell, aber verlustbehaftet (genutzt von Video-Calls, Spielen).</li>
+      <li><strong>HTTP/HTTPS:</strong> Request/Response über TCP; HTTPS = HTTP in einem TLS-verschlüsselten Tunnel. Methoden: GET, POST, PUT, DELETE. Statuscodes: 2xx ok, 3xx Redirect, 4xx Client-Fehler, 5xx Server-Fehler.</li>
+      <li><strong>DNS:</strong> das Telefonbuch — macht aus <code>example.com</code> eine IP-Adresse (verteiltes Nachschlagen mit Caching auf jedem Hop).</li>
+      <li><strong>Sockets:</strong> die API, mit der dein Programm eine Verbindung öffnet und Bytes sendet/empfängt; das OS verwaltet die eigentlichen Pakete.</li>
+    </ul>
+
+    <h2>Warum hilft mir das (als KI-/Code-Nutzer)</h2>
+    <ul>
+      <li><strong>API-Calls &amp; Latenz:</strong> jeder LLM-Request ist ein Netzwerk-Roundtrip; Retries, Timeouts und Streaming (WebSockets/SSE) sind Netzwerk-Konzepte (12).</li>
+      <li><strong>Parallele Tool-Calls in Agents:</strong> mehrere Tool-Calls gleichzeitig ausführen ist ein Concurrency-Problem — wo Threads/Async und geteilter Zustand beißen (35, 39).</li>
+      <li><strong>Streaming:</strong> Token-für-Token-Ausgabe kommt über eine dauerhafte Verbindung; HTTP/SSE/WebSockets zu verstehen entmystifiziert es.</li>
+      <li><strong>Debugging:</strong> „5xx" vs. „4xx", Timeouts und DNS-Fehler sind der Alltags-Wortschatz produktiver KI-Apps.</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="30-llm-apis-praktisch.html">30 · LLM-APIs praktisch</a> → echte HTTP-Calls an ein Modell</li>
+      <li><a href="37-kosten-latenz.html">37 · Kosten &amp; Latenz</a> → Latenz als erstklassige Kosten</li>
+      <li><a href="23-agent-loop-harness.html">23 · Agent-Loop &amp; Harness</a> → Concurrency in Agent-Schleifen</li>
+      <li><a href="01-datenstrukturen-algorithmen.html">01 · Datenstrukturen &amp; Algorithmen</a> → Queues &amp; Scheduling</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Async vs. Threads vs. Prozesse: welches Concurrency-Modell für was?<br/>
+      • Wie stellt der TLS-Handshake Vertrauen her (PKI)?<br/>
+      • TCP vs. UDP: wann würde eine KI-App UDP wählen?<br/>
+      • Playground, das einen HTTP-Request durch den Stack zeigt?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

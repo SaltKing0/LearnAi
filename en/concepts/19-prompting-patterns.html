@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>19 · Prompting Patterns — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 19 · Stage C · Advanced</p>
+    <h1>19 · Prompting Patterns</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      A prompt is how you talk the model into something. "Show me an example" (few-shot)
+      helps it understand the pattern. "Think out loud step by step" (chain-of-
+      thought) helps it with puzzles so it doesn't guess wrong right away. Both
+      cost no training — just clever words.
+    </div>
+
+    <h2>Why prompting is the cheapest leverage</h2>
+    <p>You learned in Concept 01: the model only guesses the next word. What you
+       write <em>before</em> it (the prompt) controls <em>which distribution</em>
+       it guesses from. Before you fine-tune a model (Concept 10) or build RAG (08):
+       try a better prompt first. Often that's enough.</p>
+
+    <h2>The most important patterns</h2>
+
+    <h3>Basic patterns</h3>
+    <ul>
+      <li><strong>Zero-shot</strong> — just pose the task. The baseline.</li>
+      <li><strong>Few-shot</strong> — 2–5 examples (input→desired output) in the prompt set the <em>format</em> and <em>tone</em>. Very strong for structure.</li>
+      <li><strong>Chain-of-Thought (CoT)</strong> — "think step by step" / examples with intermediate steps. The model "writes along" what it does → better logic/math. Costs more tokens.</li>
+    </ul>
+
+    <h3>Advanced patterns</h3>
+    <ul>
+      <li><strong>ReAct (Reasoning + Acting)</strong> — the model alternates between thinking and acting. "I need to know X → call tool Y → based on result → next step". The basis for agents.</li>
+      <li><strong>Self-Consistency</strong> — ask the same question several times, take the most common answer. Reduces random errors.</li>
+      <li><strong>Tree of Thought</strong> — explore several reasoning paths at once, pick the best. Like brainstorming for LLMs.</li>
+      <li><strong>Prompt Chaining</strong> — split a complex task into several prompts; the output of prompt A is the input of prompt B.</li>
+    </ul>
+
+    <h3>Structure &amp; control</h3>
+    <ul>
+      <li><strong>System prompt vs. user prompt</strong> — system sets role/rules ("You are …", "Always answer as JSON"), user is the actual request.</li>
+      <li><strong>Role prompting</strong> — "You are a senior developer with 10 years of experience" → changes answer quality.</li>
+      <li><strong>Negative prompts</strong> — "Don't answer with...", "Avoid..." → excludes unwanted answers.</li>
+      <li><strong>Structured output</strong> — "Give me JSON with fields x,y" → directly parseable in code.</li>
+    </ul>
+
+    <div class="mermaid">
+flowchart TD
+    S[Task present] --> Q1{Needs structured<br/>output?}
+    Q1 -->|Yes| JSON["Structured output / system prompt:<br/>'Answer as JSON'"]
+    Q1 -->|No| Q2{Does the model<br/>need examples?}
+    Q2 -->|Yes| FEW["Few-shot:<br/>2–5 input → output examples"]
+    Q2 -->|No| Q3{Logic / math /<br/>multi-step?}
+    Q3 -->|Yes| COT["Chain-of-Thought:<br/>'Think step by step'"]
+    Q3 -->|No| ZERO[Zero-shot:<br/>plain task]
+    end
+    <p class="diagram-cap">Rule of thumb for choosing a pattern — cheapest lever first.</p>
+    </div>
+
+    <h2>Demo: Zero-shot vs. Few-shot vs. CoT (illustrated)</h2>
+    <div class="demo-box">
+      <div class="controls">
+        Mode:
+        <button class="pmode" data-m="zero">Zero-shot</button>
+        <button class="pmode" data-m="few">Few-shot</button>
+        <button class="pmode" data-m="cot">Chain-of-Thought</button>
+      </div>
+      <p class="meta">Task: "The tomatoes are red. Is the sentence positive or negative?"</p>
+      <pre id="promptOut" style="white-space:pre-wrap"></pre>
+      <p class="meta" id="noteOut"></p>
+    </div>
+
+    <h2>Prompt engineering vs. prompt tuning</h2>
+    <table>
+      <tr><th></th><th>Prompt Engineering</th><th>Prompt Tuning</th></tr>
+      <tr><td>What</td><td>Optimize text prompts</td><td>Learn numeric vectors</td></tr>
+      <tr><td>Effort</td><td>Manual, fast</td><td>Training needed</td></tr>
+      <tr><td>Flexible</td><td>High</td><td>Less</td></tr>
+      <tr><td>Use case</td><td>APIs, fast iteration</td><td>Specialized models</td></tr>
+    </table>
+
+    <h2>Why this is central for you as a code user</h2>
+    <ul>
+      <li><strong>No training, immediately</strong> — in the API just the prompt string.</li>
+      <li><strong>Structured outputs</strong> (JSON) make models pipeline components.</li>
+      <li><strong>Cost/latency</strong>: CoT + few-shot eat tokens — relevant at high traffic.</li>
+      <li><strong>Reproducibility</strong>: version your prompts (exactly this repo!).</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="12-language-model-as-function.html">12 · Language Model as Function</a> — the prompt is the input to P(next|prompt).</li>
+      <li><a href="20-rag.html">20 · RAG</a> — retrieval is ultimately "better prompt through context".</li>
+      <li><a href="22-fine-tuning.html">22 · Fine-Tuning</a> — the expensive alternative, when prompts are not enough.</li>
+      <li><a href="38-security-prompt-injection.html">38 · Security &amp; Prompt Injection</a> — prompts can be manipulated.</li>
+      <li><a href="60-agent-architectures.html">60 · Agent Architectures</a> — ReAct vs. Plan-and-Execute at the prompting level.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • Why does CoT work at all (not just more computing)?<br/>
+      • What is prompt injection and how dangerous with tool-use?<br/>
+      • Where is the limit of few-shot (context length, confusion)?<br/>
+      • Difference: instruction tuning vs. prompting?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+  <script>
+    const PROMPTS = {
+      zero: {
+        p: "The tomatoes are red. Is the sentence positive or negative?",
+        n: "The model must guess the pattern from nothing — often inconsistent with unclear formats."
+      },
+      few: {
+        p: "Examples:\n'I love this movie.' → positive\n'The food was awful.' → negative\n\nThe tomatoes are red. → ?",
+        n: "The pattern (sentence → label) is given. The model follows the structure."
+      },
+      cot: {
+        p: "Task: determine sentiment. Think step by step.\nStep 1: analyze the words. 'red' is neutral-descriptive, no emotion.\nStep 2: no positive/negative signal visible.\nStep 3: → neutral\n\nNow: 'The tomatoes are red.' → ?",
+        n: "Intermediate steps force the model into explicit reasoning — better for logic."
+      }
+    };
+    function show(mode) {
+      document.getElementById("promptOut").textContent = PROMPTS[mode].p;
+      document.getElementById("noteOut").textContent = PROMPTS[mode].n;
+    }
+    document.querySelectorAll(".pmode").forEach((b) => {
+      b.addEventListener("click", () => show(b.dataset.m));
+    });
+    show("zero");
+  </script>
+
+  <!-- Mermaid for flow/architecture diagrams (CDN, no build step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+</body>
+</html>

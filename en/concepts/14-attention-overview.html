@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>14 · Attention — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 14 · Stage A</p>
+    <h1>14 · Attention (Self-Attention)</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Imagine you're reading a sentence: "The cat sat on the mat because it was tired." What does "it" refer to? The cat, not the mat. Your brain automatically "attends" to the right word. Attention is how models do this — they look at all previous words and figure out which ones matter most.
+    </div>
+
+    <h2>What is Attention?</h2>
+    <p>Attention is the mechanism that lets models weigh the importance of different words in a context. When predicting the next word, the model "looks at" all previous words and decides which ones are most relevant.</p>
+
+    <h2>The Attention Mechanism</h2>
+    <ol>
+      <li><strong>Query</strong> → "What am I looking for?" (current word)</li>
+      <li><strong>Key</strong> → "What do I contain?" (all previous words)</li>
+      <li><strong>Value</strong> → "What do I pass on?" (weighted by relevance)</li>
+    </ol>
+
+    <h2>Multi-Head Attention</h2>
+    <p>Instead of one attention mechanism, models use multiple "heads" — each can focus on different aspects. One head might track grammar, another might track meaning, another might track position.</p>
+
+    <h2>Why this matters to you</h2>
+    <ul>
+      <li><strong>Context understanding</strong> → Attention is why models can handle long contexts</li>
+      <li><strong>Hallucinations</strong> → When attention goes wrong, models lose track</li>
+      <li><strong>Performance</strong> → Attention is O(n²) — longer contexts = much slower</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="12-language-model-as-function.html">12 · Language Model as Function</a> → What the model predicts</li>
+      <li><a href="13-tokens-and-embeddings.html">13 · Tokens &amp; Embeddings</a> → What attention operates on</li>
+      <li><a href="15-transformer-overview.html">15 · Transformer Overview</a> → How attention fits into the full architecture</li>
+      <li><a href="../playground/attention-demo.html">Playground · Attention</a></li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • How does attention scale to very long contexts?<br/>
+      • What's the difference between self-attention and cross-attention?<br/>
+      • Can attention be made more efficient?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>
+

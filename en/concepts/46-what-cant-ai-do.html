@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>46 · What Can't AI Do? — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 46 · Cross-thinking</p>
+    <h1>46 · What Can't AI Do?</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      A model is like someone who has read endless books but has never lived a single
+      day. It can talk about things wonderfully — but it has no real experiences, no
+      feelings, no own will. Some things need exactly that.
+    </div>
+
+    <h2>Limits that are structural (not just "not yet")</h2>
+    <ul>
+      <li><strong>No consciousness / no experience</strong> — it processes symbols,
+        "knows" nothing about the world (Concept 01/16).</li>
+      <li><strong>No real counting/logic at the core</strong> — guesses patterns,
+        stumbles over the simplest math without tools (09).</li>
+      <li><strong>No causality from its own insight</strong> — only correlates;
+        "why" is derived, not grasped.</li>
+      <li><strong>No responsibility</strong> — decisions need a human.</li>
+      <li><strong>Doesn't learn from life</strong> — only from data someone feeds it.</li>
+    </ul>
+
+    <h2>"Not yet" vs. "in principle"</h2>
+    <p>Some things (better math, longer context) are technically solvable. Others
+       (consciousness, real understanding) concern the <em>nature</em> of the architecture
+       (01–04) and are not a question of "more data". Distinguishing these is
+       important — otherwise you overestimate the system.</p>
+
+    <div class="mermaid">
+flowchart TD
+    A["Task to the model"] --> B{Does the task need<br/>real experience / will /<br/>responsibility?}
+    B -->|Yes| C["Principled limit<br/>(consciousness, grieving,<br/>real decision)"]
+    B -->|No| D{Does it hinge on<br/>a hard challenge:<br/>math/logic/<br/>knowledge?}
+    D -->|"Yes, hard"| E["Limit today —<br/>better with tools (09)"]
+    D -->|"No, linguistic"| F["Model can do it<br/>(text, summarizing, code)"]
+    </div>
+    <p class="diagram-cap">Not every "limit" is principled — the distinction protects against overestimation.</p>
+
+    <h2>Demo: "Can the model do X?" (intuition)</h2>
+    <div class="demo-box">
+      <div class="controls">
+        <button class="cap" data-k="grieve">Grieve?</button>
+        <button class="cap" data-k="math">Do exact math?</button>
+        <button class="cap" data-k="understand">Understand the world?</button>
+        <button class="cap" data-k="write">Write text?</button>
+      </div>
+      <p id="capOut" style="font-family:var(--mono);margin-top:12px;min-height:40px;"></p>
+    </div>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="36-hallucinations-bias-limits.html">36 · Hallucinations, Bias, Limits</a> — the technical limits.</li>
+      <li><a href="47-difference-vs-understanding.html">47 · Difference vs. Understanding</a> — the depth of it.</li>
+      <li><a href="12-language-model-as-function.html">12 · Language Model as Function</a> — why "guessing" is not experience.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • Where exactly is the line "just patterns vs. understanding"?<br/>
+      • Could future architecture have consciousness (philosophical)?<br/>
+      • What does "artificial general intelligence" (AGI) really mean?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+  <script>
+    const C = {
+      grieve:   "NO — no feeling, no experience. It simulates grief, doesn't feel it.",
+      math:     "LIMITED — only guesses; needs tools (09) for exact results.",
+      understand:"NO — processes symbols, has no world experience (01/16).",
+      write:    "YES — generating language is exactly its strength (autoregressive loop).",
+    };
+    function show(k){ document.getElementById("capOut").textContent = C[k]; }
+    document.querySelectorAll(".cap").forEach(b=>b.addEventListener("click",()=>show(b.dataset.k)));
+  </script>
+
+  <!-- Mermaid for flow/architecture diagrams (CDN, no build step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+</body>
+</html>

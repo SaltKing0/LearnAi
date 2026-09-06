@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>49 · Mini-Projekt: Mini-RAG — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Projekt 49 · Stufe G (Praxis)</p>
+    <h1>49 · Mini-Projekt: Mini-RAG</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Stell dir eine Kiste mit deinen eigenen Zetteln vor. Du stellst eine Frage,
+      das Programm sucht die passenden Zettel heraus und gibt sie dem Modell, damit
+      es daraus antwortet — statt zu raten.
+    </div>
+
+    <h2>Bausteine (aus bisherigen Stufen)</h2>
+    <ul>
+      <li><strong>Embeddings</strong> (02) — Zettel in Vektoren wandeln.</li>
+      <li><strong>Vektorsuche</strong> (08) — ähnlichste Chunks zur Frage finden.</li>
+      <li><strong>Augmentierter Prompt</strong> (07) — Chunks + Frage an die API (12).</li>
+    </ul>
+
+    <h2>Flow (vereinfacht)</h2>
+    <pre><code># 1) Index bauen (einmal)
+chunks = split(docs)
+vecs   = embed(chunks)            # Konzept 02
+
+# 2) Frage beantworten
+q_vec  = embed(question)
+top    = nearest(vecs, q_vec, k=3) # Konzept 08
+prompt = f"Kontext:\n{top}\n\nFrage: {question}"
+answer = llm(prompt)               # Konzept 12</code></pre>
+
+    <h2>Aufgaben</h2>
+    <ul>
+      <li>Nimm deine eigenen Textdateien (Notizen, Docs).</li>
+      <li>Nutze eine Vektordatenbank (Chroma/pgvector) statt In-Memory (08).</li>
+      <li>Zitate mitgeben, damit die Antwort verifizierbar ist (16).</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="20-rag.html">20 · RAG</a> · <a href="13-tokens-und-embeddings.html">13 · Embeddings</a> · <a href="19-prompting-patterns.html">19 · Prompts</a></li>
+      <li><a href="59-retrieval-feintuning.html">59 · Retrieval-Feintuning</a> — Chunking &amp; Re-Ranking verbessern das Mini-RAG deutlich.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen</span>
+      • Chunk-Größe/Überlappung (08)?<br/>
+      • Re-Ranking der Top-k (08)?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

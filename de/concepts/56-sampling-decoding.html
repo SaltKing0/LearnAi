@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>56 · Sampling &amp; Decoding — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 56 · Stufe C · Grundlagen</p>
+    <h1>56 · Sampling &amp; Decoding</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Stell dir das Modell ist ein Freund der beim Satz "Ich esse gern ___" die nächsten Wörter vorschlägt: "Pizza" (55%), "Nudeln" (20%), "Apfel" (10%), "Bananenbrot" (2%) ... Das Modell liefert nur diese Wahrscheinlichkeitsliste. Sampling entscheidet dann, welches Wort wirklich genommen wird — nimmst du immer den Favoriten (langweilig, vorhersehbar), oder würfelst du mit den Wahrscheinlichkeiten (überraschend, kreativ)? Temperatur und Top-p sind die Regeln, nach denen gewürfelt wird.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>Ein Sprachmodell gibt <em>nicht</em> Text zurück. Es gibt für jedes mögliche Token eine Zahl zurück: den Logit. Nach Softmax ist das eine Wahrscheinlichkeitsverteilung über das ganze Vokabular (~50.000–200.000 Einträge). Erst der <strong>Decoding-Schritt</strong> macht daraus das eine Token, das im Output landet. Diese Wahl ist der Grund, warum dieselbe Frage zweimal unterschiedliche Antworten geben kann — und warum man Kreativität vs. Präzision per Knopfdruck einstellen kann.</p>
+
+    <h2>Was passiert technisch</h2>
+    <p>Der Pipeline pro generiertem Token:</p>
+    <div class="mermaid">
+flowchart LR
+    L[Logits<br/>rohe Scores] --> S[Softmax]
+    T[Temperatur] --> S
+    S --> F[Filter<br/>Top-k / Top-p]
+    RP[Repetition Penalty] --> L
+    F --> G{Strategie}
+    G -- Greedy --> O1[argmax<br/>immer bestes Token]
+    G -- Sampling --> O2[würfeln gemäß<br/>Wahrscheinlichkeiten]
+    </div>
+
+    <ul>
+      <li><strong>Logits</strong> → unnormalisierte Scores pro Vokabular-Eintrag (können beliebig groß/klein sein).</li>
+      <li><strong>Softmax</strong> → macht daraus Wahrscheinlichkeiten (alles zwischen 0 und 1, Summe = 1).</li>
+      <li><strong>Temperatur</strong> → teilt die Logits durch T vor dem Softmax. T&lt;1 schärft die Verteilung (sicherer), T&gt;1 glättet sie (kreativer/wild).</li>
+      <li><strong>Greedy Decoding</strong> → nimm immer das wahrscheinlichste Token. Deterministisch im Prinzip, aber repetitiv und oft schlechter.</li>
+      <li><strong>Top-k</strong> → behalte nur die k wahrscheinlichsten Tokens, setz den Rest auf 0, renormalisiere.</li>
+      <li><strong>Top-p / Nucleus</strong> → nimm die kleinste Token-Menge, deren kumulative Wahrscheinlichkeit ≥ p ist (z.B. 0.9). Adaptiv: bei sicherer Verteilung wenige Tokens, bei unsicherer viele.</li>
+      <li><strong>Beam Search</strong> → verfolge die b besten Teil-Sequenzen parallel statt nur einer. Standard bei Übersetzung, aber bei offener Textgenerierung oft fad/generisch.</li>
+      <li><strong>Repetition Penalty</strong> → bestraft bereits generierte Tokens (Logit absenken oder dividieren), gegen Loops.</li>
+    </ul>
+
+    <table>
+      <tr><th>Parameter</th><th>Typischer Wert</th><th>Wann</th></tr>
+      <tr><td>temperatur = 0 (greedy)</td><td>Code, Extraktion, Klassifikation</td><td>wenn Reproduzierbarkeit zählt</td></tr>
+      <tr><td>T ≈ 0.2–0.7</td><td>technische Erklärungen, Docs</td><td>Default-Bereich vieler APIs</td></tr>
+      <tr><td>T ≈ 0.7–1.0</td><td>Kreatives Schreiben, Brainstorming</td><td>Vielfalt erwünscht</td></tr>
+      <tr><td>top_p ≈ 0.9</td><td>fast immer okay</td><td>Alternative/ergänzend zu Temperatur</td></tr>
+    </table>
+
+    <h3>Ist Temperatur 0 wirklich deterministisch?</h3>
+    <p>Nein — nicht über die API. Bei T=0 wählt der Server formal argmax, aber:</p>
+    <ul>
+      <li>Auf GPU laufen Berechnungen <strong>nicht-deterministisch</strong>: Floating-Point-Additionen in anderer Reihenfolge (Batching!, parallele Reduktionen) können Bit-Unterschiede erzeugen.</li>
+      <li>Bei zwei fast gleich wahrscheinlichen Tokens (z.B. 0.5001 vs. 0.4999) kippt argmax je nach Batch-Zusammenstellung.</li>
+      <li>MoE-Modelle und Provider-seitiges Routing (unterschiedliche Rechenzentren, Hardware) verstärken das.</li>
+      <li>Dazu kommt Caching, Versionierung des Modells hinter demselben Namen etc.</li>
+    </ul>
+    <p>Faustregel: T=0 macht Output <em>weitgehend stabil</em>, aber nie garantiert identisch. Wenn du echte Reproduzierbarkeit brauchst: seed setzen (wo angeboten) + Modellversion pinnen — oder lokal hosten.</p>
+
+    <h2>Warum es mir weiterhilft</h2>
+    <ul>
+      <li>Ich verstehe, was <code>temperature</code> / <code>top_p</code> in API-Calls wirklich tun — und dass man üblicherweise nur einen von beiden stark variiert, nicht beide gleichzeitig hochdrehen.</li>
+      <li>"Das Modell hat Halluziniert" ist manchmal tatsächlich "falsche Sampling-Settings": hohe Temperatur bei Fakten-Aufgaben ist Selbstsabotage.</li>
+      <li>Stage A/B-Vergleiche (gleicher Prompt, zwei Modelle) sind wertlos mit unterschiedlichen Settings — Settings gehören zum Experiment.</li>
+      <li>Loops und Wiederholungen bei lokalen Modellen? Repetition Penalty ist meist der Hebel, nicht der Prompt.</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="12-sprachmodell-als-funktion.html">12 · Sprachmodell als Funktion</a> → woher die Wahrscheinlichkeiten überhaupt kommen</li>
+      <li><a href="13-tokens-und-embeddings.html">13 · Tokens &amp; Embeddings</a> → worüber die Verteilung läuft</li>
+      <li><a href="30-llm-apis-praktisch.html">30 · LLM-APIs praktisch</a> → wo man diese Parameter setzt</li>
+      <li><a href="37-kosten-latenz.html">37 · Kosten &amp; Latenz</a> → jedes Sample = ein Vorwärts-Pass</li>
+      <li><a href="33-lokale-modelle.html">33 · Lokale Modelle</a> → hier kontrollierst du alle Sampler selbst (llama.cpp)</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Wie genau implementieren Provider "seed" bei T&gt;0 — echtes Seed-basiertes Sampling oder nur Marketing?<br/>
+      • Min-p-Sampling (Dynamik-Schwelle relativ zum Top-Token) — wann besser als Top-p?<br/>
+      • Warum funktioniert Beam Search bei Chat-Modellen so viel schlechter als bei Übersetzung — RLHF-Artefakt oder Likelihood-Gap?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <!-- Mermaid für Fluss-/Architekturdiagramme (CDN, kein Build-Step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

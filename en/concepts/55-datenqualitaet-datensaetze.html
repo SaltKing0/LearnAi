@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>55 · Data Quality & Datasets — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 55 · Stage B/F</p>
+    <h1>55 · Data Quality &amp; Datasets</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      If you learn cooking from a cookbook that's half wrong, you'll never cook
+      really well — no matter how long you practice. Models are the same: they get
+      exactly as good (or bad) as the data they learn from. 1000 clean examples
+      beat 100,000 garbage ones.
+    </div>
+
+    <h2>Why data is the real bottleneck</h2>
+    <ul>
+      <li><strong>"Garbage in, garbage out"</strong>: bias, errors and outliers in
+        the dataset land directly in model behavior (Concept 16).</li>
+      <li><strong>Scaling laws</strong> say: more + better data → better model. But
+        high-quality web text is finite; quality beats quantity.</li>
+      <li><strong>Especially for fine-tuning</strong>: with 100–10k examples, the
+        quality of each individual example dominates the outcome.</li>
+    </ul>
+
+    <h2>What "good data" means</h2>
+    <table>
+      <tr><th>Criterion</th><th>Question</th></tr>
+      <tr><td>Representativeness</td><td>Does the set cover real usage (languages, cases, edge cases)?</td></tr>
+      <tr><td>Correctness</td><td>Are labels/answers reliable? Who produced them — human or model?</td></tr>
+      <tr><td>Diversity without redundancy</td><td>Different phrasings yes, duplicates no (overfitting risk).</td></tr>
+      <tr><td>Balance</td><td>No class/topic dominates just because it happens to appear more often.</td></tr>
+      <tr><td>Dedupe &amp; PII</td><td>Duplicates removed, personal data removed/anonymized.</td></tr>
+      <tr><td>License</td><td>Am I allowed to train on this? (Legally often more important than technically.)</td></tr>
+    </table>
+
+    <h2>A practical workflow</h2>
+    <pre><code>1. Collect     → raw data (logs, documents, curated sources)
+2. Filter      → dedupe (hash/embedding), language filter, toxicity, length
+3. Quality score → heuristic or LLM-as-judge (Concept 34)
+4. Split       → train / validation / test — never mix them!
+5. Train       → watch loss, detect overfitting via validation loss (05)
+6. Error analysis → look at bad cases → add targeted data</code></pre>
+    <p>The loop 6→2 is the crucial one: <strong>data curation is iterative</strong>,
+       not a one-time job.</p>
+
+    <div class="mermaid">
+flowchart LR
+    RAW[Raw data] --> F[Filter/dedupe]
+    F --> S[Quality score<br/>heuristic / judge]
+    S -->|bad| BIN[Discard]
+    S -->|good| TR[Train split]
+    TR --> M[Training] --> EV[Evaluation]
+    EV -->|error analysis| GAP[Gaps identified]
+    GAP -->|targeted collection| RAW
+    </div>
+    <p class="diagram-cap">Curation as a cycle: evaluation results feed back into the next round of data.</p>
+
+    <h2>Well-known reference datasets (for learning/studying)</h2>
+    <ul>
+      <li><strong>C4 / The Pile / FineWeb</strong> — large web corpora for pre-training.</li>
+      <li><strong>OpenAssistant / UltraChat / Tülu</strong> — instruction/dialog data for SFT.</li>
+      <li><strong>MMLU / GSM8K / HumanEval</strong> — evaluation benchmarks (Concepts 15/34), NOT training data!</li>
+    </ul>
+
+    <h2>Why this is central for you as a code user</h2>
+    <ul>
+      <li><strong>Fine-tuning success = data work</strong>: 80% of the time goes into
+        curation, not training (Concepts 10/25).</li>
+      <li><strong>Evals need your own data</strong>: an eval set from your real cases
+        beats any benchmark.</li>
+      <li><strong>RAG also lives on data quality</strong>: badly scanned PDFs =
+        badly retrieved chunks (Concepts 08/30).</li>
+      <li><strong>Legal risks</strong> (license, privacy) sit at the data, not the model.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="16-training-intuitively.html">16 · Training Intuitively</a> — what happens to the data.</li>
+      <li><a href="20-rag.html">20 · RAG</a> + <a href="28-embedding-search-vector-search.html">28 · Embedding Search</a> — chunking is runtime data quality.</li>
+      <li><a href="22-fine-tuning.html">22 · Fine-Tuning</a> + <a href="51-project-lora-train.html">51 · LoRA project</a> — where you build data yourself.</li>
+      <li><a href="35-evaluation-metrics.html">35 · Evaluation &amp; Metrics</a> + <a href="44-testing-evaluation.html">44 · Testing &amp; Evaluation</a> — measuring what "good" means.</li>
+      <li><a href="36-hallucinations-bias-limits.html">36 · Hallucinations, Bias, Limits</a> — consequences of bad data.</li>
+      <li><a href="59-retrieval-fine-tuning.html">59 · Retrieval Fine-Tuning</a> — chunking = runtime data quality, in depth.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • How do you detect synthetic-data loops (model trained on model output)?<br/>
+      • Data contamination: how do you ensure benchmarks aren't inside the training set?<br/>
+      • How much curation can you delegate to LLM-as-judge without importing its bias?<br/>
+      • Active learning: which examples are worth labeling?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

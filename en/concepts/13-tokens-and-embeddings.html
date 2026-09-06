@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>13 · Tokens &amp; Embeddings — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 13 · Stage A</p>
+    <h1>13 · Tokens &amp; Embeddings</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Imagine you have a huge box of LEGO bricks. Each brick is a small piece of meaning. Some bricks are whole words ("cat"), some are parts of words ("un-", "-break-", "-able"). A token is just one of these LEGO bricks. And the model's job is to figure out which brick comes next.
+    </div>
+
+    <h2>What is a Token?</h2>
+    <p>A token is the smallest unit the model works with. It's not always a word — it can be a part of a word, a punctuation mark, or even a space. The process of splitting text into tokens is called <strong>tokenization</strong>.</p>
+
+    <h2>Tokenization Examples</h2>
+    <table>
+      <tr><th>Text</th><th>Tokens</th><th>Count</th></tr>
+      <tr><td>Hello world</td><td>["Hello", " world"]</td><td>2</td></tr>
+      <tr><td>I don't know</td><td>["I", " don", "'t", " know"]</td><td>4</td></tr>
+      <tr><td>Unbreakable</td><td>["Un", "break", "able"]</td><td>3</td></tr>
+    </table>
+
+    <h2>Why not just use words?</h2>
+    <p>There are millions of words in all languages. But there are far fewer meaningful word parts. By using subword tokens, models can handle any word — even ones they've never seen before.</p>
+
+    <h2>What is an Embedding?</h2>
+    <p>An embedding is a vector (list of numbers) that represents a token. Similar tokens have similar embeddings. "Cat" and "dog" are close together. "Cat" and "car" are far apart.</p>
+
+    <h2>Why this matters to you</h2>
+    <ul>
+      <li><strong>Token counting</strong> → API pricing is per token, not per word</li>
+      <li><strong>Context limits</strong> → "8K context" means 8000 tokens, not 8000 words</li>
+      <li><strong>Multilingual</strong> → Subword tokens handle all languages efficiently</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="12-language-model-as-function.html">12 · Language Model as Function</a> → What the model predicts</li>
+      <li><a href="14-attention-overview.html">14 · Attention</a> → How tokens relate to each other</li>
+      <li><a href="../playground/tokenizer-demo.html">Playground · Tokenizer</a></li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • How do different tokenizers compare?<br/>
+      • Why do some languages use more tokens than others?<br/>
+      • What's the relationship between tokens and embeddings?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>52 · MCP (Model Context Protocol) — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 52 · Stufe C</p>
+    <h1>52 · MCP (Model Context Protocol)</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Bisher musste für jede Verbindung Modell↔Werkzeug ein eigenes Kabel gelötet
+      werden: 10 Tools = 10 verschiedene Stecker. MCP ist wie USB-C für KI — ein
+      Standard-Stecker. Wer ein Tool einmal als MCP-Server anbietet, kann es mit
+      jedem MCP-fähigen Modell/Client benutzen. Und umgekehrt: ein Client versteht
+      automatisch alle MCP-Server.
+    </div>
+
+    <h2>Was ist MCP?</h2>
+    <p>Ein offener Standard (von Anthropic, Ende 2024) für die Verbindung zwischen
+       KI-Anwendungen und externen Kontext: Werkzeuge, Daten, Prompts. Vor MCP baute
+       jede App ihre eigenen Function-Calling-Integrationen (Konzept 29) — MCP
+       vereinheitlicht das in ein Client-Server-Protokoll.</p>
+
+    <div class="mermaid">
+flowchart LR
+    A[Host · z.B. Claude Desktop, IDE] -->|MCP-Client| S1[Server: Dateien]
+    A -->|MCP-Client| S2[Server: GitHub]
+    A -->|MCP-Client| S3[Server: DB]
+    S1 --- T1[Tools · Resources · Prompts]
+    S2 --- T2[Tools · Resources · Prompts]
+    S3 --- T3[Tools · Resources · Prompts]
+    </div>
+    <p class="diagram-cap">Ein Host kann mehrere MCP-Server parallel anbinden — jeder Server stellt Tools, Resources und Prompt-Vorlagen bereit.</p>
+
+    <h2>Die drei Server-Primitiven</h2>
+    <ul>
+      <li><strong>Tools</strong> — Funktionen, die das Modell aufrufen darf
+        („Datei lesen“, „PR erstellen“). Das ist das MCP-Pendant zu Function Calling.</li>
+      <li><strong>Resources</strong> — Daten, die der Client lesen/anhängen kann
+        (Dateien, DB-Zeilen). Kontext, keine Aktionen.</li>
+      <li><strong>Prompts</strong> — vorgefertigte Prompt-Vorlagen, die der Server
+        anbietet (z.B. „Code-Review dieses PRs“).</li>
+    </ul>
+
+    <h2>Warum das für dich als Code-Nutzer zentral ist</h2>
+    <ul>
+      <li><strong>Einmal bauen, überall nutzen</strong>: dein MCP-Server funktioniert
+        in Claude Desktop, IDEs, Agent-Frameworks — ohne pro App nachzubauen.</li>
+      <li><strong>Weniger Kleber-Code</strong>: statt 20 handgeschriebener
+        Function-Definitionen konsumierst du fertige Server (GitHub, Slack, Postgres …).</li>
+      <li><strong>Aber:</strong> MCP löst nicht die Sicherheitsfragen — Prompt
+        Injection über Tool-Ergebnisse (Konzept 26) und Sandboxing (Konzept 40)
+        bleiben deine Verantwortung.</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="21-agents-tool-use.html">21 · Agents / Tool-Use</a> — der Loop, den MCP füttert.</li>
+      <li><a href="27-function-calling-deep-dive.html">27 · Function Calling (Deep Dive)</a> — der Mechanismus unter der Haube.</li>
+      <li><a href="38-sicherheit-prompt-injection.html">38 · Sicherheit &amp; Prompt Injection</a> — Tool-Ergebnisse sind Input von außen.</li>
+      <li><a href="45-sandboxing-haertung.html">45 · Sandboxing &amp; Härtung</a> — Server isolieren.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Wie authentifiziert man MCP-Server sauber (OAuth, Remote-Server)?<br/>
+      • Wie findet man die richtigen Tools, wenn 20 Server je 10 Tools anbieten (Tool-Overload)?<br/>
+      • MCP vs. klassische Function-Calling-APIs — wann reicht das Simple?<br/>
+      • Wie testet man einen MCP-Server (MCP Inspector)?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

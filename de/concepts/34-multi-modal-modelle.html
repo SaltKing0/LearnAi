@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>34 · Multi-Modal Modelle — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 34 · Stufe D · Fortgeschritten</p>
+    <h1>34 · Multi-Modal Modelle</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Stell dir ein Modell ist wie jemand der nur lesen kann (Text). Jetzt gib ihm Augen (Bilder), Ohren (Audio) und Hände (Video). Plötzlich kann es nicht nur einen Satz verstehen, sondern ein Meme erklären, ein Diagramm lesen oder einem Flöte spielen zeigen. Das ist Multi-Modalität.
+    </div>
+
+    <h2>Was bedeutet Multi-Modal?</h2>
+    <p>Multi-Modal = das Modell verarbeitet mehrere Eingabetypen (Modalitäten): Text, Bilder, Audio, Video, Code, Sensordaten. Die Zukunft gehört Modellen die all diese Sprachen sprechen.</p>
+
+    <h2>Die Modalitäten</h2>
+    <table>
+      <tr><th>Modalität</th><th>Beispiel-Modell</th><th>Use-Case</th></tr>
+      <tr><td>Text → Text</td><td>GPT-4, Claude</td><td>Chat, Code, Analyse</td></tr>
+      <tr><td>Text + Bild → Text</td><td>GPT-4V, Claude 3.5 Sonnet</td><td>Bildbeschreibung, OCR, UI-Analyse</td></tr>
+      <tr><td>Text → Bild</td><td>DALL-E, Midjourney, Stable Diffusion</td><td>Bildgenerierung, Design</td></tr>
+      <tr><td>Audio → Text</td><td>Whisper</td><td>Transkription, Übersetzung</td></tr>
+      <tr><td>Text → Audio</td><td>ElevenLabs, Bark</td><td>Voice-Cloning, Musik</td></tr>
+      <tr><td>Text + Video → Text</td><td>Gemini 1.5 Pro</td><td>Videoanalyse, Zusammenfassung</td></tr>
+    </table>
+
+    <h2>Architektur-Herausforderungen</h2>
+    <ul>
+      <li><strong>Fusion</strong> → Wie kombiniert man Text- und Bild-Embeddings?</li>
+      <li><strong>Alignment</strong> → „Hund" im Text = „Hund" im Bild. Das Modell muss die Verbindung lernen.</li>
+      <li><strong>Kosten</strong> → Bilder brauchen mehr Tokens als Text (ein Bild = 1000+ Tokens).</li>
+      <li><strong>Qualität</strong> → Ein schlechtes Bild führt zu schlechten Antworten.</li>
+    </ul>
+
+    <h2>Praktische Anwendungen</h2>
+    <ul>
+      <li><strong>Dokumenten-Analyse</strong> → Screenshots, Rechnungen, Tabellen automatisch lesen</li>
+      <li><strong>UI-Testing</strong> → Bot sieht den Screen und erkennt Bugs</li>
+      <li><strong>Code-Review</strong> → Pull Requests mit Screenshots kommentieren</li>
+      <li><strong>Accessibility</strong> → Blinde Menschen Bilder beschreiben lassen</li>
+      <li><strong>Video-Zusammenfassung</strong> → YouTube-Videos in Threads umwandeln</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="13-tokens-und-embeddings.html">13 · Tokens &amp; Embeddings</a> → Wie Text in Zahlen wird</li>
+      <li><a href="21-agents-tool-use.html">21 · Agents / Tool-Use</a> → Multi-Modal erweitert die Tool-Palette</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Wie debuggt man Multi-Modal-Antworten?<br/>
+      • Welche Bildqualität ist "gut genug"?<br/>
+      → Wie vermeidet man Halluzinationen bei Bildinhalten?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>
+
