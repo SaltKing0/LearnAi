@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>66 · Coding Agents — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 66 · Stufe C · Agenten vertiefen</p>
+    <h1>66 · Coding Agents</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Stell dir eine Helferin vor, die deinen Code lesen, ausführen und reparieren kann —
+      aber statt zu raten <em>prüft sie ihre eigene Arbeit</em>. Sie macht eine Änderung,
+      führt die Tests aus, sieht, dass einer scheitert, liest warum, behebt es und führt
+      erneut aus — bis alle Tests bestehen. Das ist ein Coding-Agent: eine KI, die Code
+      schreibt, testet und repariert, in einer Schleife, mit den Testergebnissen als
+      Wahrheit darüber, ob es richtig ist.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>Ein Coding-Agent ist ein Agent-Loop (23), spezialisiert auf Software: Statt generischer
+       Tools bekommt er <em>Code-Tools</em> — Datei lesen, Codebasis durchsuchen, Tests
+       ausführen, Datei bearbeiten — und statt eine Frage zu beantworten, erzeugt er eine
+       funktionierende Änderung. Der Loop ist: <strong>planen → handeln (lesen/suchen/
+       bearbeiten/ausführen) → beobachten (Testausgabe) → anpassen → wiederholen</strong>,
+       bis die Aufgabe fertig ist. Der entscheidende Unterschied zu einer reinen
+       Chat-Antwort: Der Agent kann seine eigene Ausgabe <em>verifizieren</em>, indem er sie
+       ausführt.</p>
+
+    <h2>Was passiert technisch</h2>
+    <p>Ein Coding-Agent (Claude Code, Codex, Cursors Agent-Modus) ist ein Modell in einem
+       Harness, der code-spezifische Tools (21) bereitstellt und ein Arbeitsverzeichnis
+       verwaltet. Jede Loop-Iteration sieht so aus:</p>
+    <pre><code>1. Planen:  "dem CLI ein --json-Flag hinzufügen"
+2. Handeln: read_file("cli.py")   → aktuelle Struktur verstehen
+3. Handeln: grep("--json")        → prüfen, dass nichts existiert
+4. Handeln: edit("cli.py", ...)   → die Änderung schreiben
+5. Handeln: run("pytest")         → die Testausgabe beobachten
+6. Beobachten: ein Test scheitert → Fehler lesen, fixen, erneut ausführen
+7. Wiederholen bis alle Tests bestehen → fertig</code></pre>
+    <p>Drei Ideen machen das funktionieren:</p>
+    <ul>
+      <li><strong>Der Test-Harness ist die Ground Truth (44)</strong>: Der Agent vertraut
+          nicht seinem eigenen Urteil „sieht richtig aus“ — er führt die Tests aus und liest
+          das Urteil. Die Tests entscheiden, ob die Arbeit fertig ist.</li>
+      <li><strong>Self-Healing</strong>: ausführen → Scheitern sehen → Fehler lesen → fixen
+          → erneut ausführen. Die Fehlermeldung ist Feedback, keine Sackgasse. Die meisten
+          Coding-Agents verbringen die meiste Zeit in diesem Fix-Loop, nicht beim ersten
+          Schreiben.</li>
+      <li><strong>REPL-getriebene Entwicklung</strong>: Der Agent führt ein Snippet aus,
+          liest die Ausgabe und iteriert — eine dialogische Version des klassischen
+          Read–Eval–Print-Loops. Schnelle Experimente gegen den laufenden Code ersetzen
+          lange Denkstrecken.</li>
+    </ul>
+    <p>Im Hintergrund ist jeder Tool-Aufruf ein Funktionsaufruf (27), den das Modell
+       auswählt; der Harness führt ihn aus, fängt stdout/Exit-Codes ab und gibt das Ergebnis
+       als nächste Beobachtung zurück. Das Modell führt selbst nie Code aus — der Harness
+       tut das, und das Modell liest nur das Transkript (21).</p>
+
+    <h2>Warum es mir (als Code-Nutzer) weiterhilft</h2>
+    <ul>
+      <li><strong>Das ist ein großer Praxis-Use-Case</strong>: Coding-Agents sind heute die
+          am weitesten verbreitete Form von Agenten. Den Loop zu verstehen heißt zu
+          verstehen, was der Hype tatsächlich unter der Haube tut.</li>
+      <li><strong>Du steuerst einen Loop, keine Magie</strong>: Für gute Ergebnisse gibst du
+          dem Agent eine klare Aufgabe, einen Test zum Erfüllen und lässt ihn iterieren. Du
+          „redest nicht mit einem Programmierer“ — du steuerst eine Schleife.</li>
+      <li><strong>Du weißt, was du prüfen musst</strong>: Weil der Test-Harness die Ground
+          Truth ist, bestimmt die Qualität deiner Tests die Qualität der Agentenarbeit.
+          Schwache Tests → selbstbewusst falscher Code. Das erhöht den Wert guter Tests.</li>
+      <li><strong>Du kannst es debuggen</strong>: Wenn ein Coding-Agent scheitert, liegt der
+          Fehler im Loop — ein falscher Tool-Aufruf, ein nicht existierender Test, eine
+          Änderung, die nicht gelandet ist. Wer das Muster kennt (23, 21), findet das
+          schwache Glied, statt nur auf die Ausgabe zu starren.</li>
+      <li><strong>Architektur-Bewusstsein</strong>: Ob er replant, wie viel Kontext er hält
+          und welchen Tools er vertraut, sind dieselben Design-Entscheidungen wie bei jedem
+          Agenten (60) — jetzt kannst du Tools danach beurteilen.</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="21-agents-tool-use.html">21 · Agents / Tool-Use</a> — der Tool-Loop, den ein Coding-Agent ausführt.</li>
+      <li><a href="23-agent-loop-harness.html">23 · Agent-Loop &amp; Harness</a> — die Infrastruktur unter jedem Coding-Agent.</li>
+      <li><a href="27-function-calling-deep-dive.html">27 · Function Calling Deep Dive</a> — wie jeder Tool-Aufruf entsteht.</li>
+      <li><a href="60-agent-architekturen.html">60 · Agent-Architekturen</a> — ReAct vs. Plan-and-Execute hinter den Tools.</li>
+      <li><a href="44-testing-evaluation.html">44 · Testing &amp; Evaluation</a> — der Test-Harness als Ground Truth des Agents.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Wie entscheidet ein Agent, wann er mit dem Fixen aufhört und um Hilfe bittet, statt endlos zu loopen?<br/>
+      • Wie gut verifizieren Coding-Agents Änderungen, die Tests nicht abdecken (Refactorings, Stil, Architektur)?<br/>
+      • Was passiert, wenn die Tests selbst falsch oder unvollständig sind — wer prüft den Prüfer?<br/>
+      • Wie stark gefährdet Prompt-Injection (bösartige Dateien oder Testausgaben) den Loop eines Coding-Agents?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <!-- Mermaid für Fluss-/Architekturdiagramme (CDN, kein Build-Step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

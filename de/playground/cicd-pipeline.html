@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Playground · CI/CD-Pipeline — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Playground · interaktiv</p>
+    <h1>CI/CD-Pipeline</h1>
+    <p>Beobachte, wie ein Build-Artefakt durch eine Continuous-Integration /
+       Continuous-Delivery-Pipeline wandert: <strong>Commit → Build → Test → Deploy →
+       Monitor</strong>. Die Monitor-Stufe meldet zurück an Commit — diese
+       Rückkopplung ist das Herz von CI/CD. Injiziere einen Fehler und sieh, wie ein
+       roter Test den gesamten Release stoppt.</p>
+
+    <div id="p5canvas"></div>
+
+    <div style="margin-top:12px">
+      <button id="btnRun">▶ Pipeline starten</button>
+      <button id="btnFail">⚠ Fehler injizieren</button>
+      <button id="btnReset">↺ Zurücksetzen</button>
+      <span id="status" style="margin-left:12px"></span>
+    </div>
+
+    <div class="callout kid">
+      <span class="label">Worauf du achten solltest</span>
+      Starte einmal mit alles-grün, dann drücke <strong>Fehler injizieren</strong> und
+      starte erneut. Das Artefakt stoppt bei Test und Deploy zeigt ein rotes ✗ — ein
+      fehlgeschlagener Test blockiert den Release. Beobachte dann den
+      Rückkopplungspfeil von Monitor zurück zu Commit: Diese Schleife ist der Grund,
+      warum Teams Probleme früh finden, bevor sie zu Nutzern gelangen.
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <script>
+  // --- layout ---
+  const STAGES = [
+    { key: "commit",  label: "Commit"  },
+    { key: "build",   label: "Build"   },
+    { key: "test",    label: "Test"    },
+    { key: "deploy",  label: "Deploy"  },
+    { key: "monitor", label: "Monitor" },
+  ];
+  const BW = 110, GAP = 15, BOX_TOP = 135, BOX_H = 70, CY = BOX_TOP + BOX_H / 2;
+  const DUR = [40, 60, 60, 60, 40]; // frames per stage
+
+  // --- state ---
+  let running = false, failed = false, done = false, failArmed = false;
+  let stage = 0, prog = 0;
+  let passed = [false, false, false, false, false];
+  let failedStage = -1;
+
+  const boxX = i => 15 + i * (BW + GAP);
+  const boxC = i => boxX(i) + BW / 2;
+
+  function startPipeline() {
+    running = true; failed = false; done = false;
+    stage = 0; prog = 0; failedStage = -1;
+    passed = [false, false, false, false, false];
+  }
+  function resetPipeline() {
+    running = false; failed = false; done = false; failArmed = false;
+    stage = 0; prog = 0; failedStage = -1;
+    passed = [false, false, false, false, false];
+    document.getElementById("btnFail").style.outline = "none";
+    document.getElementById("btnFail").style.outlineOffset = "0";
+  }
+
+  function updateStatus() {
+    const s = document.getElementById("status");
+    if (failed) {
+      s.textContent = "Stufe: Test — FEHLGESCHLAGEN · Deploy blockiert";
+      s.style.color = "#dc2626";
+    } else if (running) {
+      s.textContent = "Stufe: " + STAGES[stage].label + " — läuft…";
+      s.style.color = "#0f172a";
+    } else if (failArmed) {
+      s.textContent = "Bereit — Fehler aktiviert";
+      s.style.color = "#b45309";
+    } else {
+      s.textContent = "Bereit — Pipeline starten";
+      s.style.color = "#0f172a";
+    }
+  }
+
+  function advance() {
+    prog += 1 / DUR[stage];
+    if (prog >= 1) {
+      if (stage === 2) {            // Test
+        if (failArmed) {
+          failed = true; running = false; prog = 1; failedStage = 2;
+          return;
+        }
+      }
+      passed[stage] = true;
+      stage++; prog = 0;
+      if (stage >= STAGES.length) { // feedback loop back to Commit
+        stage = 0; prog = 0; done = true;
+      }
+    }
+  }
+
+  function drawFeedback() {
+    const x0 = boxC(0), x4 = boxC(4), topY = BOX_TOP;
+    noFill(); stroke(148, 163, 184); strokeWeight(2);
+    bezier(x4, topY, x4, topY - 74, x0, topY - 74, x0, topY);
+    // arrowhead pointing down into Commit
+    fill(148, 163, 184); noStroke();
+    triangle(x0, topY, x0 - 6, topY - 11, x0 + 6, topY - 11);
+    fill(100, 116, 139); textSize(11); textAlign(CENTER, CENTER);
+    text("Rückkopplung", (x0 + x4) / 2, topY - 82);
+  }
+
+  function drawBox(i) {
+    const x = boxX(i), y = BOX_TOP;
+    const active = running && stage === i && !failed;
+    const failHere = failedStage === i || (failed && i === 3);
+    // box
+    noStroke(); fill(255); rect(x, y, BW, BOX_H, 10);
+    stroke(active ? color(59, 130, 246) : (failHere ? color(239, 68, 68) : color(203, 213, 225)));
+    strokeWeight(active ? 3 : 1.5);
+    noFill(); rect(x, y, BW, BOX_H, 10);
+    // label
+    fill(15, 23, 42); textSize(14); textAlign(CENTER, CENTER);
+    text(STAGES[i].label, boxC(i), y + 24);
+    // status icon
+    textSize(20);
+    if (passed[i]) { fill(16, 185, 129); text("✓", boxC(i), y + 52); }
+    else if (failHere) { fill(239, 68, 68); text("✗", boxC(i), y + 52); }
+    else { fill(203, 213, 225); text("·", boxC(i), y + 52); }
+  }
+
+  function drawArtifact() {
+    // artifact position
+    let ax, ay = CY, col;
+    if (failed) {
+      ax = boxX(2) + BW - 25;         // stopped at end of Test
+      col = color(239, 68, 68);
+    } else if (running || done) {
+      ax = lerp(boxX(stage) + 25, boxX(stage) + BW - 25, prog);
+      col = color(59, 130, 246);
+    } else {
+      ax = boxX(0) + 25;              // idle at Commit
+      col = color(100, 116, 139);
+    }
+    // little shadow
+    noStroke(); fill(226, 232, 240); ellipse(ax, ay + 3, 30, 10);
+    fill(col); ellipse(ax, ay, 20, 20);
+    fill(255); textSize(11); textAlign(CENTER, CENTER);
+    text("v1", ax, ay + 1);
+  }
+
+  function setup() {
+    const c = createCanvas(640, 360); c.parent("p5canvas");
+    textFont("system-ui, sans-serif"); textAlign(CENTER, CENTER);
+    frameRate(60);
+    document.getElementById("btnRun").addEventListener("click", () => {
+      startPipeline();
+    });
+    document.getElementById("btnFail").addEventListener("click", () => {
+      failArmed = !failArmed;
+      const b = document.getElementById("btnFail");
+      b.style.outline = failArmed ? "3px solid #f59e0b" : "none";
+      b.style.outlineOffset = failArmed ? "2px" : "0";
+      if (failArmed) { running = false; failed = false; stage = 0; prog = 0; failedStage = -1; passed = [false,false,false,false,false]; }
+      updateStatus();
+    });
+    document.getElementById("btnReset").addEventListener("click", resetPipeline);
+    updateStatus();
+  }
+
+  function draw() {
+    background(250, 250, 252);
+    drawFeedback();
+    for (let i = 0; i < STAGES.length; i++) drawBox(i);
+    drawArtifact();
+    if (running && !failed) advance();
+    updateStatus();
+  }
+  window.setup = setup; window.draw = draw;
+  </script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

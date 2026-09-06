@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>68 · Destillation &amp; Pruning — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 68 · Stufe F · Deployment</p>
+    <h1>68 · Destillation &amp; Pruning</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Eine riesige Enzyklopädie ist toll, aber zu schwer zum Herumtragen. Destillation ist wie ein kluger Autor, der diese Enzyklopädie liest und ein kleines Taschenbuch schreibt, das die wichtigsten Ideen in eigenen Worten festhält. Pruning ist wie das Beschneiden eines großen Baums: Du schneidest die Äste ab, die fast nichts tun, und der Baum steht trotzdem — nur leichter und leichter zu bewegen.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>Frontier-Modelle sind riesig — hunderte Milliarden Parameter — und dadurch langsam und teuer. Aber selten brauchst du das ganze Gehirn. <strong>Knowledge Distillation</strong> trainiert ein kleines „Student"-Modell, das Verhalten eines großen „Lehrer"-Modells nachzuahmen, sodass der Student einen Großteil der Fähigkeiten des Lehrers in einem Bruchteil der Größe erhält. <strong>Pruning</strong> nimmt ein vorhandenes Modell und entfernt Gewichte oder Neuronen, die wenig beitragen, und hinterlässt ein schlankeres Netzwerk.</p>
+
+    <h2>Was passiert technisch</h2>
+    <p><strong>Knowledge Distillation</strong>: Statt nur aus beschrifteten Daten zu lernen, trainiert der Student auch, die Ausgaben des Lehrers zu matchen — oft die rohen Wahrscheinlichkeitsverteilungen (Logits) vor dem finalen Softmax. Diese weichen, informativen Ziele („dieses Wort ist wahrscheinlich die Antwort, aber das andere liegt auch nahe dran") tragen viel mehr Signal als ein einzelnes hartes Label, sodass ein kleines Modell überraschend gut lernt. Der Student ist typischerweise eine kleinere oder flachere Architektur, die auf den Vorhersagen des Lehrers trainiert wird.</p>
+    <p><strong>Pruning</strong>: Viele Gewichte in einem trainierten Netzwerk sind nahe null oder beeinflussen die Ausgabe kaum. Pruning identifiziert diese (nach Magnitude, nach Gradient oder danach, wie sehr das Entfernen den Loss verändert) und entfernt sie — entweder auf null gesetzt (sparse) oder ganze Neuronen/Kanäle entfernt (strukturiert). Nach dem Pruning wird das Modell meist kurz nachtrainiert, um verlorene Genauigkeit zurückzugewinnen.</p>
+    <p>Beides unterscheidet sich von der <a href="42-quantisierung-kompression.html">Quantisierung</a>: Quantisierung ändert die <em>Genauigkeit</em> der Zahlen (weniger Bits), während Destillation eine kleinere <em>Architektur</em> baut und Pruning <em>Teile</em> der Architektur entfernt. Der Trade-off ist derselbe: kleiner und schneller, aber mit etwas Qualitätsverlust.</p>
+
+    <div class="mermaid">
+flowchart LR
+  T[Großes Lehrer-Modell] -->|soft targets / Logits| S[Kleines Student-Modell]
+  D[Trainingsdaten] --> T
+  D --> S
+  S --> O[Kleines, schnelles, einsetzbares Modell]
+    </div>
+
+    <h2>Warum es mir (als Code-Nutzer) weiterhilft</h2>
+    <p>Destillierte und geprunte Modelle sind der Weg, wie Frontier-Qualität auf Edge-Geräte, Laptops und Budget-Deployments kommt. Als Code-Nutzer schreibst du die Destillation selten selbst — stattdessen wählst du eine destillierte oder geprunte Variante aus einem Modell-Hub (zum Beispiel ein „distill"- oder „small"-Checkpoint) und servierst sie. Das bringt dir geringere Latenz, geringere Kosten und einen kleineren Speicherbedarf bei einem kleinen Qualitätsverlust — oft der richtige Engineering-Trade-off.</p>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="42-quantisierung-kompression.html">42 · Quantisierung &amp; Kompression</a> → der andere Weg, Modelle zu verkleinern</li>
+      <li><a href="15-transformer-ueberblick.html">15 · Transformer-Überblick</a> → die Architektur, die komprimiert wird</li>
+      <li><a href="22-fine-tuning.html">22 · Fine-Tuning (LoRA / PEFT)</a> → Training, das auf Destillation/Pruning folgen kann</li>
+      <li><a href="43-serving-deployment.html">43 · Serving &amp; Production Deployment</a> → wo kleine Modelle glänzen</li>
+      <li><a href="57-kv-cache-inference-optimierung.html">57 · KV-Cache &amp; Inference-Optimierung</a> → weitere Wege, Inferenzkosten zu senken</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Wie viel Qualitätsverlust ist in der Praxis für eine bestimmte Aufgabe akzeptabel?<br/>
+      • Wann ist Destillation besser als ein kleines Modell von Grund auf zu trainieren?<br/>
+      • Wie lassen sich Destillation, Pruning und Quantisierung kombinieren?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

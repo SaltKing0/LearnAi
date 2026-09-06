@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>65 · RLHF &amp; RL Deep Dive — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 65 · Stufe B · Training</p>
+    <h1>65 · RLHF &amp; RL Deep Dive</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Stell dir einen Hund vor, der Wörter sagen gelernt hat, aber nur das Wort wählt,
+      das als Nächstes am wahrscheinlichsten klingt — ihm ist egal, ob der Satz nützlich
+      oder nett ist. RLHF ist das Training, bei dem ein Mensch sagt „das war ein guter
+      Satz, hier ist ein Leckerli" oder „das war schlecht, kein Leckerli". Der Hund lernt
+      nach und nach, welche Sätze Leckerli bringen, und sagt lieber diese. Der Deep Dive
+      geht darum, wie genau die Leckerli gezählt werden und wie der Hund in ihre Richtung
+      geschoben wird.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>Ein vortrainiertes Modell ist darauf trainiert, das wahrscheinlichste nächste
+       Token vorherzusagen. Das macht es flüssig, aber „am wahrscheinlichsten" ist nicht
+       dasselbe wie „hilfreich". Ein Base-Model führt einen schädlichen Prompt fröhlich
+       weiter, lehnt nichts ab und antwortet mit dem statistisch Wahrscheinlichen statt
+       mit dem, was ein Mensch wirklich will. RLHF (Reinforcement Learning from Human
+       Feedback) ist die Schicht, die aus „flüssigem Text-Rater" einen „hilfreichen
+       Assistenten" macht.</p>
+
+    <p>Die Kernidee ist einfach: menschliche Urteile darüber sammeln, welche Antworten
+       gut sind, diese Urteile in eine numerische Belohnung verwandeln und das Modell
+       dann so trainieren, dass es diese Belohnung maximiert. Die Schwierigkeit ist, das
+       alles zu tun, ohne die Sprachfähigkeit des Modells zu zerstören — und genau dafür
+       gibt es die technische Maschinerie.</p>
+
+    <h2>Was passiert technisch</h2>
+    <p>Die RLHF-Pipeline hat drei Stufen:</p>
+    <ol>
+      <li><strong>Supervised Fine-Tuning (SFT)</strong> — das Base-Model auf
+          handgeschriebene, hochwertige Instruktion-Antwort-Paare trainieren, damit es
+          das Format des Helfens lernt.</li>
+      <li><strong>Reward Model</strong> — Antwortpaare zum selben Prompt sammeln,
+          Menschen bewerten sie (A besser als B), und ein kleines Modell wird trainiert,
+          diese Präferenz als skalaren Wert vorherzusagen.</li>
+      <li><strong>Policy-Optimierung (PPO)</strong> — das Reward Model als Signal
+          nutzen, um die Gewichte des SFT-Modells so zu verschieben, dass es Antworten
+          produziert, die höher bewertet werden.</li>
+    </ol>
+
+    <div class="mermaid">
+flowchart LR
+    subgraph Data["Daten &amp; Präferenzen"]
+        D1[Prompts] --> D2[Menschliche Antworten]
+        D2 --> D3[Gerankte Paare<br/>A besser als B]
+    end
+    subgraph Reward["Reward Model"]
+        D3 --> R1[Reward Model trainieren]
+        R1 --> R2[Belohnungswert<br/>für jede Antwort]
+    end
+    subgraph Policy["Policy (PPO)"]
+        P1[SFT-Modell] --> P2[Antworten sampeln]
+        P2 --> P3[Mit Reward Model bewerten]
+        P3 --> P4[Gewichte aktualisieren,<br/>Belohnung maximieren]
+        P4 -.Schleife.-> P2
+    end
+    R2 --> P3
+    </div>
+
+    <p><strong>Warum PPO, und was macht es eigentlich?</strong> Würden wir die Gewichte
+       einfach so aktualisieren, dass die Belohnung maximiert wird, kollabiert das Modell
+       schnell auf wenige hochbewertete Antworten und verliert Vielfalt und Flüssigkeit.
+       PPO ist ein on-policy Reinforcement-Learning-Algorithmus, der kleine, stabile
+       Updates macht. Zwei Details sind für ein Verständnis auf hoher Ebene wichtig:</p>
+    <ul>
+      <li><strong>Das Belohnungssignal</strong> — der Wert des Reward Models sagt der
+          Policy, wie gut eine Antwort war, aber der Wert ist nur so gut wie die
+          menschlichen Präferenzen dahinter.</li>
+      <li><strong>Die KL-Strafe</strong> — PPO fügt eine Strafe proportional zur
+          Abweichung der neuen Policy vom Referenzmodell (SFT) hinzu. Das verhindert,
+          dass das Modell die Belohnung überoptimiert und seine Sprachfähigkeit
+          zerstört. Belohnung und KL-Strafe werden gegeneinander abgewogen.</li>
+    </ul>
+
+    <h3>DPO — die einfachere Alternative</h3>
+    <p>Direct Preference Optimization (DPO) entfernt das separate Reward Model und die
+       PPO-Schleife komplett. Stattdessen schreibt es das RL-Ziel in einen einfachen
+       Klassifikationsverlust um: für jedes Paar (bevorzugte Antwort, abgelehnte
+       Antwort) wird das Modell trainiert, der bevorzugten Antwort eine höhere
+       Wahrscheinlichkeit zu geben. Das ist viel einfacher und stabiler zu trainieren
+       und erreicht bei vielen Aufgaben das Niveau von RLHF oder übertrifft es.</p>
+
+    <h2>Warum es mir (als Code-Nutzer) weiterhilft</h2>
+    <p>Du führst RLHF selbst nie aus, aber es erklärt das Verhalten, das du in jedem
+       Frontier-Modell siehst. Warum lehnt ein Modell bestimmte Anfragen ab,
+       entschuldigt sich, formuliert vorsichtig oder wirkt darauf bedacht, zu gefallen?
+       Weil seine Gewichte von menschlichen Präferenzen geformt wurden, nicht nur von
+       Token-Statistik. Das zu wissen verändert, wie du Modelle nutzt: Du verstehst,
+       dass „Alignment" eine trainierte Eigenschaft mit Kompromissen ist, dass der Stil
+       eines Modells ein gelerntes Artefakt ist, und dass Prompting zum Teil ein
+       Verhalten lenkt, das RLHF eingebaut hat. Es zeigt dir auch, welchen Stellhebel
+       du tatsächlich bedienen kannst — Fine-Tuning für SFT-artige Kontrolle und
+       Prompt-Design zum Anstoßen des alignierten Verhaltens — im Gegensatz zum
+       Alignment selbst, das beim Training festgelegt wird.</p>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="18-alignment-rlhf-dpo.html">18 · Alignment (RLHF &amp; DPO)</a> → der Überblick, warum es Alignment gibt</li>
+      <li><a href="16-training-intuitiv.html">16 · Training intuitiv</a> → wie Modelle überhaupt lernen</li>
+      <li><a href="22-fine-tuning.html">22 · Fine-Tuning</a> → die SFT-Stufe in der Praxis</li>
+      <li><a href="35-evaluierung-metriken.html">35 · Evaluierung &amp; Metriken</a> → wie du misst, ob Alignment funktioniert hat</li>
+      <li><a href="19-prompting-patterns.html">19 · Prompting Patterns</a> → das alignierte Verhalten zur Laufzeit formen</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Wie erkennt man Reward Hacking (das Modell trickst das Reward Model aus)?<br/>
+      • Wie tragen menschliche Präferenzen selbst Bias ins Modell?<br/>
+      • Warum setzen manche Labs bei Frontier-Modellen weiterhin auf RLHF statt DPO?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

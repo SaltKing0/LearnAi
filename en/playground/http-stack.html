@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Playground · HTTP &amp; the TCP/IP Stack — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Playground · interactive</p>
+    <h1>HTTP &amp; the TCP/IP Stack</h1>
+    <p>Send an HTTP request and watch it <strong>descend</strong> the stack — each layer wraps
+       the payload in its own envelope (encapsulation) — then the response
+       <strong>ascend</strong> back, unwrapping in reverse. HTTPS just adds an encryption
+       envelope at the top.</p>
+
+    <div id="p5canvas"></div>
+
+    <div style="margin-top:12px">
+      <button id="btnSend">▶ Send</button>
+      <button id="btnStep">Step</button>
+      <button id="btnReset">↺ Reset</button>
+      <span id="status" style="margin-left:12px"></span>
+    </div>
+
+    <div class="callout kid">
+      <span class="label">What to watch for</span>
+      Each layer wraps the payload like an envelope, and the response unwraps it in
+      reverse. The Transport layer (TCP) adds reliability, the Internet layer (IP) adds
+      addressing, and the Link layer puts it on the wire.
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <script>
+  const LAYERS = ["Application", "Transport", "Internet", "Link"];
+  const COLS = ["#3b82f6", "#8b5cf6", "#f59e0b", "#10b981"];
+  let step = -1;      // -1 idle, 0..7 descend, 8..15 ascend
+  let auto = false;
+
+  function setup() {
+    const c = createCanvas(640, 360); c.parent("p5canvas");
+    textFont("system-ui, sans-serif"); textAlign(CENTER, CENTER);
+    document.getElementById("btnSend").addEventListener("click", () => { step = 0; auto = true; });
+    document.getElementById("btnStep").addEventListener("click", () => { auto = false; step = step < 15 ? step + 1 : 15; updateStatus(); });
+    document.getElementById("btnReset").addEventListener("click", () => { step = -1; auto = false; updateStatus(); });
+    updateStatus();
+  }
+  function updateStatus() {
+    let s = "Idle — press Send";
+    if (step >= 0 && step <= 3) s = "Encapsulating at " + LAYERS[step];
+    else if (step > 3 && step <= 7) s = "On the wire — request traveling down";
+    else if (step > 7 && step <= 11) s = "De-encapsulating at " + LAYERS[11-step];
+    else if (step > 11 && step <= 15) s = "Response unwrapped — done";
+    document.getElementById("status").textContent = s;
+  }
+  function draw() {
+    background(250, 250, 252);
+    // layer labels
+    textAlign(RIGHT, CENTER); fill(100); textSize(13);
+    LAYERS.forEach((l, i) => text(l, 120, 50 + i * 70));
+    // draw packet
+    const y0 = 30, y1 = 300;
+    if (step >= 0) {
+      const t = step <= 7 ? step / 7 : (15 - step) / 7;
+      const y = lerp(y0, y1, t);
+      const size = 40 + 90 * (1 - Math.abs(0.5 - t) * 2); // biggest mid-travel
+      const wrap = step <= 3 ? step : (step <= 7 ? 3 : (step <= 11 ? 11 - step : 0));
+      // draw nested envelopes
+      for (let k = wrap; k >= 0; k--) {
+        fill(COLS[k]); noStroke();
+        rect(220 - (size/2 + k*8), y - (size/2 + k*8), size + k*16, size + k*16, 6);
+      }
+      fill(255); textSize(11); text("HTTP", 220, y);
+    }
+    // wire
+    stroke(200); strokeWeight(2); line(120, y0, 120, y1); line(120, y1, 520, y1); line(520, y1, 520, y0);
+    textAlign(CENTER, CENTER); fill(140); textSize(11);
+    text("client", 120, 20); text("server", 520, 20);
+    if (auto && step >= 0 && step < 15) { step++; if (step > 15) step = 15; updateStatus(); }
+  }
+  window.setup = setup; window.draw = draw;
+  </script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

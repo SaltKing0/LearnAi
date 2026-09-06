@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>62 · Streaming &amp; Transport — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 62 · Stage D</p>
+    <h1>62 · Streaming &amp; Transport</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      When you ask a chat bot a question, it doesn't wait until it has written the
+      whole answer. It types it to you live, word by word, like a friend who is
+      writing you a text message and you can already read the beginning while they
+      are still typing the rest. Streaming is how the computer hands you those words
+      one by one over the internet instead of making you wait for the whole letter.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>
+      A model doesn't produce an answer in one piece — it produces one token at a
+      time (Concept 12). Streaming is simply <em>not hiding that</em>: instead of
+      the server collecting the full answer and sending it once at the end, it
+      pushes each token to your app the moment it is generated. The transport
+      (SSE or WebSockets, Concept 03) is the pipe that carries those tokens from
+      the model's loop to your UI as they happen.
+    </p>
+    <p>
+      The two things people actually feel: <strong>first-token latency</strong> (how
+      long until the first character appears) and <strong>perceived speed</strong>
+      (watching text type out feels far faster than a spinner, even if the total
+      time is the same). Streaming turns "waiting" into "reading".
+    </p>
+
+    <h2>What happens technically</h2>
+    <p>
+      A non-streaming request is request → wait → one big response. A streaming
+      request opens a persistent connection and the server writes
+      <code>data: {...}</code> chunks down it as each token is decoded. The client
+      accumulates the chunks into the visible text and re-renders (Concept 06).
+    </p>
+
+    <div class="mermaid">
+flowchart LR
+    U[Your app / UI] -->|1. POST request<br/>stream: true| A[LLM API]
+    A -->|2. open SSE / WebSocket| C[Connection open]
+    A -->|3. token 1<br/>data: {...}| U
+    A -->|4. token 2<br/>data: {...}| U
+    A -->|5. token N ...| U
+    A -->|6. [DONE]| U
+    U -->|abort / cancel<br/>close connection| A
+    </div>
+
+    <p>
+      The stream is literally the autoregressive loop of Concept 12 delivered
+      incrementally: each <code>data:</code> event carries the next token, and the
+      client just appends. Two transports dominate:
+    </p>
+    <ul>
+      <li><strong>SSE (Server-Sent Events)</strong> — a one-way HTTP stream from
+        server to client. Simple, works over plain HTTP, auto-reconnects, great for
+        text streaming. This is what most LLM APIs use.</li>
+      <li><strong>WebSockets</strong> — a full-duplex connection (both directions).
+        Needed when the client must also send data mid-stream (e.g. voice, live
+        edits) or when you want to reuse one connection for many messages.</li>
+    </ul>
+    <p>
+      <strong>Partial responses and tool-call accumulation</strong>: with tool calls
+      (Concept 27), the streamed chunks often include a growing JSON object (the
+      tool name, then its arguments piece by piece). You can't act on a half-written
+      JSON string, so the client buffers the chunks and only parses/executes once
+      the stream signals it's complete. Same principle as accumulating visible text —
+      but for structured data.
+    </p>
+    <p>
+      <strong>Abort / cancel</strong>: because the connection stays open, the client
+      can close it (an <code>AbortController</code> in the browser, closing the
+      socket on the server). The model stops generating, you stop charging tokens,
+      and the UI stops appending. Without abort, a user hitting "stop" would keep
+      paying for tokens the model keeps producing into the void.
+    </p>
+
+    <h2>Why this helps me (as a code user)</h2>
+    <ul>
+      <li><strong>Streaming is the difference between a spinner and a live-typing
+        chat.</strong> The same API call with <code>stream: true</code> feels
+        instantly responsive; without it, users stare at a loader.</li>
+      <li><strong>First-token latency is the metric users judge you on.</strong>
+        Streaming shows progress even when the full answer takes a while.</li>
+      <li><strong>You control the pipe.</strong> Choosing SSE vs. WebSockets depends
+        on whether you need two-way traffic; picking the right one avoids overbuilding.</li>
+      <li><strong>Abort handling is a cost control.</strong> Cancelling a stream
+        stops token burn — important for any chat UI.</li>
+      <li><strong>Tool-call accumulation is where agents get tricky:</strong> you
+        must buffer partial JSON and only execute when it's complete.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="12-language-model-as-function.html">12 · Language Model as Function</a> — the stream is the autoregressive loop delivered incrementally.</li>
+      <li><a href="30-llm-apis-practically.html">30 · LLM APIs Practically</a> — <code>stream=True</code> in the real API call.</li>
+      <li><a href="27-function-calling-deep-dive.html">27 · Function Calling Deep-Dive</a> — accumulating partial tool-call JSON from the stream.</li>
+      <li><a href="03-os-networking.html">03 · OS &amp; Networking</a> — SSE vs. WebSockets as transport protocols.</li>
+      <li><a href="06-frontend-development.html">06 · Frontend Development</a> — re-rendering the accumulating text in the UI.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • When exactly does an API choose SSE vs. WebSockets — and what are the real trade-offs?<br/>
+      • How do providers signal the end of a stream reliably (event types, delimiters)?<br/>
+      • How does streaming interact with caching / rate limits across providers?<br/>
+      • How do I handle reconnects and mid-stream failures without losing tokens?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <!-- Mermaid for flow/architecture diagrams (CDN, no build step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

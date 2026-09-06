@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Playground · Architecture Styles — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Playground · interactive</p>
+    <h1>Architecture Styles</h1>
+    <p>The same app, four ways of splitting and wiring it. Pick a style and watch how the
+       boxes and connections change — then read the trade-off in the status line.</p>
+
+    <div id="p5canvas"></div>
+
+    <div style="margin-top:12px">
+      <button class="arch" data-k="mono">Monolith</button>
+      <button class="arch" data-k="micro">Microservices</button>
+      <button class="arch" data-k="serverless">Serverless</button>
+      <button class="arch" data-k="event">Event-driven</button>
+      <span id="status" style="margin-left:12px"></span>
+    </div>
+
+    <div class="callout kid">
+      <span class="label">What to watch for</span>
+      Monolith = one box. Microservices = many services talking over a network.
+      Serverless = functions that run only on demand. Event-driven = pieces that never
+      wait, they just publish messages to a bus.
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <script>
+  let style = "mono";
+  const INFO = {
+    mono:     { title: "Monolith", color: "#3b82f6",
+                text: "One app + one DB. Simple to build, but hard to scale one part and risky big deploys." },
+    micro:    { title: "Microservices", color: "#8b5cf6",
+                text: "Many small services, each with its own DB, talking over the network. Independent scaling, more ops." },
+    serverless:{ title: "Serverless", color: "#f59e0b",
+                text: "Functions run only when called. No server to manage, scales automatically, but cold starts." },
+    event:    { title: "Event-driven", color: "#10b981",
+                text: "Producers publish to a bus; consumers react. Loosely coupled, async, but harder to trace." },
+  };
+
+  function setup() {
+    const c = createCanvas(640, 340); c.parent("p5canvas");
+    textFont("system-ui, sans-serif"); textAlign(CENTER, CENTER);
+    document.querySelectorAll(".arch").forEach(b =>
+      b.addEventListener("click", () => { style = b.dataset.k; updateStatus(); }));
+    updateStatus();
+  }
+  function updateStatus() {
+    document.getElementById("status").textContent = INFO[style].text;
+  }
+  function box(x, y, w, h, label, col, sub) {
+    fill(col); noStroke(); rect(x, y, w, h, 8);
+    fill(255); textSize(14); text(label, x + w/2, y + h/2 - (sub ? 6 : 0));
+    if (sub) { textSize(10); text(sub, x + w/2, y + h/2 + 14); }
+  }
+  function arrow(x1,y1,x2,y2){ stroke(120); strokeWeight(2); line(x1,y1,x2,y2);
+    const a=atan2(y2-y1,x2-x1), s=7; push(); translate(x2,y2); rotate(a); noStroke(); fill(120);
+    triangle(0,0,-s,-s/2,-s,s/2); pop(); strokeWeight(1); }
+
+  function draw() {
+    background(250, 250, 252);
+    fill(80); textSize(18); textAlign(LEFT, TOP); text(INFO[style].title, 16, 12);
+    textAlign(CENTER, CENTER);
+    if (style === "mono") {
+      box(150, 90, 340, 120, "App", INFO.mono.color, "UI + logic + DB access");
+      box(240, 250, 160, 50, "Database", "#64748b");
+      arrow(320, 210, 320, 250);
+    } else if (style === "micro") {
+      box(70, 70, 150, 80, "Service A", INFO.micro.color, "orders");
+      box(245, 70, 150, 80, "Service B", INFO.micro.color, "users");
+      box(420, 70, 150, 80, "Service C", INFO.micro.color, "billing");
+      box(160, 210, 150, 50, "DB A", "#64748b"); box(335, 210, 150, 50, "DB B", "#64748b");
+      arrow(145,150,235,210); arrow(320,150,410,210);
+      arrow(145,110,245,110); arrow(320,110,420,110);
+    } else if (style === "serverless") {
+      box(120, 80, 130, 60, "fn: auth", INFO.serverless.color);
+      box(260, 80, 130, 60, "fn: fetch", INFO.serverless.color);
+      box(400, 80, 130, 60, "fn: save", INFO.serverless.color);
+      box(240, 210, 160, 50, "API Gateway", "#64748b");
+      arrow(185,140,270,210); arrow(325,140,310,210); arrow(465,140,340,210);
+    } else {
+      box(90, 120, 140, 80, "Producer", INFO.event.color, "publishes");
+      box(410, 120, 140, 80, "Consumer", INFO.event.color, "reacts");
+      box(270, 120, 100, 80, "Event Bus", "#64748b", "Kafka / SQS");
+      arrow(230,160,270,160); arrow(370,160,410,160);
+    }
+    // bottom caption
+    fill(140); textSize(12); textAlign(LEFT, TOP); text(INFO[style].text, 16, 310);
+  }
+  window.setup = setup; window.draw = draw;
+  </script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

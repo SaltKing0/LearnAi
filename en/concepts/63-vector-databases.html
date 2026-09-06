@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>63 · Vector Databases — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 63 · Stage C · RAG Foundation</p>
+    <h1>63 · Vector Databases</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Imagine a giant library where every book is filed by how close its meaning is to other books. "Dog" sits right next to "puppy" and "pet", but far away from "rocket". A vector database is that library: it stores each idea as a list of numbers (its embedding) and, when you ask a question, it quickly finds the shelves holding the ideas most similar to yours — without reading every book.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>
+      Embeddings turn text (or images, audio) into lists of numbers where <em>similar meaning</em> means <em>nearby numbers</em>. But a normal database can't search "nearby numbers" well — it's built for exact matches like <code>WHERE name = 'dog'</code>. A vector database is the storage and index layer that makes <em>nearest-neighbor</em> search fast: given a query vector, find the K stored vectors closest to it, and return the text they came from.
+    </p>
+    <p>
+      This is the engine behind RAG and semantic search. The embedding model turns your documents into vectors once; the vector DB stores them; at query time it turns your question into a vector and returns the most similar stored chunks, which then get fed to the LLM.
+    </p>
+
+    <h2>What happens technically</h2>
+    <p>
+      A vector database stores two things per entry: the <strong>vector</strong> (the embedding) and <strong>metadata</strong> (source text, title, timestamps, tags — anything you want to filter on). On top of that sits an <strong>index</strong> that makes "find nearest neighbors" fast.
+    </p>
+    <p>
+      The naive way is a brute-force scan: compare the query against every vector (exact, but O(N) and slow at scale). Real systems use <strong>Approximate Nearest Neighbor (ANN)</strong> search, which trades a little accuracy (recall) for huge speed gains. Common ANN approaches:
+    </p>
+    <ul>
+      <li><strong>HNSW (Hierarchical Navigable Small World)</strong> — builds a multi-layer graph where each node is a vector and edges connect nearby vectors. Search starts at the top (few, coarse nodes) and walks down to finer layers, greedily hopping to neighbors closer to the query. Fast and high-recall, but the graph lives in memory.</li>
+      <li><strong>IVF (Inverted File Index)</strong> — clusters all vectors into groups (e.g. via k-means). A query is first matched to the few nearest clusters, then searched only inside those. Cheap, disk-friendly, good for very large collections.</li>
+      <li><strong>Product Quantization (PQ)</strong> — compresses each vector into a short code so many more vectors fit in RAM, at the cost of recall. Often combined with IVF or HNSW (e.g. "IVF-PQ", "HNSW-PQ").</li>
+    </ul>
+    <p>
+      These methods sit on a spectrum: <strong>recall vs. speed vs. memory</strong>. More recall needs more memory or more compute; more speed sacrifices a bit of recall. Every index exposes parameters (e.g. HNSW's <code>M</code> and <code>ef_search</code>, IVF's <code>nlist</code> and <code>nprobe</code>) to tune that trade-off for your data size and latency budget.
+    </p>
+
+    <h2>Choosing a vector database</h2>
+    <p>Real options differ mainly in where they run and how much you manage yourself:</p>
+    <table>
+      <tr><th>Option</th><th>Type</th><th>Strengths</th><th>Trade-offs</th></tr>
+      <tr><td>pgvector</td><td>Postgres extension</td><td>Lives inside a DB you may already run; SQL + vector in one place</td><td>Fewer ANN index options; needs tuning at large scale</td></tr>
+      <tr><td>Qdrant</td><td>Dedicated (Rust)</td><td>Fast, rich filtering, good HNSW defaults</td><td>Another service to run</td></tr>
+      <tr><td>Milvus</td><td>Dedicated (distributed)</td><td>Scales to billions of vectors, many index types</td><td>Heavier to operate</td></tr>
+      <tr><td>Chroma</td><td>Embedded / local</td><td>Zero-setup, Python-native, great for prototyping</td><td>Not built for huge scale</td></tr>
+      <tr><td>Pinecone</td><td>Managed cloud</td><td>No ops, scales automatically</td><td>Vendor lock-in, cost</td></tr>
+    </table>
+    <p>
+      The "right" choice depends on your scale and infrastructure: for a small RAG app that already uses Postgres, pgvector is often the least new machinery; for a prototype, Chroma; for a large production system, a dedicated engine like Qdrant or Milvus (or a managed one like Pinecone).
+    </p>
+
+    <h2>Why this helps me (as a code user)</h2>
+    <p>
+      As someone writing RAG code, you rarely implement ANN yourself — you pick a store and an index and configure them. That choice directly drives your app's <strong>cost</strong> (managed vs. self-hosted, memory footprint), <strong>latency</strong> (index speed and recall settings), and <strong>result quality</strong> (a badly-tuned index returns irrelevant chunks, which the LLM then faithfully turns into a bad answer). Knowing the trade-offs lets you tune <code>ef_search</code> or <code>nprobe</code> instead of guessing, and lets you pick the store that matches your scale instead of over- or under-provisioning.
+    </p>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="28-embedding-search-vector-search.html">28 · Embedding Search &amp; Vector Search</a> → embeddings and cosine similarity</li>
+      <li><a href="20-rag.html">20 · RAG</a> → the pipeline that consumes vector search</li>
+      <li><a href="13-tokens-and-embeddings.html">13 · Tokens &amp; Embeddings</a> → how vectors are made</li>
+      <li><a href="07-backend-development.html">07 · Backend Development</a> → databases and data storage</li>
+      <li><a href="59-retrieval-fine-tuning.html">59 · Retrieval Fine-Tuning</a> → improving retrieval quality</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • How exactly does the HNSW greedy walk avoid getting stuck in local optima?<br/>
+      • When does brute-force search beat ANN in practice?<br/>
+      • How do hybrid (vector + full-text) search systems combine both indexes?<br/>
+      • How do you re-index or update vectors when the embedding model changes?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

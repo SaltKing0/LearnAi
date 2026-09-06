@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>65 · RLHF &amp; RL Deep Dive — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 65 · Stage B · Training</p>
+    <h1>65 · RLHF &amp; RL Deep Dive</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Imagine a dog that learned to say words, but only picks whatever word sounds most
+      likely next — it doesn't care if the sentence is useful or nice. RLHF is the
+      training where a human says "that was a good sentence, here's a treat" or "that
+      was bad, no treat". The dog slowly learns which sentences get treats and starts
+      saying those instead. The deep dive is about exactly how the treats are counted
+      and how the dog is pushed toward them.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>A pretrained model is trained to predict the most likely next token. That makes
+       it fluent, but "most likely" is not the same as "helpful". A base model will
+       happily continue a harmful prompt, refuse nothing, and answer with whatever is
+       statistically probable rather than what a person actually wants. RLHF
+       (Reinforcement Learning from Human Feedback) is the layer that turns "fluent text
+       guesser" into "helpful assistant".</p>
+
+    <p>The core idea is simple: collect human judgments about which answers are good,
+       turn those judgments into a numeric reward, and then train the model to maximize
+       that reward. The hard part is doing all of that without breaking the model's
+       language ability — which is where the technical machinery comes in.</p>
+
+    <h2>What happens technically</h2>
+    <p>The RLHF pipeline has three stages:</p>
+    <ol>
+      <li><strong>Supervised Fine-Tuning (SFT)</strong> — train the base model on
+          hand-written, high-quality instruction–response pairs so it learns the
+          format of being helpful.</li>
+      <li><strong>Reward model</strong> — collect pairs of answers to the same prompt,
+          have humans rank them (A better than B), and train a small model to predict
+          that preference as a scalar score.</li>
+      <li><strong>Policy optimization (PPO)</strong> — use the reward model as the
+          signal to push the SFT model's weights so it produces answers that score
+          higher.</li>
+    </ol>
+
+    <div class="mermaid">
+flowchart LR
+    subgraph Data["Data &amp; preferences"]
+        D1[Prompts] --> D2[Human answers]
+        D2 --> D3[Ranked pairs<br/>A better than B]
+    end
+    subgraph Reward["Reward model"]
+        D3 --> R1[Train reward model]
+        R1 --> R2[Reward score<br/>for any answer]
+    end
+    subgraph Policy["Policy (PPO)"]
+        P1[SFT model] --> P2[Sample answers]
+        P2 --> P3[Score with reward model]
+        P3 --> P4[Update weights to<br/>maximize reward]
+        P4 -.loop.-> P2
+    end
+    R2 --> P3
+    </div>
+
+    <p><strong>Why PPO, and what does it actually do?</strong> If we simply updated the
+       weights to maximize reward, the model would quickly collapse into repeating the
+       few highest-scoring answers and lose its diversity and fluency. PPO is an
+       on-policy reinforcement-learning algorithm that makes small, stable updates. Two
+       details matter for a high-level understanding:</p>
+    <ul>
+      <li><strong>The reward signal</strong> — the reward model's score tells the
+          policy how good an answer was, but the score is only as good as the human
+          preferences behind it.</li>
+      <li><strong>The KL penalty</strong> — PPO adds a penalty proportional to how far
+          the new policy drifts from the reference (SFT) model. This keeps the model
+          from over-optimizing the reward and destroying its language ability. The
+          reward and the KL penalty are traded off against each other.</li>
+    </ul>
+
+    <h3>DPO — the simpler alternative</h3>
+    <p>Direct Preference Optimization (DPO) removes the separate reward model and the
+       PPO loop entirely. Instead, it rewrites the RL objective into a simple
+       classification loss: for each pair (preferred answer, rejected answer), the
+       model is trained to assign higher probability to the preferred one. This is
+       much simpler and more stable to train, and for many tasks it matches or beats
+       RLHF.</p>
+
+    <h2>Why this helps me (as a code user)</h2>
+    <p>You never run RLHF yourself, but it explains the behavior you see in every
+       frontier model. Why does a model refuse certain requests, apologize, hedge, or
+       seem eager to please? Because its weights were shaped by human preferences, not
+       just by next-token statistics. Knowing this changes how you use models: you
+       understand that "alignment" is a trained property with trade-offs, that a
+       model's style is a learned artifact, and that prompting is partly steering a
+       behavior that RLHF baked in. It also tells you which knob you can actually turn
+       — fine-tuning for SFT-style control, and prompt design for nudging the aligned
+       behavior — versus the alignment itself, which is fixed at training time.</p>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="18-alignment-rlhf-dpo.html">18 · Alignment (RLHF &amp; DPO)</a> → the overview of why alignment exists</li>
+      <li><a href="16-training-intuitively.html">16 · Training Intuitively</a> → how models learn in the first place</li>
+      <li><a href="22-fine-tuning.html">22 · Fine-Tuning</a> → the SFT stage in practice</li>
+      <li><a href="35-evaluation-metrics.html">35 · Evaluation Metrics</a> → how you measure whether alignment worked</li>
+      <li><a href="19-prompting-patterns.html">19 · Prompting Patterns</a> → shaping the aligned behavior at inference time</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • How do you detect reward hacking (the model gaming the reward model)?<br/>
+      • How do human preferences themselves carry bias into the model?<br/>
+      • Why do some labs still prefer RLHF over DPO for frontier models?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

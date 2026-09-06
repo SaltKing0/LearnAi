@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>67 · Verantwortungsvolle KI & Governance — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 67 · Ethik &amp; Governance</p>
+    <h1>67 · Verantwortungsvolle KI &amp; Governance</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Ein Modell lernt aus dem, was man ihm gezeigt hat — wie ein Kind, das aus den
+      Büchern und Menschen um sich herum lernt. Wenn alle Bücher nur von einer Sorte
+      Menschen stammen, werden auch die Ideen des Kindes einseitig. „Verantwortungsvolle
+      KI“ ist, wenn die Erwachsenen prüfen: Von wem hat es gelernt? Können wir sagen,
+      warum es das gesagt hat? Und wer trägt die Verantwortung, wenn es einen Fehler
+      macht?
+    </div>
+
+    <h2>Intuition</h2>
+    <p>Ein Modell ist ein Spiegel seiner Trainingsdaten. Wenn die Daten manche Stimmen
+       überrepräsentieren und andere unterrepräsentieren, erbt das Modell diese
+       Schieflage stillschweigend — und jede Bereitstellung verstärkt den Bias weiter
+       (siehe <a href="36-halluzinationen-bias-limits.html">36</a>).
+       „Verantwortungsvolle KI“ ist kein Wohlfühl-Slogan, sondern die technische
+       Disziplin zu entscheiden, <em>wessen Werte</em> das System trägt, zu belegen,
+       dass man sein Verhalten erklären kann, und einen Menschen für die Ergebnisse
+       verantwortlich zu halten. Man kann es sich als Qualitätsmaßstab für die
+       <em>soziale</em> Seite des Modells vorstellen — parallel zum technischen
+       Qualitätsmaßstab, der dir als Code-Nutzer schon vertraut ist.</p>
+
+    <h2>Was passiert technisch</h2>
+    <ul>
+      <li><strong>Bias &amp; Abschwächung</strong> — Bias entsteht an drei Stellen und
+        lässt sich an jeder angreifen: in den <em>Daten</em> (Kuratierung, Ausbalancieren,
+        Deduplizierung), in der <em>Evaluation</em> (Bias-Testsets, nach Untergruppen
+        disaggregierte Metriken, Fairness-Metriken wie Equalized Odds) und in der
+        <em>Nachverarbeitung</em> (Kalibrierung, Re-Ranking, Ausgabefilter). Abschwächung
+        ist nie „einmalig“, sondern eine Schleife, die man bei jeder Änderung von Daten
+        oder Einsatz erneut durchläuft.</li>
+      <li><strong>Transparenz &amp; Erklärbarkeit</strong> — zwei verwandte, aber
+        verschiedene Ideen: <em>Transparenz</em> bedeutet zu dokumentieren, was das
+        Modell ist, welche Daten es gesehen hat und welche bekannten Fehlerarten es hat
+        (eine Model Card); <em>Erklärbarkeit</em> bedeutet, für eine konkrete Ausgabe
+        einen verständlichen Grund zu liefern — über einfachere Ersatzmodelle,
+        Feature-Attribution oder Chain-of-Thought-/Reasoning-Spuren.</li>
+      <li><strong>Verantwortlichkeit &amp; menschliche Aufsicht</strong> — ein Modell
+        kann keine Entscheidung „besitzen“, daher muss die Pipeline für
+        folgenreiche Aktionen einen Menschen im Loop halten: Freigabe-Gates,
+        Eskalationspfade und Logging, das festhält, welche Entscheidung ein Modell
+        vorgeschlagen hat und wer sie bestätigt hat. So wird ein Fehler zurechenbar,
+        statt ein vages „das hat die KI gemacht“.</li>
+      <li><strong>Red Teaming &amp; Sicherheitstests</strong> — bewusst
+        gegnerisches Prüfen vor dem Release: Jailbreaks und Prompt-Injection
+        ausprobieren (siehe <a href="38-sicherheit-prompt-injection.html">38</a>),
+        Randfälle testen, schädliche Ausgaberaten messen — als wiederkehrender
+        Prozess, nicht als einmaliges QA-Ticket.</li>
+      <li><strong>Alignment &amp; Werte</strong> — Techniken wie RLHF/DPO
+        (siehe <a href="18-alignment-rlhf-dpo.html">18</a>) lenken das Modell zu
+        hilfreichem, ehrlichem, unschädlichem Verhalten. Governance entscheidet,
+        <em>wessen</em> Werte dieses Ziel definieren und wie Konflikte zwischen ihnen
+        aufgelöst werden.</li>
+    </ul>
+
+    <h2>Warum es mir (als Code-Nutzer) weiterhilft</h2>
+    <p>Ein KI-Produkt verantwortungsvoll auszuliefern ist eine echte technische
+       Anforderung, kein Nebenschauplatz. Als Code-Nutzer kannst du schon jetzt:</p>
+    <ul>
+      <li><strong>Ein Evaluations-Gate einbauen</strong> — bevor du einem Modell in
+        Produktion vertraust, misst du es auf deinen eigenen Bias- und
+        Sicherheits-Testsets, nicht nur auf den Benchmarks des Anbieters.</li>
+      <li><strong>Den menschlichen Loop gestalten</strong> — für alles, was einen
+        Kredit ablehnt, einen Anspruch verneint oder einen Menschen betrifft: das Modell
+        schlägt vor, ein Mensch entscheidet — mit Logging.</li>
+      <li><strong>Ein Risikoregister führen</strong> — die bekannten Fehlerarten
+        (Halluzinationen, Bias, Injection) und die jeweils zuständige Kontrolle
+        aufschreiben. Das ist dieselbe Disziplin wie Threat Modeling in der Sicherheit.</li>
+      <li><strong>Eine Model Card dokumentieren</strong> — eine kurze Datei mit dem, was
+        das Modell ist, seinen Daten und Grenzen. Das macht dein System überprüfbar und
+        audit-fähig.</li>
+      <li><strong>Die rechtliche Ebene verstehen</strong> — DSGVO (Datenschutz, Recht
+        auf Erklärung bei automatisierten Entscheidungen), der EU AI Act
+        (Risikostufen: minimal, begrenzt, hoch, inakzeptabel — mit je nach Stufe
+        steigenden Pflichten) und SOC 2 (ein Vertrauens- und Audit-Framework, nach dem
+        Unternehmenskunden fragen). Das zu kennen, lässt dich die Sprache der
+        Compliance-Prüfer sprechen.</li>
+    </ul>
+    <p>Kurz: Dieselbe Sorgfalt, die du auf Korrektheit und Sicherheit verwendest, hat
+       jetzt eine dritte Achse — <em>Verantwortung</em> — und die ist messbar, testbar
+       und auslieferbar.</p>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="46-was-kann-ai-nicht.html">46 · Was kann AI nicht?</a> — die Grenzen, die menschliche Aufsicht nötig machen.</li>
+      <li><a href="47-unterschied-verstehen.html">47 · Unterschied zu echtem Verstehen</a> — warum „erklärbar“ nicht „verstanden“ ist.</li>
+      <li><a href="38-sicherheit-prompt-injection.html">38 · Sicherheit &amp; Prompt Injection</a> — die gegnerische Seite des Sicherheitstestens.</li>
+      <li><a href="36-halluzinationen-bias-limits.html">36 · Halluzinationen, Bias, Limits</a> — woher der Bias eigentlich kommt.</li>
+      <li><a href="18-alignment-rlhf-dpo.html">18 · Alignment (RLHF / DPO)</a> — wie Werte ins Modell gelenkt werden.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Was gilt in der Praxis als „hohes Risiko“, und wie wird der EU AI Act im
+        Alltag tatsächlich durchgesetzt?<br/>
+      • Wie misst man Fairness, wenn Untergruppen sich überlappen und Metriken
+        widersprechen?<br/>
+      • Wo verläuft die Grenze zwischen Erklärbarkeit und dem, dass das Modell sein
+        Denken wirklich offenlegt?<br/>
+      • Wie weit geht menschliche Aufsicht, bevor sie nur noch das Modell absegnet?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <!-- Mermaid für Fluss-/Architekturdiagramme (CDN, kein Build-Step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

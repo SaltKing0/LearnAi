@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Playground · Chat UI in 2 Frameworks — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Playground · interactive</p>
+    <h1>Chat UI in 2 Frameworks</h1>
+    <p>The same minimal chat interface, rendered two ways. Type a message and send it:
+       both panels update with the identical message list — but they reach that result by
+       completely different mechanisms. <strong>React</strong> builds a component tree and
+       diffs a <em>virtual DOM</em> at runtime; <strong>Svelte</strong> compiles your
+       reactive <code>let</code> into direct DOM updates at build time.</p>
+
+    <div id="p5canvas"></div>
+
+    <div style="margin-top:12px">
+      <input id="msgInput" type="text" placeholder="Type a message…" style="width:400px;padding:6px" />
+      <button id="btnSend">Send</button>
+      <span id="status" style="margin-left:12px"></span>
+    </div>
+
+    <div class="callout kid">
+      <span class="label">What to watch for</span>
+      The two panels give you the <em>same</em> chat UX — identical bubbles, identical
+      updates. The difference is invisible on screen: React runs a runtime diff over a
+      virtual DOM on every update, while Svelte compiled the update logic away at build
+      time and touches the real DOM directly. Same result, different engine.
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <script>
+  let msgs = [];
+  const REPLY = "Got it — message received ✓";
+
+  const PANEL_W = 360;
+  const PX = 20, PX2 = 380;          // left x of each panel
+  const HEADER_H = 30;
+  const MSG_TOP = 36, MSG_BOT = 300;
+  const CODE_TOP = 306, CODE_BOT = 468;
+  const REACT_COL = color("#61dafb");
+  const SVELTE_COL = color("#ff3e00");
+
+  function wrapText(s, maxW, size) {
+    textSize(size);
+    const words = s.split(" ");
+    const lines = []; let cur = "";
+    for (const w of words) {
+      const t = cur ? cur + " " + w : w;
+      if (textWidth(t) <= maxW) cur = t;
+      else { if (cur) lines.push(cur); cur = w; }
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+
+  function drawPanel(x, title, accent) {
+    noStroke();
+    fill(255); stroke(225, 225, 230); strokeWeight(1);
+    rect(x, 0, PANEL_W, HEADER_H, 6, 6, 0, 0);
+    noStroke();
+    fill(20); textSize(15); textAlign(LEFT, CENTER);
+    text(title, x + 10, HEADER_H / 2);
+    fill(accent); rect(x + PANEL_W - 16, 8, 8, 14, 4);
+    fill(247, 247, 250); rect(x, MSG_TOP, PANEL_W, MSG_BOT - MSG_TOP, 6);
+    fill(30, 30, 34); rect(x, CODE_TOP, PANEL_W, CODE_BOT - CODE_TOP, 6);
+  }
+
+  function drawMessages(x, panelW) {
+    let y = MSG_TOP + 8;
+    const maxW = panelW - 24;
+    const size = 13, lineH = size + 4;
+    for (const m of msgs) {
+      textSize(size);
+      const lines = wrapText(m.text, maxW - 16, size);
+      const bh = lines.length * lineH + 12;
+      const bw = Math.min(panelW - 16, Math.max(...lines.map(l => textWidth(l))) + 16);
+      const bx = m.who === "you" ? x + panelW - 8 - bw : x + 8;
+      fill(m.who === "you" ? color("#3b82f6") : color("#e5e7eb"));
+      noStroke();
+      rect(bx, y, bw, bh, 8);
+      fill(m.who === "you" ? 255 : 40);
+      textAlign(LEFT, TOP); textSize(size);
+      lines.forEach((l, i) => text(l, bx + 8, y + 6 + i * lineH));
+      y += bh + 6;
+      if (y > MSG_BOT - 8) break;
+    }
+  }
+
+  function drawCode(x, accent, isSvelte) {
+    const code = isSvelte
+      ? ["let msgs = []", "function send(m){", "  msgs = [...msgs, m]", "}"]
+      : ["const [msgs, setMsgs]", "  = useState([])", "function send(m){", "  setMsgs([...msgs, m])", "}"];
+    fill(220); textSize(12); textAlign(LEFT, TOP);
+    let y = CODE_TOP + 12;
+    for (const line of code) { text(line, x + 12, y); y += 17; }
+    fill(accent); textSize(11);
+    text(isSvelte ? "Svelte · compiled" : "React · virtual DOM", x + 12, CODE_BOT - 18);
+  }
+
+  function sendMsg() {
+    const v = document.getElementById("msgInput").value.trim();
+    if (!v) return;
+    msgs.push({ text: v, who: "you" });
+    msgs.push({ text: REPLY, who: "ai" });
+    document.getElementById("msgInput").value = "";
+  }
+
+  function setup() {
+    const c = createCanvas(760, 560); c.parent("p5canvas");
+    textFont("system-ui, sans-serif");
+    msgs.push({ text: "Hi! Try typing a message.", who: "ai" });
+    document.getElementById("btnSend").addEventListener("click", sendMsg);
+    document.getElementById("msgInput").addEventListener("keydown", e => { if (e.key === "Enter") sendMsg(); });
+    frameRate(60);
+  }
+
+  function draw() {
+    background(250, 250, 252);
+    drawPanel(PX,  "React",  REACT_COL);
+    drawPanel(PX2, "Svelte", SVELTE_COL);
+    drawMessages(PX,  PANEL_W);
+    drawMessages(PX2, PANEL_W);
+    drawCode(PX,  REACT_COL,  false);
+    drawCode(PX2, SVELTE_COL, true);
+
+    // status line — the key difference
+    fill(120); textSize(13); textAlign(CENTER, CENTER);
+    text("React diffs a virtual DOM at runtime · Svelte compiles updates at build time",
+         width / 2, 500);
+  }
+  window.setup = setup; window.draw = draw;
+  </script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

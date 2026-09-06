@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>64 · Alternative Architectures — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 64 · Level C · Efficiency</p>
+    <h1>64 · Alternative Architectures</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      The Transformer is like a student who, for every new sentence, re-reads the
+      whole book from the start. That's thorough but slow the longer the book gets.
+      Alternative architectures are students who instead keep a small notebook
+      (a "state") and update it as they read — each new word only updates the
+      notebook. The book can be huge, but the notebook stays the same size, so
+      reading never slows down. The trade-off: they might miss a detail that
+      re-reading everything would have caught.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>Attention is the Transformer's superpower: every token can look at every
+       past token. But that power has a price. For a sequence of n tokens, a
+       token at position n must compare against all n previous tokens — the work
+       grows as n × n = <strong>O(n²)</strong>. Doubling the context makes the
+       attention cost four times larger. The KV-cache (Concept 57) helps at
+       inference time, but the quadratic prefill and the growing cache still
+       bound how long a context a transformer can handle cheaply.</p>
+
+    <p><strong>Alternative architectures</strong> keep the "predict the next
+       token" idea but replace the look-at-everything attention with a
+       compressed, fixed-size <em>state</em> that is updated step by step. Each
+       new token does a constant amount of work, so cost grows linearly
+       (<strong>O(n)</strong>) with the sequence length instead of quadratically.
+       That unlocks very long contexts and cheaper edge/on-device inference —
+       at the price of sometimes slightly lower quality or harder training.</p>
+
+    <h2>What happens technically</h2>
+    <ul>
+      <li><strong>Quadratic bottleneck.</strong> Full self-attention builds an
+        n×n attention matrix: every token scores itself against every other
+        token. Memory and compute both scale O(n²), which is why "full context
+        window" is expensive (see Concept 57).</li>
+      <li><strong>State-space models (SSM / Mamba).</strong> A hidden state h
+        (a fixed-size vector) is updated at every step: h_t = A·h_{t-1} + B·x_t,
+        and the output is read from h_t. Because the state is constant size,
+        each step is O(1) and the whole sequence is O(n). Mamba adds a
+        data-dependent gating/selection mechanism so the model can decide what
+        to keep vs. forget — like a smarter, learned recurrence. A fast
+        "selective scan" makes training parallel enough to be practical.</li>
+      <li><strong>RWKV.</strong> Blends the RNN-style linear state with a
+        transformer-like training loop. It uses a recurrent form of attention
+        (a "wKV" mechanism) so inference is O(1) per token — no KV-cache that
+        grows with context — while still being trainable like a transformer.
+        Often summarized as "RNN at inference, transformer at training."</li>
+      <li><strong>Hybrids.</strong> Many recent models keep a few full-attention
+        layers (for the parts where global context really matters) and replace
+        the rest with linear/SSM layers. This gets most of the long-context
+        benefit with less quality loss than going all-in on a state.</li>
+    </ul>
+
+    <h3>Transformer vs. state-based attention</h3>
+    <div class="mermaid">
+flowchart LR
+    subgraph TR[Transformer: quadratic attention]
+        T1[Token 5] -->|"attends to all 1..4"| T2[(Tokens 1-4)]
+    end
+    subgraph SS[SSM / RWKV: fixed state]
+        S1[Token 5] -->|"updates state"| S2[(State h, fixed size)]
+        S2 -->|"constant work per step"| S3[Output]
+    end
+    TR -- "O(n²) work, cache grows" --> SS -- "O(n) work, cache constant" --> OUT[Long context &amp; edge friendly]
+    </div>
+
+    <table>
+      <tr><th></th><th>Transformer</th><th>SSM / Mamba / RWKV</th></tr>
+      <tr><td>Attention cost</td><td>O(n²)</td><td>O(n) per sequence</td></tr>
+      <tr><td>Context scaling</td><td>expensive, cache grows</td><td>cheap, constant state</td></tr>
+      <tr><td>Long-context quality</td><td>strong (sees everything)</td><td>good, but may drop fine details</td></tr>
+      <tr><td>Speed at long context</td><td>slows down</td><td>stays fast</td></tr>
+      <tr><td>Maturity / ecosystem</td><td>dominant, best tooling</td><td>newer, smaller ecosystem</td></tr>
+    </table>
+
+    <h2>Why this helps me (as a code user)</h2>
+    <ul>
+      <li>When I see "Mamba" or "RWKV" in a model name or a paper, I know it
+        targets long-context and low-latency use cases — not that it's a
+        fundamentally different kind of AI.</li>
+      <li>For very long documents or streams (logs, codebases, whole books),
+        state-based models can be dramatically cheaper per token than a
+        transformer at the same context length.</li>
+      <li>On-device / edge inference benefits: a constant-size state means
+        memory stays flat as the prompt grows, unlike a transformer whose
+        KV-cache balloons (compare Concept 57).</li>
+      <li>The trade-off matters for me as a user: if my task needs precise
+        recall of one detail buried in a huge context, a transformer or hybrid
+        is often safer; if it needs to process a massive stream fast and cheap,
+        a state model shines.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="15-transformer-overview.html">15 · Transformer Overview</a> → the architecture these models are alternatives to</li>
+      <li><a href="14-attention-overview.html">14 · Attention</a> → the quadratic mechanism being replaced</li>
+      <li><a href="57-kv-cache-inference-optimization.html">57 · KV-Cache &amp; Inference Optimization</a> → how transformers cope with the attention cost</li>
+      <li><a href="01-data-structures-algorithms.html">01 · Data Structures &amp; Algorithms</a> → why O(n²) vs O(n) matters</li>
+      <li><a href="17-inference-vs-training.html">17 · Inference vs. Training</a> → where the speed difference shows up</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • How much quality do state models actually lose on long-context recall, and on which tasks?<br/>
+      • Why haven't Mamba/RWKV fully displaced transformers in production yet — is it quality, training cost, or ecosystem?<br/>
+      • How do hybrid architectures decide which layers keep full attention?<br/>
+      • How does the selective-scan parallelism in Mamba actually work under the hood?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <!-- Mermaid for flow/architecture diagrams (CDN, no build step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

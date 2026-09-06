@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Playground · Git Branching Strategies — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Playground · interactive</p>
+    <h1>Git Branching Strategies</h1>
+    <p>Watch two Git branching strategies build the same history: <strong>Gitflow</strong>
+       and <strong>trunk-based development</strong>. Each dot is a commit; each colored
+       lane is a branch. Press <strong>Play</strong> or <strong>Step</strong> to watch
+       branches appear, diverge, and merge back together.</p>
+
+    <div id="p5canvas"></div>
+
+    <div style="margin-top:12px">
+      <label for="strategySel">Strategy: </label>
+      <select id="strategySel">
+        <option value="gitflow">Gitflow</option>
+        <option value="trunk">Trunk-based</option>
+      </select>
+      <button id="btnPlay">▶ Play</button>
+      <button id="btnStep">Step</button>
+      <button id="btnReset">↺ Reset</button>
+      <label for="speed">Speed: </label>
+      <input id="speed" type="range" min="1" max="60" value="30" />
+      <span id="status" style="margin-left:12px"></span>
+    </div>
+
+    <div class="callout kid">
+      <span class="label">What to watch for</span>
+      In trunk-based development every merge lands straight on <strong>main</strong>, so
+      main is always deployable. Gitflow adds <strong>develop</strong>,
+      <strong>feature</strong>, <strong>release</strong>, and <strong>hotfix</strong>
+      branches — more structure for planning releases, but more branches that must be
+      kept in sync.
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <script>
+  let strategy = "gitflow";
+  let step = 0;
+  let running = false;
+  let speed = 30;
+
+  const STRATEGIES = {
+    gitflow: {
+      name: "Gitflow",
+      summary: "Gitflow: main + develop + feature/release/hotfix branches — structured releases, more branches to manage.",
+      lanes: [
+        { name: "main",        color: "#3B82F6" },
+        { name: "develop",     color: "#8B5CF6" },
+        { name: "feature/login", color: "#10B981" },
+        { name: "release/1.0", color: "#F59E0B" },
+        { name: "hotfix",      color: "#EF4444" },
+        { name: "feature/pay", color: "#14B8A6" }
+      ],
+      commits: [
+        { lane: 0, src: null, label: "main" },
+        { lane: 1, src: 0,    label: "develop" },
+        { lane: 1, src: null, label: "" },
+        { lane: 2, src: 1,    label: "feature/login" },
+        { lane: 2, src: null, label: "" },
+        { lane: 2, src: null, label: "" },
+        { lane: 1, src: 2,    label: "merge login" },
+        { lane: 1, src: null, label: "" },
+        { lane: 3, src: 1,    label: "release/1.0" },
+        { lane: 3, src: null, label: "" },
+        { lane: 0, src: 3,    label: "merge → main" },
+        { lane: 1, src: 3,    label: "merge → develop" },
+        { lane: 1, src: null, label: "" },
+        { lane: 4, src: 0,    label: "hotfix" },
+        { lane: 4, src: null, label: "" },
+        { lane: 0, src: 4,    label: "merge → main" },
+        { lane: 1, src: 4,    label: "merge → develop" },
+        { lane: 5, src: 1,    label: "feature/pay" },
+        { lane: 5, src: null, label: "" },
+        { lane: 5, src: null, label: "" },
+        { lane: 1, src: 5,    label: "merge pay" }
+      ]
+    },
+    trunk: {
+      name: "Trunk-based",
+      summary: "Trunk-based: small features merge straight into main — main stays always deployable.",
+      lanes: [
+        { name: "main",    color: "#3B82F6" },
+        { name: "feature/a", color: "#10B981" },
+        { name: "feature/b", color: "#14B8A6" },
+        { name: "feature/c", color: "#8B5CF6" }
+      ],
+      commits: [
+        { lane: 0, src: null, label: "main" },
+        { lane: 1, src: 0,    label: "feature/a" },
+        { lane: 1, src: null, label: "" },
+        { lane: 1, src: null, label: "" },
+        { lane: 0, src: 1,    label: "merge a" },
+        { lane: 0, src: null, label: "" },
+        { lane: 2, src: 0,    label: "feature/b" },
+        { lane: 2, src: null, label: "" },
+        { lane: 0, src: 2,    label: "merge b" },
+        { lane: 0, src: null, label: "" },
+        { lane: 3, src: 0,    label: "feature/c" },
+        { lane: 3, src: null, label: "" },
+        { lane: 3, src: null, label: "" },
+        { lane: 0, src: 3,    label: "merge c" },
+        { lane: 0, src: null, label: "" }
+      ]
+    }
+  };
+
+  function updateStatus() {
+    const s = STRATEGIES[strategy];
+    document.getElementById("status").textContent =
+      `${s.summary}  ·  step ${step}/${s.commits.length}`;
+  }
+
+  function resetAll() {
+    step = 0; running = false;
+    document.getElementById("btnPlay").textContent = "▶ Play";
+    updateStatus();
+  }
+
+  function setup() {
+    const c = createCanvas(640, 380); c.parent("p5canvas");
+    textFont("system-ui, sans-serif"); textAlign(CENTER, CENTER);
+    document.getElementById("strategySel").addEventListener("change", e => {
+      strategy = e.target.value; resetAll();
+    });
+    document.getElementById("btnPlay").addEventListener("click", () => {
+      const n = STRATEGIES[strategy].commits.length;
+      if (step >= n) { resetAll(); running = true; document.getElementById("btnPlay").textContent = "⏸ Pause"; return; }
+      if (running) { running = false; document.getElementById("btnPlay").textContent = "▶ Play"; }
+      else { running = true; document.getElementById("btnPlay").textContent = "⏸ Pause"; }
+    });
+    document.getElementById("btnStep").addEventListener("click", () => {
+      const n = STRATEGIES[strategy].commits.length;
+      running = false; document.getElementById("btnPlay").textContent = "▶ Play";
+      if (step < n) { step++; if (step >= n) document.getElementById("btnPlay").textContent = "✓ Done"; }
+      updateStatus();
+    });
+    document.getElementById("btnReset").addEventListener("click", resetAll);
+    document.getElementById("speed").addEventListener("input", e => speed = parseInt(e.target.value));
+    frameRate(60);
+    updateStatus();
+  }
+
+  function draw() {
+    background(250, 250, 252);
+    const s = STRATEGIES[strategy];
+    const n = s.commits.length;
+    const L = s.lanes.length;
+    const leftPad = 110, rightPad = 24;
+    const laneY = [];
+    for (let i = 0; i < L; i++) laneY.push(map(i, 0, L - 1, 30, height - 30));
+    const xFor = i => (n === 1) ? width / 2 : map(i, 0, n - 1, leftPad, width - rightPad);
+
+    // advance animation
+    if (running && step < n) {
+      step += Math.max(1, Math.round(speed / 15));
+      if (step >= n) { step = n; running = false; document.getElementById("btnPlay").textContent = "✓ Done"; }
+      updateStatus();
+    }
+
+    // lane base lines + labels
+    for (let i = 0; i < L; i++) {
+      const lc = color(s.lanes[i].color); lc.setAlpha(70);
+      stroke(lc); strokeWeight(2);
+      line(leftPad, laneY[i], width - rightPad, laneY[i]);
+      noStroke(); fill(s.lanes[i].color); textSize(12); textAlign(RIGHT, CENTER);
+      text(s.lanes[i].name, leftPad - 8, laneY[i]);
+    }
+
+    // commits
+    const prevByLane = {}, lastByLane = {};
+    for (let i = 0; i < n && i < step; i++) {
+      const cm = s.commits[i];
+      const x = xFor(i), y = laneY[cm.lane];
+      // connector from source branch (merge / branch creation)
+      if (cm.src != null && cm.src !== cm.lane && lastByLane[cm.src] !== undefined) {
+        const si = lastByLane[cm.src];
+        stroke(color(s.lanes[cm.src].color)); strokeWeight(2);
+        line(xFor(si), laneY[cm.src], x, y);
+      }
+      // line from previous commit on same lane
+      if (prevByLane[cm.lane] !== undefined) {
+        const pi = prevByLane[cm.lane];
+        stroke(color(s.lanes[cm.lane].color)); strokeWeight(2);
+        line(xFor(pi), laneY[cm.lane], x, y);
+      }
+      // dot
+      const isMerge = (cm.src != null && cm.src !== cm.lane);
+      fill(color(s.lanes[cm.lane].color)); noStroke();
+      circle(x, y, isMerge ? 10 : 7);
+      if (isMerge) { noFill(); stroke(255); strokeWeight(2); circle(x, y, 10); }
+      // label
+      if (cm.label) {
+        fill(100); textSize(10); textAlign(CENTER, TOP);
+        text(cm.label, x, y + 12);
+      }
+      prevByLane[cm.lane] = i;
+      lastByLane[cm.lane] = i;
+    }
+  }
+  window.setup = setup; window.draw = draw;
+  </script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

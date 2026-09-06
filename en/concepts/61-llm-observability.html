@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>61 · LLM Observability — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 61 · Stage F · MLOps</p>
+    <h1>61 · LLM Observability</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Imagine you baked a cake and it came out burnt. You can only fix it next time if
+      you know <em>why</em> it went wrong — was the oven too hot, did you forget the
+      timer, was the recipe wrong? Observability is like keeping a diary while you
+      bake: you write down the temperature, the time, the ingredients, and what
+      happened at each step. When an LLM app misbehaves in the real world, you need
+      that same diary to see exactly where things went sideways.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>
+      A demo works once in front of you. A production system has to work for thousands
+      of users, around the clock, and it will fail in ways you never saw in testing.
+      LLMs make this worse: the same prompt can give different answers, calls cost
+      real money, and a single user request can fan out into many model calls and tool
+      calls. If you can't see what a request actually did, you're debugging blind.
+    </p>
+    <p>
+      Observability is the practice of making a running system <em>inspectable</em>:
+      capturing what happened, when, how long it took, what it cost, and whether the
+      output was good. It turns "the app is broken" into "the retrieval step returned
+      empty context and the model hallucinated a confident answer."
+    </p>
+
+    <h2>What happens technically</h2>
+
+    <h3>Structured logging of prompts and responses</h3>
+    <p>
+      Log every prompt, model, parameters, response, token counts, and latency as
+      structured records (JSON), not free-form text. This is the raw material every
+      other observability feature builds on. <em>Beware of privacy:</em> prompts and
+      responses can contain user data, so redact secrets and PII before storing.
+    </p>
+
+    <h3>Tracing one request across model + tool calls</h3>
+    <p>
+      A single user turn may trigger a chain: an orchestrator calls the model, the
+      model asks for a tool, the tool runs (a search, a database query), its result
+      goes back into a second model call. A <strong>trace</strong> captures this whole
+      tree as one unit with parent/child spans, so you can see the end-to-end path and
+      the timing of each hop. Tools like <strong>Langfuse</strong>, <strong>LangSmith</strong>,
+      and <strong>OpenTelemetry</strong> (with LLM semantic conventions) give you this
+      out of the box for most frameworks.
+    </p>
+
+    <h3>Tracking cost and latency per request</h3>
+    <p>
+      Each model call costs money and time, and both scale with token count. Compute
+      and record cost per request (input + output tokens × price per model) and
+      latency per span. This lets you spot runaway costs from a single prompt, compare
+      models, and set budgets before a bug empties your account.
+    </p>
+
+    <h3>Prompt versioning</h3>
+    <p>
+      Treat prompts as versioned artifacts, not magic strings. Every change to a
+      prompt is a new version you can compare against production data. If quality
+      drops after a "small tweak," you can roll back to the last good version and see
+      which change caused the regression.
+    </p>
+
+    <h3>Eval-in-production (guardrails)</h3>
+    <p>
+      Testing happens before release; observability continues after. Run lightweight
+      evaluations on live traffic — LLM-as-judge scoring, safety checks, schema
+      validation, refusal/hallucination heuristics — as <strong>guardrails</strong>.
+      When a score drops below a threshold, alert and/or reroute the request. This
+      closes the loop between offline evals and real-world behavior.
+    </p>
+
+    <h2>Why this helps me (as a code user)</h2>
+    <p>
+      You cannot improve what you do not measure. Observability is what turns a demo
+      into a production system: it tells you which prompt is costing you money, which
+      tool call is slow, which user request produced a bad answer, and which prompt
+      change broke quality. Without it, every production bug is a guessing game and
+      every cost spike is a surprise invoice. With it, you debug in minutes instead of
+      days, and you can iterate on prompts and models with real evidence.
+    </p>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="08-devops-cloud.html">08 · DevOps &amp; Cloud</a> → the tooling that hosts and monitors</li>
+      <li><a href="44-testing-evaluation.html">44 · Testing &amp; Evaluation</a> → evals before release</li>
+      <li><a href="40-deployment.html">40 · Deployment</a> → shipping the system you then observe</li>
+      <li><a href="37-cost-latency.html">37 · Cost &amp; Latency</a> → the numbers observability tracks</li>
+      <li><a href="21-agents-tool-use.html">21 · Agents &amp; Tool Use</a> → the chains you trace</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • How do you sample traces without losing the rare failures?<br/>
+      • How do you guard privacy when logging real prompts?<br/>
+      • How do you decide which evals to run live without slowing the request?<br/>
+      • What is the right alert threshold for a score that fluctuates naturally?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

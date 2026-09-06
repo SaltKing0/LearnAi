@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>67 · Responsible AI & Governance — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 67 · Ethics & Governance</p>
+    <h1>67 · Responsible AI &amp; Governance</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      A model learns from what it was shown, like a kid who learns from the books
+      and people around them. If all those books were written by one kind of person,
+      the kid's ideas get one-sided too. "Responsible AI" is the grown-ups checking:
+      whose stories did it learn? Can we tell why it said that? And who is in charge
+      when it makes a mistake?
+    </div>
+
+    <h2>Intuition</h2>
+    <p>A model is a mirror of its training data. If the data over-represents some
+       voices and under-represents others, the model quietly inherits that skew —
+       and every deployment then scales the bias (see <a href="36-hallucinations-bias-limits.html">36</a>).
+       "Responsible AI" is not a feel-good slogan; it is the engineering discipline of
+       deciding <em>whose values the system carries</em>, proving you can explain its
+       behavior, and keeping a human accountable for the outcomes. Think of it as the
+       quality bar for the <em>social</em> side of the model, parallel to the technical
+       quality bar you already care about as a code user.</p>
+
+    <h2>What happens technically</h2>
+    <ul>
+      <li><strong>Bias &amp; mitigation</strong> — bias enters at three points and can be
+        attacked at each: in the <em>data</em> (curation, balancing, de-duplication),
+        in <em>evaluation</em> (bias test-sets, disaggregated metrics per subgroup,
+        fairness metrics like equalized odds), and in <em>post-processing</em>
+        (calibration, re-ranking, output filters). Mitigation is never "once"; it is a
+        loop you re-run when data or deployment changes.</li>
+      <li><strong>Transparency &amp; explainability</strong> — two related but distinct
+        ideas: <em>transparency</em> means documenting what the model is, what data it
+        saw, and its known failure modes (a model card); <em>explainability</em> means
+        producing an understandable reason for a specific output — via simpler
+        surrogate models, feature attribution, or chain-of-thought / reasoning traces.</li>
+      <li><strong>Accountability &amp; human oversight</strong> — a model cannot own a
+        decision, so the pipeline must keep a human in the loop for high-stakes
+        actions: approval gates, escalation paths, and logging that records which
+        decision a model proposed and who confirmed it. This is what makes a failure
+        attributable instead of a vague "the AI did it".</li>
+      <li><strong>Red teaming &amp; safety testing</strong> — deliberately adversarial
+        probing before release: trying jailbreaks and prompt injection
+        (see <a href="38-security-prompt-injection.html">38</a>), testing on edge cases,
+        measuring harmful-output rates, and running these as a recurring process, not a
+        one-off QA ticket.</li>
+      <li><strong>Alignment &amp; values</strong> — techniques like RLHF/DPO
+        (see <a href="18-alignment-rlhf-dpo.html">18</a>) steer the model toward
+        helpful, honest, harmless behavior. Governance decides <em>whose</em> values
+        that target is and how conflicts between them get resolved.</li>
+    </ul>
+
+    <h2>Why this helps me (as a code user)</h2>
+    <p>Shipping an AI product responsibly is a real engineering requirement, not a
+       side quest. As a code user you can already:</p>
+    <ul>
+      <li><strong>Add an evaluation gate</strong> — before trusting a model in
+        production, measure it on your own bias and safety test-sets, not just the
+        vendor's benchmarks.</li>
+      <li><strong>Design the human loop</strong> — for anything that rejects a loan,
+        denies a claim, or touches a person, make the model propose and a human decide,
+        with logging.</li>
+      <li><strong>Keep a risk register</strong> — write down the known failure modes
+        (hallucinations, bias, injection) and which control handles each. This is the
+        same discipline as threat modeling for security.</li>
+      <li><strong>Document a model card</strong> — a short file with what the model is,
+        its data, its limits. It makes your system reviewable and audit-ready.</li>
+      <li><strong>Understand the legal layer</strong> — GDPR (data protection,
+        right to explanation for automated decisions), the EU AI Act (risk tiers:
+        minimal, limited, high, unacceptable — with duties scaling by tier), and SOC 2
+        (a trust-and-audit framework your enterprise customers will ask about). Knowing
+        these lets you speak the language of compliance reviewers.</li>
+    </ul>
+    <p>In short: the same rigor you apply to correctness and security now has a third
+       axis — <em>responsibility</em> — and it is measurable, testable, and shippable.</p>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="46-what-cant-ai-do.html">46 · What Can't AI Do?</a> — the limits that make human oversight necessary.</li>
+      <li><a href="47-difference-vs-understanding.html">47 · Difference vs. Understanding</a> — why "explainable" is not "understood".</li>
+      <li><a href="38-security-prompt-injection.html">38 · Security &amp; Prompt Injection</a> — the adversarial side of safety testing.</li>
+      <li><a href="36-hallucinations-bias-limits.html">36 · Hallucinations, Bias, Limits</a> — where the bias actually comes from.</li>
+      <li><a href="18-alignment-rlhf-dpo.html">18 · Alignment (RLHF / DPO)</a> — how values get steered into the model.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • What counts as "high-risk" in practice, and how does the EU AI Act actually
+        get enforced day to day?<br/>
+      • How do you measure fairness when subgroups overlap and metrics disagree?<br/>
+      • Where is the line between explainability and the model genuinely revealing
+        its reasoning?<br/>
+      • How far does human oversight go before it just rubber-stamps the model?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <!-- Mermaid for flow/architecture diagrams (CDN, no build step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

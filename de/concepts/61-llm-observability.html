@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>61 · LLM-Observability — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 61 · Stufe F · MLOps</p>
+    <h1>61 · LLM-Observability</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Stell dir vor, du hast einen Kuchen gebacken und er ist verbrannt. Du kannst ihn
+      nur beim nächsten Mal verbessern, wenn du weißt <em>warum</em> — war der Ofen zu
+      heiß, hast du den Timer vergessen, war das Rezept falsch? Observability ist wie
+      ein Tagebuch beim Backen: Du schreibst Temperatur, Zeit, Zutaten und jeden
+      Schritt auf. Wenn eine LLM-App in der echten Welt Fehler macht, brauchst du
+      genau dieses Tagebuch, um zu sehen, wo es schiefgelaufen ist.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>
+      Eine Demo funktioniert einmal vor dir. Ein Produktionssystem muss für tausende
+      Nutzer rund um die Uhr laufen — und es wird auf Arten scheitern, die du beim
+      Testen nie gesehen hast. LLMs machen das schlimmer: Derselbe Prompt kann
+      verschiedene Antworten liefern, Aufrufe kosten echtes Geld, und eine einzige
+      Nutzeranfrage kann sich in viele Modell- und Tool-Aufrufe verzweigen. Wenn du
+      nicht sehen kannst, was eine Anfrage wirklich getan hat, debugst du im Blindflug.
+    </p>
+    <p>
+      Observability ist die Praxis, ein laufendes System <em>untersuchbar</em> zu
+      machen: festhalten, was passiert ist, wann, wie lange es dauerte, was es kostete
+      und ob die Ausgabe gut war. Sie macht aus „die App ist kaputt" ein „der
+      Retrieval-Schritt lieferte leeren Kontext und das Modell halluzinierte eine
+      selbstbewusste Antwort."
+    </p>
+
+    <h2>Was passiert technisch</h2>
+
+    <h3>Strukturiertes Logging von Prompts und Antworten</h3>
+    <p>
+      Protokolliere jeden Prompt, das Modell, Parameter, Antwort, Token-Zahlen und
+      Latenz als strukturierte Datensätze (JSON), nicht als Freitext. Das ist der
+      Rohstoff, auf dem jede andere Observability-Funktion aufbaut. <em>Achtung
+      Datenschutz:</em> Prompts und Antworten können Nutzerdaten enthalten — entferne
+      Geheimnisse und personenbezogene Daten vor dem Speichern.
+    </p>
+
+    <h3>Tracing einer Anfrage über Modell- und Tool-Aufrufe</h3>
+    <p>
+      Ein einziger Nutzer-Turn kann eine Kette auslösen: Ein Orchestrator ruft das
+      Modell, das Modell verlangt ein Tool, das Tool läuft (eine Suche, eine
+      Datenbankabfrage), sein Ergebnis fließt in einen zweiten Modell-Aufruf. Ein
+      <strong>Trace</strong> erfasst diesen ganzen Baum als eine Einheit mit
+      Eltern-/Kind-Spans, sodass du den End-to-End-Pfad und die Dauer jedes Schritts
+      siehst. Tools wie <strong>Langfuse</strong>, <strong>LangSmith</strong> und
+      <strong>OpenTelemetry</strong> (mit LLM-Semantik-Konventionen) liefern das für
+      die meisten Frameworks out of the box.
+    </p>
+
+    <h3>Kosten und Latenz pro Anfrage erfassen</h3>
+    <p>
+      Jeder Modell-Aufruf kostet Geld und Zeit, und beides skaliert mit der
+      Token-Zahl. Berechne und protokolliere Kosten pro Anfrage (Eingabe- +
+      Ausgabe-Tokens × Preis pro Modell) und Latenz pro Span. So erkennst du
+      ausufernde Kosten durch einen einzigen Prompt, kannst Modelle vergleichen und
+      Budgets setzen, bevor ein Bug dein Konto leert.
+    </p>
+
+    <h3>Prompt-Versionierung</h3>
+    <p>
+      Behandle Prompts als versionierte Artefakte, nicht als Zauber-Strings. Jede
+      Änderung an einem Prompt ist eine neue Version, die du gegen Produktionsdaten
+      vergleichen kannst. Sinkt die Qualität nach einem „kleinen Tweaks", kannst du
+      auf die letzte gute Version zurückrollen und sehen, welche Änderung die
+      Regression verursacht hat.
+    </p>
+
+    <h3>Evaluation in Produktion (Guardrails)</h3>
+    <p>
+      Testen passiert vor dem Release; Observability danach. Führe leichte
+      Evaluationen auf Live-Traffic aus — LLM-as-Judge-Bewertungen,
+      Sicherheitschecks, Schema-Validierung, Refusal-/Halluzinations-Heuristiken —
+      als <strong>Guardrails</strong>. Sinkt ein Score unter einen Schwellwert,
+      alarmiere und/oder leite die Anfrage um. Das schließt die Schleife zwischen
+      Offline-Evals und echtem Verhalten.
+    </p>
+
+    <h2>Warum es mir (als Code-Nutzer) weiterhilft</h2>
+    <p>
+      Du kannst nicht verbessern, was du nicht misst. Observability ist das, was aus
+      einer Demo ein Produktionssystem macht: Sie sagt dir, welcher Prompt Geld
+      kostet, welcher Tool-Aufruf langsam ist, welche Nutzeranfrage eine schlechte
+      Antwort produzierte und welche Prompt-Änderung die Qualität brach. Ohne sie ist
+      jeder Produktionsbug ein Ratespiel und jeder Kostenschub eine Überraschungsrechnung.
+      Mit ihr debugst du in Minuten statt Tagen und kannst Prompts und Modelle mit
+      echten Belegen iterieren.
+    </p>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="08-devops-cloud.html">08 · DevOps &amp; Cloud</a> → die Tools, die hosten und überwachen</li>
+      <li><a href="44-testing-evaluation.html">44 · Testing &amp; Evaluation</a> → Evals vor dem Release</li>
+      <li><a href="40-deployment.html">40 · Deployment</a> → das System ausliefern, das du dann beobachtest</li>
+      <li><a href="37-kosten-latenz.html">37 · Kosten &amp; Latenz</a> → die Zahlen, die Observability erfasst</li>
+      <li><a href="21-agents-tool-use.html">21 · Agents &amp; Tool-Nutzung</a> → die Ketten, die du tracest</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Wie sampelt man Traces, ohne die seltenen Fehler zu verlieren?<br/>
+      • Wie schützt man die Privatsphäre beim Loggen echter Prompts?<br/>
+      • Wie entscheidet man, welche Evals live laufen, ohne die Anfrage zu verlangsamen?<br/>
+      • Was ist der richtige Alarm-Schwellwert für einen Score, der natürlich schwankt?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

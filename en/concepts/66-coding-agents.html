@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>66 · Coding Agents — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 66 · Stage C · Agents deep dive</p>
+    <h1>66 · Coding Agents</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      Imagine a helper who can read your code, run it, and fix it — but instead of
+      guessing, they <em>check their own work</em>. They make a change, run the tests,
+      see one fails, read why, fix it, and run again — until all tests pass. That's a
+      coding agent: an AI that writes, tests, and repairs code in a loop, using the
+      test results as the truth about whether it got it right.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>A coding agent is an agent loop (23) specialized for software: instead of generic
+       tools it gets <em>code tools</em> — read a file, grep the codebase, run the tests,
+       edit a file — and instead of answering a question it produces a working change.
+       The loop is: <strong>plan → act (read/grep/edit/run) → observe (test output) →
+       adjust → repeat</strong> until the task is done. The key difference from a plain
+       chat answer is that the agent can <em>verify its own output</em> by running it.</p>
+
+    <h2>What happens technically</h2>
+    <p>A coding agent (Claude Code, Codex, Cursor's agent mode) is a model wrapped in a
+       harness that exposes code-specific tools (21) and keeps a working directory. Each
+       loop iteration looks like this:</p>
+    <pre><code>1. Plan: "add a --json flag to the CLI"
+2. Act:   read_file("cli.py")   → understand current structure
+3. Act:   grep("--json")        → check nothing already exists
+4. Act:   edit("cli.py", ...)   → write the change
+5. Act:   run("pytest")         → observe the test output
+6. Observe: one test fails      → read the failure, fix, run again
+7. Repeat until all tests pass  → done</code></pre>
+    <p>Three ideas make this work:</p>
+    <ul>
+      <li><strong>The test harness is the ground truth (44)</strong>: the agent doesn't
+          trust its own judgment about "looks right" — it runs the tests and reads the
+          verdict. The tests decide whether the work is done.</li>
+      <li><strong>Self-healing</strong>: run → see failure → read the error → fix → run
+          again. The failure message is feedback, not a dead end. Most coding agents spend
+          most of their steps in this fix loop, not in the initial write.</li>
+      <li><strong>REPL-driven development</strong>: the agent runs a snippet, reads the
+          output, and iterates — a conversational version of the classic read–eval–print
+          loop. Quick experiments against the live code replace long stretches of
+          reasoning.</li>
+    </ul>
+    <p>Under the hood each tool call is a function call (27) the model selects; the
+       harness runs it, captures stdout/exit codes, and feeds the result back as the next
+       observation. The model never executes code itself — the harness does, and the model
+       only reads the transcript (21).</p>
+
+    <h2>Why this helps me (as a code user)</h2>
+    <ul>
+      <li><strong>This is a major real-world use case</strong>: coding agents are the most
+          widely deployed form of agents today. Understanding the loop means you understand
+          what the hype is actually doing under the hood.</li>
+      <li><strong>You use the loop, not magic</strong>: to get good results you give the
+          agent a clear task, a test to satisfy, and let it iterate. You're not "talking to
+          a coder" — you're steering a loop.</li>
+      <li><strong>You know what to check</strong>: because the test harness is the ground
+          truth, the quality of your tests determines the quality of the agent's work.
+          Weak tests → confident wrong code. This raises the value of writing good tests.</li>
+      <li><strong>You can debug it</strong>: when a coding agent fails, the failure lives
+          in the loop — a wrong tool call, a test that doesn't exist, an edit that didn't
+          land. Knowing the pattern (23, 21) lets you find the weak link instead of staring
+          at the output.</li>
+      <li><strong>Architecture awareness</strong>: whether it replans, how much context it
+          keeps, and which tools it trusts are the same design choices as any agent (60) —
+          now you can judge tools by them.</li>
+    </ul>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="21-agents-tool-use.html">21 · Agents / Tool-Use</a> — the tool loop a coding agent runs.</li>
+      <li><a href="23-agent-loop-harness.html">23 · Agent Loop &amp; Harness</a> — the infrastructure under every coding agent.</li>
+      <li><a href="27-function-calling-deep-dive.html">27 · Function Calling Deep Dive</a> — how each tool call is made.</li>
+      <li><a href="60-agent-architectures.html">60 · Agent Architectures</a> — ReAct vs. Plan-and-Execute behind the tools.</li>
+      <li><a href="44-testing-evaluation.html">44 · Testing &amp; Evaluation</a> — the test harness as the agent's ground truth.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • How does an agent decide when to stop fixing and ask for help instead of looping forever?<br/>
+      • How well do coding agents verify changes that tests can't cover (refactors, style, architecture)?<br/>
+      • What happens when the tests themselves are wrong or incomplete — who checks the checker?<br/>
+      • How much does prompt-injection risk (malicious files or test output) affect a coding agent's loop?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <!-- Mermaid for flow/architecture diagrams (CDN, no build step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

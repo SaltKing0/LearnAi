@@ -73,6 +73,27 @@ Struktur = gespiegelt in `assets/nav.js` (dort Stufen als `stages`). Immer synch
 - [x] 50 · Attention-Vis
 - [x] 51 · Train LoRA
 
+## Stage H: Modern Architecture & Data
+- [x] 52 · MCP (Model Context Protocol)
+- [x] 53 · Diffusion & Image Generation
+- [x] 54 · RAG vs. Fine-Tuning vs. Prompting
+- [x] 55 · Data Quality & Datasets
+- [x] 56 · Sampling & Decoding
+- [x] 57 · KV-Cache & Inference Optimization
+- [x] 58 · Attention Details
+- [x] 59 · Retrieval Fine-Tuning
+- [x] 60 · Agent Architectures
+
+## Stage I: Applied & Advanced
+- [x] 61 · LLM Observability
+- [x] 62 · Streaming & Transport
+- [x] 63 · Vector Databases
+- [x] 64 · Alternative Architectures
+- [x] 65 · RLHF & RL Deep Dive
+- [x] 66 · Coding Agents
+- [x] 67 · Responsible AI & Governance
+- [x] 68 · Distillation & Pruning
+
 ## Playground
 - [x] Tokenizer Demo
 - [x] Attention Demo
@@ -83,3 +104,12 @@ Struktur = gespiegelt in `assets/nav.js` (dort Stufen als `stages`). Immer synch
 - [x] Context Window
 - [x] Memory Tiers
 - [x] Routing & Cascade
+- [x] Sorting & Big-O
+- [x] Architecture Styles
+- [x] HTTP & TCP/IP
+- [x] Paradigms
+- [x] Git Branching
+- [x] Chat UI
+- [x] REST vs GraphQL
+- [x] CI/CD Pipeline
+- [x] Prompt Injection

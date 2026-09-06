@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>62 · Streaming &amp; Transport — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 62 · Stufe D</p>
+    <h1>62 · Streaming &amp; Transport</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Wenn du einem Chat-Bot eine Frage stellst, wartet er nicht, bis er die ganze
+      Antwort geschrieben hat. Er tippt sie dir live vor, Wort für Wort, wie ein
+      Freund, der dir eine Nachricht schreibt und du schon den Anfang lesen kannst,
+      während er noch den Rest tippt. Streaming ist, wie der Computer dir diese
+      Wörter einzeln über das Internet reicht, statt dich auf den ganzen Brief
+      warten zu lassen.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>
+      Ein Modell erzeugt eine Antwort nicht am Stück — es erzeugt ein Token nach
+      dem anderen (Konzept 12). Streaming heißt einfach, <em>das nicht zu
+      verstecken</em>: Statt dass der Server die komplette Antwort sammelt und am
+      Ende einmal schickt, schiebt er jedes Token in dem Moment zu deiner App, in
+      dem es erzeugt wird. Der Transport (SSE oder WebSockets, Konzept 03) ist die
+      Leitung, die diese Token von der Schleife des Modells zu deiner UI bringt,
+      während sie entstehen.
+    </p>
+    <p>
+      Die zwei Dinge, die man wirklich spürt: <strong>First-Token-Latenz</strong>
+      (wie lange bis zum ersten Zeichen) und <strong>gefasste Geschwindigkeit</strong>
+      (Text beim Tippen zu sehen fühlt sich viel schneller an als ein Spinner, auch
+      wenn die Gesamtzeit gleich ist). Streaming verwandelt „Warten“ in „Lesen“.
+    </p>
+
+    <h2>Was passiert technisch</h2>
+    <p>
+      Ein Nicht-Streaming-Request ist Request → Warten → eine große Antwort. Ein
+      Streaming-Request öffnet eine dauerhafte Verbindung, und der Server schreibt
+      <code>data: {...}</code>-Chunks hinein, sobald jedes Token dekodiert ist. Der
+      Client sammelt die Chunks zum sichtbaren Text und rendert neu (Konzept 06).
+    </p>
+
+    <div class="mermaid">
+flowchart LR
+    U[Deine App / UI] -->|1. POST-Request<br/>stream: true| A[LLM-API]
+    A -->|2. SSE / WebSocket öffnen| C[Verbindung offen]
+    A -->|3. Token 1<br/>data: {...}| U
+    A -->|4. Token 2<br/>data: {...}| U
+    A -->|5. Token N ...| U
+    A -->|6. [DONE]| U
+    U -->|abort / cancel<br/>Verbindung schließen| A
+    </div>
+
+    <p>
+      Der Stream ist buchstäblich der autoregressive Loop von Konzept 12, inkrementell
+      ausgeliefert: Jedes <code>data:</code>-Event trägt das nächste Token, und der
+      Client hängt es einfach an. Zwei Transporte dominieren:
+    </p>
+    <ul>
+      <li><strong>SSE (Server-Sent Events)</strong> — ein einseitiger HTTP-Stream vom
+        Server zum Client. Einfach, läuft über normales HTTP, verbindet sich
+        automatisch neu, ideal für Text-Streaming. Das nutzen die meisten LLM-APIs.</li>
+      <li><strong>WebSockets</strong> — eine vollduplexe Verbindung (beide
+        Richtungen). Nötig, wenn der Client mitten im Stream auch Daten senden muss
+        (z. B. Sprache, Live-Edits) oder wenn du eine Verbindung für viele Nachrichten
+        wiederverwenden willst.</li>
+    </ul>
+    <p>
+      <strong>Teilantworten und Tool-Call-Akkumulation</strong>: Bei Tool-Calls
+      (Konzept 27) enthalten die gestreamten Chunks oft ein wachsendes JSON-Objekt
+      (zuerst der Tool-Name, dann die Argumente Stück für Stück). Auf einen
+      halbgeschriebenen JSON-String kannst du nicht reagieren, also puffert der Client
+      die Chunks und parst/führt erst aus, wenn der Stream das Ende signalisiert.
+      Gleiches Prinzip wie beim sichtbaren Text — nur für strukturierte Daten.
+    </p>
+    <p>
+      <strong>Abort / Cancel</strong>: Weil die Verbindung offen bleibt, kann der
+      Client sie schließen (ein <code>AbortController</code> im Browser, das Socket
+      auf dem Server). Das Modell hört auf zu generieren, du zahlst keine Tokens
+      mehr, und die UI hört auf anzuhängen. Ohne Abort würde ein Nutzer, der auf
+      „Stopp“ drückt, weiterhin Tokens bezahlen, die das Modell ins Leere produziert.
+    </p>
+
+    <h2>Warum es mir (als Code-Nutzer) weiterhilft</h2>
+    <ul>
+      <li><strong>Streaming ist der Unterschied zwischen einem Spinner und einem
+        live tippenden Chat.</strong> Derselbe API-Aufruf mit <code>stream: true</code>
+        fühlt sich sofort reaktionsschnell an; ohne ihn starren Nutzer auf einen
+        Ladebalken.</li>
+      <li><strong>First-Token-Latenz ist die Kennzahl, an der Nutzer dich messen.</strong>
+        Streaming zeigt Fortschritt, auch wenn die ganze Antwort dauert.</li>
+      <li><strong>Du steuerst die Leitung.</strong> Die Wahl zwischen SSE und
+        WebSockets hängt davon ab, ob du Zwei-Wege-Verkehr brauchst; die richtige
+        Wahl vermeidet Over-Engineering.</li>
+      <li><strong>Abort-Handling ist Kostenkontrolle.</strong> Einen Stream abzubrechen
+        stoppt den Token-Verbrauch — wichtig für jede Chat-UI.</li>
+      <li><strong>Tool-Call-Akkumulation ist, wo Agents knifflig werden:</strong> Du
+        musst Teil-JSON puffern und erst ausführen, wenn es vollständig ist.</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="12-sprachmodell-als-funktion.html">12 · Sprachmodell als Funktion</a> — der Stream ist der autoregressive Loop, inkrementell ausgeliefert.</li>
+      <li><a href="30-llm-apis-praktisch.html">30 · LLM-APIs praktisch</a> — <code>stream=True</code> im echten API-Aufruf.</li>
+      <li><a href="27-function-calling-deep-dive.html">27 · Function Calling Deep-Dive</a> — Teil-Tool-Call-JSON aus dem Stream akkumulieren.</li>
+      <li><a href="03-betriebssysteme-netzwerke.html">03 · Betriebssysteme &amp; Netzwerke</a> — SSE vs. WebSockets als Transportprotokolle.</li>
+      <li><a href="06-frontend-entwicklung.html">06 · Frontend-Entwicklung</a> — den akkumulierten Text in der UI neu rendern.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Wann genau wählt eine API SSE vs. WebSockets — und was sind die echten Trade-offs?<br/>
+      • Wie signalisieren Anbieter das Stream-Ende zuverlässig (Event-Typen, Begrenzer)?<br/>
+      • Wie interagiert Streaming mit Caching / Rate-Limits über Anbieter hinweg?<br/>
+      • Wie gehe ich mit Reconnects und Ausfällen mitten im Stream um, ohne Tokens zu verlieren?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <!-- Mermaid für Fluss-/Architekturdiagramme (CDN, kein Build-Step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

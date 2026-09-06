@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>68 · Distillation &amp; Pruning — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Concept 68 · Stage F · Deployment</p>
+    <h1>68 · Distillation &amp; Pruning</h1>
+
+    <div class="callout kid">
+      <span class="label">Explain it to a 12-year-old</span>
+      A huge encyclopedia is great, but too heavy to carry around. Distillation is like a clever author reading that encyclopedia and writing a small pocket book that captures the most important ideas in their own words. Pruning is like trimming a big tree: you cut off the branches that do almost nothing, and the tree still stands — just lighter and easier to move.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>Frontier models are enormous — hundreds of billions of parameters — and that makes them slow and expensive. But you rarely need the whole brain. <strong>Knowledge distillation</strong> trains a small "student" model to copy the behavior of a large "teacher" model, so the student ends up with much of the teacher's ability in a fraction of the size. <strong>Pruning</strong> takes an existing model and removes weights or neurons that contribute little, leaving a leaner network behind.</p>
+
+    <h2>What happens technically</h2>
+    <p><strong>Knowledge distillation</strong>: instead of only learning from labeled data, the student also trains to match the teacher's outputs — often the raw probability distributions (logits) before the final softmax. Those soft, informative targets ("this word is probably the answer, but that other one is close too") carry far more signal than a single hard label, so a small model can learn surprisingly well. The student is typically a smaller or shallower architecture trained on the teacher's predictions.</p>
+    <p><strong>Pruning</strong>: many weights in a trained network are near zero or barely influence the output. Pruning identifies these (by magnitude, by gradient, or by how much removing them changes the loss) and removes them — either setting them to zero (sparse) or removing entire neurons/channels (structured). After pruning, the model is usually fine-tuned a little to recover lost accuracy.</p>
+    <p>Both differ from <a href="42-quantization-compression.html">quantization</a>: quantization changes the <em>precision</em> of numbers (fewer bits), while distillation builds a smaller <em>architecture</em> and pruning removes <em>parts</em> of the architecture. The trade-off is the same: smaller and faster, but some quality loss.</p>
+
+    <div class="mermaid">
+flowchart LR
+  T[Large Teacher Model] -->|soft targets / logits| S[Small Student Model]
+  D[Training Data] --> T
+  D --> S
+  S --> O[Small, Fast, Deployable Model]
+    </div>
+
+    <h2>Why this helps me (as a code user)</h2>
+    <p>Distilled and pruned models are how frontier-quality behavior gets onto edge devices, laptops, and budget deployments. As a code user you rarely write the distillation yourself — instead you pick a distilled or pruned variant from a model hub (for example a "distill" or "small" checkpoint) and serve it. It gives you lower latency, lower cost, and a smaller memory footprint for a small quality hit, which is often the right engineering trade-off.</p>
+
+    <h2>Related</h2>
+    <ul>
+      <li><a href="42-quantization-compression.html">42 · Quantization &amp; Compression</a> → the other way to shrink models</li>
+      <li><a href="15-transformer-overview.html">15 · Transformer Overview</a> → the architecture being compressed</li>
+      <li><a href="22-fine-tuning.html">22 · Fine-Tuning (LoRA / PEFT)</a> → training that can follow distillation/pruning</li>
+      <li><a href="43-serving-deployment.html">43 · Serving &amp; Production Deployment</a> → where small models shine</li>
+      <li><a href="57-kv-cache-inference-optimization.html">57 · KV-Cache &amp; Inference Optimization</a> → more ways to cut inference cost</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Open Questions / Gaps</span>
+      • How much quality loss is acceptable in practice for a given task?<br/>
+      • When is distillation better than just training a small model from scratch?<br/>
+      • How do distillation, pruning, and quantization stack together?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

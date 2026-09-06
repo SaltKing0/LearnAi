@@ -73,3 +73,44 @@ Struktur = gespiegelt in `assets/nav.js` (dort Stufen als `stages`). Immer synch
 - [x] 49 · Mini-RAG über eigene Textdateien
 - [x] 50 · Eigene Attention-Visualisierung
 - [x] 51 · LoRA-Adapter auf einem kleinen Datensatz trainieren
+
+## Stufe H — Moderne Architektur & Daten
+- [x] 52 · MCP (Model Context Protocol)
+- [x] 53 · Diffusion & Bildgenerierung
+- [x] 54 · RAG vs. Fine-Tuning vs. Prompting
+- [x] 55 · Datenqualität & Datensätze
+- [x] 56 · Sampling & Decoding
+- [x] 57 · KV-Cache & Inference-Optimierung
+- [x] 58 · Attention-Details
+- [x] 59 · Retrieval-Feintuning
+- [x] 60 · Agent-Architekturen
+
+## Stufe I — Angewandt & Fortgeschritten
+- [x] 61 · LLM-Observability
+- [x] 62 · Streaming & Transport
+- [x] 63 · Vektordatenbanken
+- [x] 64 · Alternative Architekturen
+- [x] 65 · RLHF & RL Deep Dive
+- [x] 66 · Coding Agents
+- [x] 67 · Verantwortungsvolle KI & Governance
+- [x] 68 · Destillation & Pruning
+
+## Playground
+- [x] Tokenizer
+- [x] Attention
+- [x] Embeddings
+- [x] Kostenrechner
+- [x] RAG-Demo
+- [x] Agent-Loop
+- [x] Context-Window
+- [x] Memory-Tiers
+- [x] Routing & Cascade
+- [x] Sortieren & Big-O
+- [x] Architektur-Stile
+- [x] HTTP & TCP/IP
+- [x] Paradigmen
+- [x] Git-Branching
+- [x] Chat-UI
+- [x] REST vs. GraphQL
+- [x] CI/CD-Pipeline
+- [x] Prompt Injection

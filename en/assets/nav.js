@@ -135,6 +135,20 @@ const SITE = {
         { file: "concepts/60-agent-architectures.html", title: "60 · Agent Architectures", desc: "ReAct vs. plan-and-execute, framework comparison, agent eval." },
       ],
     },
+    {
+      id: "I",
+      label: "Stage I · Applied & Advanced",
+      items: [
+        { file: "concepts/61-llm-observability.html", title: "61 · LLM Observability", desc: "Trace, log and evaluate LLM apps in production — turn a demo into a system." },
+        { file: "concepts/62-streaming-transport.html", title: "62 · Streaming & Transport", desc: "How tokens reach your UI: SSE vs WebSockets, partial responses, abort." },
+        { file: "concepts/63-vector-databases.html", title: "63 · Vector Databases", desc: "The index layer behind RAG: ANN, HNSW, and the pgvector/Qdrant/Milvus options." },
+        { file: "concepts/64-alternative-architectures.html", title: "64 · Alternative Architectures", desc: "Beyond the transformer: SSM/Mamba and RWKV with linear scaling." },
+        { file: "concepts/65-rlhf-deep-dive.html", title: "65 · RLHF & RL Deep Dive", desc: "Reward models, PPO, and DPO — how alignment training actually works." },
+        { file: "concepts/66-coding-agents.html", title: "66 · Coding Agents", desc: "Agents that write, test and fix code — the loop and the tools." },
+        { file: "concepts/67-responsible-ai.html", title: "67 · Responsible AI & Governance", desc: "Bias, transparency, red teaming, and the regulatory landscape." },
+        { file: "concepts/68-distillation-pruning.html", title: "68 · Distillation & Pruning", desc: "Smaller models: teacher→student distillation and weight pruning." },
+      ],
+    },
   ],
 
   playground: [
@@ -147,6 +161,15 @@ const SITE = {
     { file: "playground/context-window.html", title: "Context Window", desc: "How context grows, gets cached, and compaction kicks in (O(n²))." },
     { file: "playground/memory-tiers.html", title: "Memory Tiers", desc: "Core/Recall/Archival — what lands in the prompt, what moves external." },
     { file: "playground/routing-cascade.html", title: "Routing & Cascade", desc: "Start cheap, escalate when needed — save cost interactively." },
+    { file: "playground/sorting-vis.html", title: "Sorting & Big-O", desc: "Watch bubble/merge/quick sort an array and count comparisons — proof of Big-O." },
+    { file: "playground/architecture-compare.html", title: "Architecture Styles", desc: "Monolith vs microservices vs serverless vs event-driven — the same app, four wirings." },
+    { file: "playground/http-stack.html", title: "HTTP & TCP/IP", desc: "Watch a request get wrapped layer by layer, then unwrapped on the way back." },
+    { file: "playground/paradigm-compare.html", title: "Paradigms", desc: "The same problem in imperative, OOP and functional style." },
+    { file: "playground/git-branching.html", title: "Git Branching", desc: "Gitflow vs trunk-based as an animated commit graph." },
+    { file: "playground/chat-ui-compare.html", title: "Chat UI", desc: "The same chat UI rendered React-style vs Svelte-style." },
+    { file: "playground/rest-vs-graphql.html", title: "REST vs GraphQL", desc: "Round-trips and over-fetching, side by side." },
+    { file: "playground/cicd-pipeline.html", title: "CI/CD Pipeline", desc: "Commit → build → test → deploy → monitor, with a feedback loop." },
+    { file: "playground/prompt-injection.html", title: "Prompt Injection", desc: "See how crafted input can hijack a model's behavior." },
   ],
 };
 

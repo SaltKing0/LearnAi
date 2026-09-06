@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Playground · REST vs GraphQL — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Playground · interactive</p>
+    <h1>REST vs GraphQL</h1>
+    <p>Ask the same question — <em>who is user 1 and what did they post?</em> — the
+       REST way and the GraphQL way. REST makes <strong>multiple round-trips</strong> to
+       different endpoints and hands back <strong>extra fields you never asked for</strong>
+       (over-fetching). GraphQL sends <strong>one query</strong> to one endpoint and gets
+       back <strong>exactly</strong> the fields it requested. Watch the arrows fly.</p>
+
+    <div id="p5canvas"></div>
+
+    <div style="margin-top:12px">
+      <button id="btnRest">REST</button>
+      <button id="btnGraphql">GraphQL</button>
+      <button id="btnReplay">↺ Replay</button>
+      <span id="status" style="margin-left:12px"></span>
+    </div>
+
+    <div class="callout kid">
+      <span class="label">What to watch for</span>
+      REST: many endpoints (<code>/users/1</code>, <code>/users/1/posts</code>) and each
+      response drags along extra data you don't need. GraphQL: one query, exact fields —
+      but the setup (schema, resolvers, a server that speaks GraphQL) is more complex.
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <script>
+  let mode = "rest", stepIdx = 0, t = 0, running = true, finished = false;
+  const SPEED = 0.018;
+
+  // The same data, fetched two ways.
+  const REST_USER = { id: 1, name: "Ada Lovelace", username: "ada", email: "ada@example.com",
+    phone: "+1-555-0100", website: "ada.dev",
+    address: { city: "London", zipcode: "WC2N 5DU" },
+    company: { name: "Analytical Engines", catchPhrase: "Think in tables" } };
+  const REST_POSTS = [ { id: 101, userId: 1, title: "Hello world", body: "First post." },
+    { id: 102, userId: 1, title: "GraphQL vs REST", body: "Round trips & over-fetching." } ];
+  const GQL_RESP = { data: { user: { id: 1, name: "Ada Lovelace",
+    posts: [ { id: 101, title: "Hello world" }, { id: 102, title: "GraphQL vs REST" } ] } } };
+
+  const MODES = {
+    rest: {
+      label: "REST",
+      endpoints: [ { label: "GET /users/1", y: 70 }, { label: "GET /users/1/posts", y: 175 } ],
+      steps: [
+        { ep: 0, req: "GET /users/1", resp: REST_USER, note: "over-fetched" },
+        { ep: 1, req: "GET /users/1/posts", resp: REST_POSTS, note: "2nd round-trip" }
+      ]
+    },
+    graphql: {
+      label: "GraphQL",
+      endpoints: [ { label: "POST /graphql", y: 120 } ],
+      steps: [
+        { ep: 0, req: "query { user(id:1){ id name posts{ id title } } }",
+          resp: GQL_RESP, note: "one query" }
+      ]
+    }
+  };
+
+  function resetMode() {
+    stepIdx = 0; t = 0; running = true; finished = false;
+  }
+  function startMode(m) {
+    mode = m; resetMode(); updateStatus();
+  }
+
+  function drawArrow(x1, y1, x2, y2, col) {
+    stroke(col); strokeWeight(3);
+    line(x1, y1, x2, y2);
+    const a = Math.atan2(y2 - y1, x2 - x1);
+    noStroke(); fill(col);
+    triangle(x2, y2,
+      x2 - 12 * Math.cos(a - 0.45), y2 - 12 * Math.sin(a - 0.45),
+      x2 - 12 * Math.cos(a + 0.45), y2 - 12 * Math.sin(a + 0.45));
+  }
+
+  function drawJSON(x, y, w, h, title, obj) {
+    fill(246, 246, 249); stroke(214, 214, 224); strokeWeight(1);
+    rect(x, y, w, h, 6);
+    noStroke(); fill(100); textAlign(LEFT, TOP); textSize(13);
+    text(title, x + 12, y + 10);
+    const s = JSON.stringify(obj, null, 2);
+    fill(30); textSize(12);
+    let ty = y + 32;
+    for (const ln of s.split("\n")) { text(ln, x + 14, ty); ty += 15; }
+  }
+
+  function updateStatus() {
+    const m = MODES[mode];
+    let msg;
+    if (mode === "rest") {
+      const bytes = JSON.stringify(REST_USER).length + JSON.stringify(REST_POSTS).length;
+      msg = `REST · 2 round-trips · ${bytes} bytes of JSON (extra fields you didn't ask for)`;
+    } else {
+      const bytes = JSON.stringify(GQL_RESP).length;
+      msg = `GraphQL · 1 round-trip · ${bytes} bytes — exactly the fields you asked for`;
+    }
+    document.getElementById("status").textContent = msg;
+  }
+
+  function setup() {
+    const c = createCanvas(720, 540); c.parent("p5canvas");
+    textFont("system-ui, sans-serif"); textAlign(CENTER, CENTER);
+    document.getElementById("btnRest").addEventListener("click", () => startMode("rest"));
+    document.getElementById("btnGraphql").addEventListener("click", () => startMode("graphql"));
+    document.getElementById("btnReplay").addEventListener("click", () => { resetMode(); });
+    frameRate(60);
+    updateStatus();
+  }
+
+  function draw() {
+    background(250, 250, 252);
+    const m = MODES[mode];
+
+    // --- advance animation ---
+    if (running && !finished) {
+      t += SPEED;
+      if (t >= 1) {
+        stepIdx++; t = 0;
+        if (stepIdx >= m.steps.length) { finished = true; running = false; }
+      }
+    }
+    const shown = min(stepIdx, m.steps.length - 1);
+    const step = m.steps[shown];
+    const ep = m.endpoints[step.ep];
+
+    // --- client box ---
+    fill(59, 130, 246); noStroke();
+    rect(20, 55, 130, 90, 8);
+    fill(255); textSize(15); textAlign(CENTER, CENTER);
+    text("Client", 85, 90);
+    textSize(11); fill(235, 242, 255);
+    text("wants: id, name,\nposts (titles)", 85, 116);
+
+    // --- endpoint boxes ---
+    for (const e of m.endpoints) {
+      fill(255); stroke(59, 130, 246); strokeWeight(1.5);
+      rect(560, e.y - 24, 140, 48, 8);
+      noStroke(); fill(30); textSize(12);
+      text(e.label, 630, e.y);
+    }
+
+    // --- arrows for the active step ---
+    if (stepIdx < m.steps.length) {
+      const x1 = 150, x2 = 560, y = ep.y;
+      if (t < 0.5) {
+        const p = t / 0.5;
+        drawArrow(x1, y, lerp(x1, x2, p), y, color(59, 130, 246));
+        // request label
+        fill(59, 130, 246); textSize(12); textAlign(CENTER, BOTTOM);
+        text(step.req, (x1 + x2) / 2, y - 8);
+      } else {
+        const p = (t - 0.5) / 0.5;
+        drawArrow(x2, y, lerp(x2, x1, p), y, color(16, 185, 129));
+        fill(16, 185, 129); textSize(12); textAlign(CENTER, TOP);
+        text("200 OK", (x1 + x2) / 2, y + 8);
+      }
+    }
+
+    // --- response JSON panel ---
+    drawJSON(20, 300, 680, 225, "Response · " + step.req, step.resp);
+
+    // --- footer note inside canvas ---
+    fill(120); textSize(12); textAlign(LEFT, TOP);
+    text("Round-trips: " + m.steps.length + "   ·   payload shown at bottom", 20, 285);
+  }
+  window.setup = setup; window.draw = draw;
+  </script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

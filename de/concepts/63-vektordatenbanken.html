@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>63 · Vektordatenbanken — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 63 · Stufe C · RAG-Grundlage</p>
+    <h1>63 · Vektordatenbanken</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Stell dir eine riesige Bibliothek vor, in der jedes Buch danach einsortiert ist, wie nah seine Bedeutung an anderen Büchern liegt. „Hund" steht direkt neben „Welpe" und „Haustier", aber weit weg von „Rakete". Eine Vektordatenbank ist diese Bibliothek: Sie speichert jede Idee als Liste von Zahlen (ihr Embedding) und findet, wenn du eine Frage stellst, schnell die Regale mit den Ideen, die deiner am ähnlichsten sind — ohne jedes Buch zu lesen.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>
+      Embeddings verwandeln Text (oder Bilder, Audio) in Listen von Zahlen, bei denen <em>ähnliche Bedeutung</em> <em>nahe Zahlen</em> bedeutet. Aber eine normale Datenbank kann „nahe Zahlen" nicht gut durchsuchen — sie ist für exakte Treffer wie <code>WHERE name = 'Hund'</code> gebaut. Eine Vektordatenbank ist die Speicher- und Indexschicht, die <em>Nearest-Neighbor</em>-Suche schnell macht: Gegeben einen Query-Vektor, finde die K gespeicherten Vektoren, die ihm am nächsten liegen, und gib den Text zurück, aus dem sie stammen.
+    </p>
+    <p>
+      Das ist die Engine hinter RAG und semantischer Suche. Das Embedding-Modell verwandelt deine Dokumente einmal in Vektoren; die Vektordatenbank speichert sie; zur Abfragezeit verwandelt sie deine Frage in einen Vektor und liefert die ähnlichsten Chunks, die dann dem LLM zugeführt werden.
+    </p>
+
+    <h2>Was passiert technisch</h2>
+    <p>
+      Eine Vektordatenbank speichert pro Eintrag zwei Dinge: den <strong>Vektor</strong> (das Embedding) und <strong>Metadaten</strong> (Quelltext, Titel, Zeitstempel, Tags — alles, nach dem du filtern willst). Darüber liegt ein <strong>Index</strong>, der „nächste Nachbarn finden" schnell macht.
+    </p>
+    <p>
+      Der naive Weg ist ein Brute-Force-Scan: den Query mit jedem Vektor vergleichen (exakt, aber O(N) und bei großer Menge langsam). Echte Systeme nutzen <strong>Approximate Nearest Neighbor (ANN)</strong>-Suche, die ein bisschen Genauigkeit (Recall) gegen große Geschwindigkeitsgewinne eintauscht. Häufige ANN-Ansätze:
+    </p>
+    <ul>
+      <li><strong>HNSW (Hierarchical Navigable Small World)</strong> — baut einen mehrschichtigen Graphen, in dem jeder Knoten ein Vektor ist und Kanten nahe Vektoren verbinden. Die Suche startet oben (wenige, grobe Knoten) und wandert in feinere Schichten hinab, indem sie gierig zu Nachbarn springt, die näher am Query liegen. Schnell und hoher Recall, aber der Graph lebt im Arbeitsspeicher.</li>
+      <li><strong>IVF (Inverted File Index)</strong> — gruppiert alle Vektoren in Cluster (z. B. per k-means). Ein Query wird zuerst den wenigen nächsten Clustern zugeordnet und dann nur innerhalb dieser durchsucht. Günstig, festplattenfreundlich, gut für sehr große Sammlungen.</li>
+      <li><strong>Product Quantization (PQ)</strong> — komprimiert jeden Vektor zu einem kurzen Code, sodass viel mehr Vektoren in den RAM passen, auf Kosten des Recall. Oft mit IVF oder HNSW kombiniert (z. B. „IVF-PQ", „HNSW-PQ").</li>
+    </ul>
+    <p>
+      Diese Verfahren liegen auf einem Spektrum: <strong>Recall vs. Geschwindigkeit vs. Speicher</strong>. Mehr Recall braucht mehr Speicher oder mehr Rechenleistung; mehr Geschwindigkeit opfert ein bisschen Recall. Jeder Index hat Parameter (z. B. HNSWs <code>M</code> und <code>ef_search</code>, IVFs <code>nlist</code> und <code>nprobe</code>), um diesen Kompromiss für deine Datengröße und dein Latenzbudget zu tunen.
+    </p>
+
+    <h2>Eine Vektordatenbank wählen</h2>
+    <p>Echte Optionen unterscheiden sich vor allem darin, wo sie laufen und wie viel du selbst verwaltest:</p>
+    <table>
+      <tr><th>Option</th><th>Typ</th><th>Stärken</th><th>Kompromisse</th></tr>
+      <tr><td>pgvector</td><td>Postgres-Erweiterung</td><td>Läuft in einer DB, die du evtl. schon betreibst; SQL + Vektor an einem Ort</td><td>Weniger ANN-Indexoptionen; braucht Tuning im großen Maßstab</td></tr>
+      <tr><td>Qdrant</td><td>Eigenständig (Rust)</td><td>Schnell, reiches Filtern, gute HNSW-Standardwerte</td><td>Ein weiterer Dienst zum Betreiben</td></tr>
+      <tr><td>Milvus</td><td>Eigenständig (verteilt)</td><td>Skaliert auf Milliarden Vektoren, viele Indextypen</td><td>Schwerer zu betreiben</td></tr>
+      <tr><td>Chroma</td><td>Eingebettet / lokal</td><td>Kein Setup, Python-nativ, ideal zum Prototypen</td><td>Nicht für sehr große Mengen gebaut</td></tr>
+      <tr><td>Pinecone</td><td>Managed Cloud</td><td>Kein Betrieb, skaliert automatisch</td><td>Vendor-Lock-in, Kosten</td></tr>
+    </table>
+    <p>
+      Die „richtige" Wahl hängt von deiner Skala und Infrastruktur ab: Für eine kleine RAG-App, die schon Postgres nutzt, ist pgvector oft am wenigsten neue Technik; für einen Prototyp Chroma; für ein großes Produktionssystem eine eigene Engine wie Qdrant oder Milvus (oder eine verwaltete wie Pinecone).
+    </p>
+
+    <h2>Warum es mir (als Code-Nutzer) weiterhilft</h2>
+    <p>
+      Als jemand, der RAG-Code schreibt, implementierst du ANN selten selbst — du wählst einen Store und einen Index und konfigurierst sie. Diese Wahl bestimmt direkt <strong>Kosten</strong> (managed vs. selbst gehostet, Speicherbedarf), <strong>Latenz</strong> (Indexgeschwindigkeit und Recall-Einstellungen) und <strong>Ergebnisqualität</strong> deiner App (ein schlecht getunter Index liefert irrelevante Chunks, die das LLM dann getreu in eine schlechte Antwort verwandelt). Die Kompromisse zu kennen, lässt dich <code>ef_search</code> oder <code>nprobe</code> gezielt einstellen statt zu raten, und den Store passend zu deiner Skala wählen statt zu groß oder zu klein zu dimensionieren.
+    </p>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="28-embedding-suche-vector-search.html">28 · Embedding-Suche &amp; Vector Search</a> → Embeddings und Cosine Similarity</li>
+      <li><a href="20-rag.html">20 · RAG</a> → die Pipeline, die Vektorsuche nutzt</li>
+      <li><a href="13-tokens-und-embeddings.html">13 · Tokens &amp; Embeddings</a> → wie Vektoren entstehen</li>
+      <li><a href="07-backend-entwicklung.html">07 · Backend-Entwicklung</a> → Datenbanken und Datenspeicherung</li>
+      <li><a href="59-retrieval-feintuning.html">59 · Retrieval-Feintuning</a> → Retrieval-Qualität verbessern</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Wie vermeidet der gierige HNSW-Spaziergang das Steckenbleiben in lokalen Optima?<br/>
+      • Wann schlägt Brute-Force-Suche ANN in der Praxis?<br/>
+      • Wie kombinieren hybride (Vektor + Volltext) Systeme beide Indizes?<br/>
+      • Wie re-indext oder aktualisiert man Vektoren, wenn sich das Embedding-Modell ändert?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

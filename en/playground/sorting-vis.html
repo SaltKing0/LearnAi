@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Playground · Sorting &amp; Big-O — AI Learning Course</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Playground · interactive</p>
+    <h1>Sorting &amp; Big-O</h1>
+    <p>Watch four sorting algorithms race on the same random array. Each bar is a value;
+       red = being compared, green = already sorted. The <strong>comparison counter</strong>
+       is your live proof of Big-O: bubble/insertion grow ~n², merge/quick ~n·log n.</p>
+
+    <div id="p5canvas"></div>
+
+    <div style="margin-top:12px">
+      <label for="algoSel">Algorithm: </label>
+      <select id="algoSel">
+        <option value="bubble">Bubble — O(n²)</option>
+        <option value="insertion">Insertion — O(n²)</option>
+        <option value="merge">Merge — O(n log n)</option>
+        <option value="quick">Quick — O(n log n)</option>
+      </select>
+      <button id="btnShuffle">↺ Shuffle</button>
+      <button id="btnSort">▶ Sort</button>
+      <button id="btnStep">Step</button>
+      <label for="speed">Speed: </label>
+      <input id="speed" type="range" min="1" max="60" value="30" />
+      <label for="size">n: </label>
+      <input id="size" type="range" min="8" max="80" value="40" />
+      <span id="status" style="margin-left:12px"></span>
+    </div>
+
+    <div class="callout kid">
+      <span class="label">What to watch for</span>
+      Double the array size (n) and re-sort: the O(n²) sorts take ~4× as many
+      comparisons, the O(n log n) sorts only a bit more than 2×. That gap is the whole
+      reason complexity notation exists (see Concept 01).
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <script>
+  let arr = [], comps = 0, gen = null, done = false;
+  let hi = [], sorted = [];
+  let speed = 30, running = false;
+
+  const ALGO = {
+    bubble:   { label: "Bubble — O(n²)",       run: bubbleGen },
+    insertion:{ label: "Insertion — O(n²)",   run: insertionGen },
+    merge:    { label: "Merge — O(n log n)",  run: mergeGen },
+    quick:    { label: "Quick — O(n log n)",  run: quickGen },
+  };
+
+  function makeArr(n) {
+    arr = Array.from({length: n}, () => Math.floor(Math.random()*100)+1);
+    comps = 0; gen = null; done = false; hi = []; sorted = []; running = false;
+    document.getElementById("btnSort").textContent = "▶ Sort";
+  }
+
+  function* bubbleGen(a) {
+    for (let i = 0; i < a.length-1; i++) {
+      for (let j = 0; j < a.length-1-i; j++) {
+        comps++; hi = [j, j+1];
+        if (a[j] > a[j+1]) { [a[j], a[j+1]] = [a[j+1], a[j]]; }
+        yield;
+      }
+      sorted.push(a.length-1-i);
+    }
+    sorted.push(0);
+  }
+  function* insertionGen(a) {
+    for (let i = 1; i < a.length; i++) {
+      let key = a[i], j = i-1;
+      while (j >= 0) { comps++; hi = [j, j+1]; if (a[j] > key) { a[j+1] = a[j]; j--; yield; } else break; }
+      a[j+1] = key; yield;
+    }
+    for (let k = 0; k < a.length; k++) sorted.push(k);
+  }
+  function* mergeGen(a, lo = 0, hiI = a.length-1) {
+    if (lo >= hiI) { yield; return; }
+    const mid = (lo+hiI)>>1;
+    yield* mergeGen(a, lo, mid);
+    yield* mergeGen(a, mid+1, hiI);
+    let L = a.slice(lo, mid+1), R = a.slice(mid+1, hiI+1);
+    let i = 0, j = 0, k = lo;
+    while (i < L.length && j < R.length) {
+      comps++; hi = [lo+i, mid+1+j];
+      if (L[i] <= R[j]) { a[k++] = L[i++]; } else { a[k++] = R[j++]; }
+      yield;
+    }
+    while (i < L.length) { a[k++] = L[i++]; yield; }
+    while (j < R.length) { a[k++] = R[j++]; yield; }
+  }
+  function* quickGen(a, lo = 0, hiI = a.length-1) {
+    if (lo > hiI) return;
+    const pivot = a[hiI]; let i = lo;
+    for (let j = lo; j < hiI; j++) {
+      comps++; hi = [j, hiI];
+      if (a[j] < pivot) { [a[i], a[j]] = [a[j], a[i]]; i++; }
+      yield;
+    }
+    [a[i], a[hiI]] = [a[hiI], a[i]];
+    yield* quickGen(a, lo, i-1);
+    yield* quickGen(a, i+1, hiI);
+  }
+
+  function startSort() {
+    const key = document.getElementById("algoSel").value;
+    gen = ALGO[key].run(arr.slice()); // sort a copy so shuffle stays intact? no — sort in place visually
+    // re-create gen on the live array
+    gen = ALGO[key].run(arr);
+    done = false; running = true;
+    document.getElementById("btnSort").textContent = "⏸ Pause";
+  }
+  function stepSort() {
+    if (!gen) startSort();
+    if (gen) { const r = gen.next(); if (r.done) { done = true; running = false; document.getElementById("btnSort").textContent = "✓ Done"; } }
+    updateStatus();
+  }
+
+  function updateStatus() {
+    const key = document.getElementById("algoSel").value;
+    document.getElementById("status").textContent =
+      `Comparisons: ${comps}  ·  ${ALGO[key].label}`;
+  }
+
+  function setup() {
+    const c = createCanvas(640, 320); c.parent("p5canvas");
+    textFont("system-ui, sans-serif"); textAlign(CENTER, CENTER);
+    makeArr(40);
+    document.getElementById("btnShuffle").addEventListener("click", () => {
+      const n = parseInt(document.getElementById("size").value);
+      makeArr(n);
+    });
+    document.getElementById("btnSort").addEventListener("click", () => {
+      if (done) { makeArr(parseInt(document.getElementById("size").value)); startSort(); return; }
+      if (running) { running = false; document.getElementById("btnSort").textContent = "▶ Sort"; }
+      else startSort();
+    });
+    document.getElementById("btnStep").addEventListener("click", stepSort);
+    document.getElementById("speed").addEventListener("input", e => speed = parseInt(e.target.value));
+    document.getElementById("size").addEventListener("input", e => makeArr(parseInt(e.target.value)));
+    document.getElementById("algoSel").addEventListener("change", () => { gen = null; done = false; updateStatus(); });
+    frameRate(60);
+    updateStatus();
+  }
+  function draw() {
+    background(250, 250, 252);
+    const n = arr.length;
+    const w = width / n;
+    // advance animation
+    if (running && gen && !done) {
+      for (let s = 0; s < speed/10+1; s++) { const r = gen.next(); if (r.done) { done = true; running = false; document.getElementById("btnSort").textContent = "✓ Done"; break; } }
+      updateStatus();
+    }
+    for (let i = 0; i < n; i++) {
+      const h = map(arr[i], 1, 100, 20, height-30);
+      let col = color(59, 130, 246);
+      if (hi.includes(i)) col = color(239, 68, 68);
+      if (sorted.includes(i)) col = color(16, 185, 129);
+      fill(col); noStroke();
+      rect(i*w + 1, height-h, w-2, h);
+    }
+    fill(120); textSize(13); textAlign(LEFT, TOP);
+    text(`n = ${n}`, 8, 8);
+  }
+  window.setup = setup; window.draw = draw;
+  </script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>

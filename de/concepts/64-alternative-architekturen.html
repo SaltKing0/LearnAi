@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>64 · Alternative Architekturen — AI-Lernkurs</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header id="topnav"></header>
+
+  <div class="wrap">
+    <p class="meta">Konzept 64 · Stufe C · Effizienz</p>
+    <h1>64 · Alternative Architekturen</h1>
+
+    <div class="callout kid">
+      <span class="label">Erklär es einem 12-Jährigen</span>
+      Der Transformer ist wie ein Schüler, der bei jedem neuen Satz das ganze
+      Buch noch einmal von vorn liest. Das ist gründlich, aber umso langsamer,
+      je dicker das Buch wird. Alternative Architekturen sind Schüler, die
+      stattdessen ein kleines Notizbuch (einen „Zustand“) führen und es beim
+      Lesen aktualisieren — jedes neue Wort verändert nur das Notizbuch. Das
+      Buch kann riesig sein, das Notizbuch bleibt gleich groß, also wird das
+      Lesen nie langsamer. Der Preis: Sie übersehen vielleicht ein Detail, das
+      das komplette Wiederlesen gefunden hätte.
+    </div>
+
+    <h2>Intuition</h2>
+    <p>Attention ist die Superkraft des Transformers: Jedes Token kann auf jedes
+       frühere Token schauen. Doch diese Kraft hat ihren Preis. Bei einer Folge
+       aus n Tokens muss sich ein Token an Position n mit allen n vorherigen
+       vergleichen — der Aufwand wächst mit n × n = <strong>O(n²)</strong>.
+       Verdoppelt man den Kontext, wird der Attention-Aufwand viermal so groß.
+       Der KV-Cache (Konzept 57) hilft beim Inferenz-Zeitpunkt, aber das
+       quadratische Prefill und der wachsende Cache begrenzen weiterhin, wie
+       lange ein Kontext ein Transformer günstig verarbeiten kann.</p>
+
+    <p><strong>Alternative Architekturen</strong> behalten die Idee „sage das
+       nächste Token voraus“, ersetzen aber die Schau-auf-alles-Attention durch
+       einen komprimierten <em>Zustand</em> fester Größe, der Schritt für Schritt
+       aktualisiert wird. Jedes neue Token leistet dabei einen konstanten
+       Aufwand, sodass die Kosten linear (<strong>O(n)</strong>) mit der
+       Sequenzlänge wachsen statt quadratisch. Das ermöglicht sehr lange Kontexte
+       und günstigere Edge-/On-Device-Inferenz — auf Kosten von teils etwas
+       geringerer Qualität oder schwierigerem Training.</p>
+
+    <h2>Was passiert technisch</h2>
+    <ul>
+      <li><strong>Quadratischer Engpass.</strong> Volle Self-Attention baut eine
+        n×n-Attention-Matrix auf: Jedes Token bewertet sich gegen jedes andere.
+        Speicher und Rechenaufwand skalieren beide mit O(n²) — deshalb ist das
+        „volle Kontextfenster“ teuer (siehe Konzept 57).</li>
+      <li><strong>State-Space-Modelle (SSM / Mamba).</strong> Ein verborgener
+        Zustand h (ein Vektor fester Größe) wird bei jedem Schritt aktualisiert:
+        h_t = A·h_{t-1} + B·x_t, und die Ausgabe wird aus h_t gelesen. Da der
+        Zustand eine feste Größe hat, ist jeder Schritt O(1) und die ganze
+        Sequenz O(n). Mamba ergänzt ein datenabhängiges Gating/Selektions-
+        Mechanismus, sodass das Modell selbst entscheiden kann, was es behält
+        und was es vergisst — wie eine schlauere, gelernte Rekurrenz. Ein
+        schneller „selective scan“ macht das Training parallel genug, um
+        praktisch zu sein.</li>
+      <li><strong>RWKV.</strong> Verbindet einen rekurrenten linearen Zustand im
+        RNN-Stil mit einem transformerartigen Trainingsablauf. Es nutzt eine
+        rekurrente Form von Attention (einen „wKV“-Mechanismus), sodass die
+        Inferenz O(1) pro Token ist — kein KV-Cache, der mit dem Kontext
+        wächst — und sich trotzdem wie ein Transformer trainieren lässt. Oft
+        zusammengefasst als „RNN bei der Inferenz, Transformer beim Training.“</li>
+      <li><strong>Hybride.</strong> Viele neuere Modelle behalten ein paar volle
+        Attention-Schichten (für die Teile, in denen globaler Kontext wirklich
+        zählt) und ersetzen den Rest durch lineare/SSM-Schichten. So bekommt man
+        den Großteil des Langkontext-Vorteils mit weniger Qualitätsverlust, als
+        wenn man komplett auf einen Zustand setzt.</li>
+    </ul>
+
+    <h3>Transformer vs. zustandsbasierte Attention</h3>
+    <div class="mermaid">
+flowchart LR
+    subgraph TR[Transformer: quadratische Attention]
+        T1[Token 5] -->|"achtet auf alle 1..4"| T2[(Tokens 1-4)]
+    end
+    subgraph SS[SSM / RWKV: fester Zustand]
+        S1[Token 5] -->|"aktualisiert Zustand"| S2[(Zustand h, feste Größe)]
+        S2 -->|"konstanter Aufwand pro Schritt"| S3[Ausgabe]
+    end
+    TR -- "O(n²) Aufwand, Cache wächst" --> SS -- "O(n) Aufwand, Cache konstant" --> OUT[Langkontext &amp; Edge-freundlich]
+    </div>
+
+    <table>
+      <tr><th></th><th>Transformer</th><th>SSM / Mamba / RWKV</th></tr>
+      <tr><td>Attention-Aufwand</td><td>O(n²)</td><td>O(n) pro Sequenz</td></tr>
+      <tr><td>Kontext-Skalierung</td><td>teuer, Cache wächst</td><td>günstig, konstanter Zustand</td></tr>
+      <tr><td>Langkontext-Qualität</td><td>stark (sieht alles)</td><td>gut, aber feine Details können leiden</td></tr>
+      <tr><td>Geschwindigkeit bei langem Kontext</td><td>wird langsamer</td><td>bleibt schnell</td></tr>
+      <tr><td>Reife / Ökosystem</td><td>dominant, beste Tooling</td><td>neuer, kleineres Ökosystem</td></tr>
+    </table>
+
+    <h2>Warum es mir (als Code-Nutzer) weiterhilft</h2>
+    <ul>
+      <li>Wenn ich „Mamba“ oder „RWKV“ in einem Modellnamen oder Paper sehe,
+        weiß ich: Es zielt auf Langkontext- und Niedrig-Latenz-Anwendungsfälle —
+        nicht auf eine grundlegend andere Art von KI.</li>
+      <li>Für sehr lange Dokumente oder Streams (Logs, Codebasen, ganze Bücher)
+        können zustandsbasierte Modelle pro Token deutlich günstiger sein als
+        ein Transformer bei gleicher Kontextlänge.</li>
+      <li>On-Device-/Edge-Inferenz profitiert: Ein Zustand fester Größe bedeutet,
+        dass der Speicher flach bleibt, während der Prompt wächst — anders als
+        beim Transformer, dessen KV-Cache aufbläht (vgl. Konzept 57).</li>
+      <li>Der Kompromiss ist für mich als Nutzer wichtig: Wenn meine Aufgabe
+        präzises Abrufen eines Details in einem riesigen Kontext braucht, ist ein
+        Transformer oder Hybrid oft sicherer; wenn ich einen riesigen Stream
+        schnell und günstig verarbeiten muss, glänzt ein Zustandsmodell.</li>
+    </ul>
+
+    <h2>Verwandt</h2>
+    <ul>
+      <li><a href="15-transformer-ueberblick.html">15 · Transformer-Überblick</a> → die Architektur, zu der diese Modelle die Alternative sind</li>
+      <li><a href="14-attention-ueberblick.html">14 · Attention</a> → der quadratische Mechanismus, der ersetzt wird</li>
+      <li><a href="57-kv-cache-inference-optimierung.html">57 · KV-Cache &amp; Inference-Optimierung</a> → wie Transformer mit dem Attention-Aufwand umgehen</li>
+      <li><a href="01-datenstrukturen-algorithmen.html">01 · Datenstrukturen &amp; Algorithmen</a> → warum O(n²) vs. O(n) zählt</li>
+      <li><a href="17-inference-vs-training.html">17 · Inference vs. Training</a> → wo sich der Geschwindigkeitsunterschied zeigt</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Offene Fragen / Lücken</span>
+      • Wie viel Qualität verlieren Zustandsmodelle tatsächlich beim Langkontext-Abruf, und bei welchen Aufgaben?<br/>
+      • Warum haben Mamba/RWKV Transformer in der Produktion noch nicht vollständig verdrängt — Qualität, Trainingskosten oder Ökosystem?<br/>
+      • Wie entscheiden hybride Architekturen, welche Schichten volle Attention behalten?<br/>
+      • Wie funktioniert der „selective scan“-Parallelismus in Mamba genau unter der Haube?
+    </div>
+  </div>
+
+  <footer id="bottomnav"></footer>
+
+  <!-- Mermaid für Fluss-/Architekturdiagramme (CDN, kein Build-Step) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="../assets/mermaid-init.js"></script>
+  <script src="../assets/nav.js"></script>
+</body>
+</html>
